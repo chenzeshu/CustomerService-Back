@@ -23,7 +23,7 @@ Route::group(['prefix'=>'v1'], function (){
     });
     Route::post('/login', 'v1\Back\LoginController@login');
     //todo 开发完后将需要jwt验证的模块放入下方;
-    
+
 
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
 
