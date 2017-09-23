@@ -18,13 +18,15 @@ class companySeed extends Seeder
             //合同
             $company->contracts()->save(factory(\App\Models\Contract::class)->make());
             $company->contracts()->save(factory(\App\Models\Contract::class)->make());
-            //普通服务单
-            $company->services()->save(factory(\App\Models\Services\Service::class)->make());
-            $company->services()->save(factory(\App\Models\Services\Service::class)->make());
-            //信道服务单
-            $company->channels()->save(factory(\App\Models\Channels\Channel::class)->make());
-            $company->channels()->save(factory(\App\Models\Channels\Channel::class)->make());
+
+            $company->contracts()->get()->each(function ($contract){
+                //普通服务单
+                $contract->services()->save(factory(\App\Models\Services\Service::class)->make());
+                //信道服务单
+                $contract->channels()->save(factory(\App\Models\Channels\Channel::class)->make());
+            });
             //回访表
+
         });
     }
 }
