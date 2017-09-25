@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Channels\Channel;
+use App\Models\Channels\Channel_nums;
+use App\Models\Services\Service;
 use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
@@ -20,6 +23,11 @@ class Company extends Model
         return $this->hasMany(Contract::class);
     }
 
+    public function contract_cs()
+    {
+        return $this->hasMany(Contract_C::class);
+    }
+
     public function services()
     {
         return $this->hasManyThrough(Service::class, Contract::class);
@@ -27,7 +35,8 @@ class Company extends Model
 
     public function channels()
     {
-        return $this->hasManyThrough(Channel::class, Contract::class);
+        return $this->hasManyThrough(Channel::class, Contract_C::class);
     }
+
 }
 

@@ -85,3 +85,4 @@ $factory->define(\App\Models\Channels\Channel::class, function (Faker $faker){
         "source" => rand(0,5),
     ];
 });
+

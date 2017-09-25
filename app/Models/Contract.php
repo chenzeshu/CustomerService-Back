@@ -21,9 +21,4 @@ class Contract extends Model
     {
         return $this->hasMany(Service::class);
     }
-
-    public function channels()
-    {
-        return $this->hasMany(Channel::class);
-    }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Models\Channels;
 
-use App\Models\Contract;
+use App\Models\Contract_C;
 use Illuminate\Database\Eloquent\Model;
 
 class Channel extends Model
@@ -11,8 +11,15 @@ class Channel extends Model
 
     ];
 
-    public function contract()
+    public function channel_applys()
     {
-        return $this->belongsTo(Contract::class);
+        return $this->hasMany(Channel_apply::class);
     }
+
+    public function contract_c()
+    {
+        return $this->belongsTo(Contract_C::class);
+    }
+
+
 }

@@ -14,4 +14,9 @@ class Employee extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function channel_apply()
+    {
+        
+    }
 }
