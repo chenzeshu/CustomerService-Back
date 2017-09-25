@@ -17,7 +17,7 @@ class CreateCoorsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('address')->nullable();
-            $table->string('phone',20)->nullable();
+            $table->string('phone',30)->nullable();
             $table->timestamps();
         });
     }

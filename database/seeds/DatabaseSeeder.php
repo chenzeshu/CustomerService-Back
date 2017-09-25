@@ -11,7 +11,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         $this->call(companySeed::class);
-         $this->call(userSeed::class);
+        //无依赖部分
+        $this->call(ChannelsUtilsSeed::class);
+        $this->call(UtilsSeed::class);
+        $this->call(companySeed::class);
+        $this->call(userSeed::class);
+        //有依赖部分
+        $this->call(ChannelsSeed::class);
+
     }
 }

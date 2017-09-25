@@ -21,8 +21,8 @@ class CreateChannelOperativesTable extends Migration
             $table->integer('id2');
             $table->integer('id3');
             $table->integer('id4');
-            $table->timestamp('t1');  //申请时间 必填
-            $table->timestamp('t2');  //结束时间 必填
+            $table->timestamp('begin_time')->nullable();  //开始时间 必填
+            $table->timestamp('end_time')->nullable();  //结束时间 必填
             $table->text('remark')->nullable();
             $table->timestamps();
         });

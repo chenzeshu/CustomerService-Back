@@ -17,5 +17,5 @@ Route::get('/', function () {
 
 
 Route::get('/test', function (){
-   return view('Test');
+  dd(factory(\App\Models\Channels\Channel_plan::class)->make());
 });

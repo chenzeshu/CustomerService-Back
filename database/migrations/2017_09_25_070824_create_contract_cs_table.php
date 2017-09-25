@@ -13,14 +13,14 @@ class CreateContractCsTable extends Migration
      */
     public function up()
     {
-        Schema::create('contract__cs', function (Blueprint $table) {
+        Schema::create('contract_cs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id');
             $table->string('contract_id');  //信道合同编号
             $table->string('PM',50);
             $table->timestamp('time');
-            $table->timestamp('beginline');
-            $table->timestamp('deadline');
+            $table->timestamp('beginline')->nullable();
+            $table->timestamp('deadline')->nullable();
             $table->decimal('money', 10, 2)->nullable();
             $table->text('desc')->nullable();
             $table->text('document')->nullable();
@@ -35,6 +35,6 @@ class CreateContractCsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('contract__cs');
+        Schema::dropIfExists('contract_cs');
     }
 }

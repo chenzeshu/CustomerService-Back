@@ -39,7 +39,7 @@ $factory->define(\App\Models\Employee::class, function (Faker $faker) {
         'name' => $faker->name,
         'openid' => $faker->unique()->creditCardNumber,
         'email' => $faker->unique()->safeEmail,
-        'phone'=> rand(0,99999),
+        'phone'=> $faker->unique()->phoneNumber,
         'status' => 'online'
     ];
 });
@@ -56,6 +56,34 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
         "time2" =>$faker->dateTime(),
         "money" => $faker->randomFloat(2,0, 10000000),
         "coor" => rand(0,10)
+    ];
+});
+
+$factory->define(\App\Models\Contract_C::class, function (Faker $faker){
+    return [
+        "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
+        "PM"=>rand(0,100),
+        "time" => $faker->dateTime(),
+        "beginline" =>$faker->dateTime(),
+        "deadline" =>$faker->dateTime(),
+        "money" => $faker->randomFloat(2,0, 10000000),
+    ];
+});
+
+//用户选择的套餐
+$factory->define(\App\Models\Channels\Channel_plan::class, function (Faker $faker){
+    $status = ['用完', '正常'];
+   return [
+        'plan' => rand(0,7),
+        'full_time' =>ceil($faker->numberBetween(0, 1500)/15)*15,
+        'flag' => $faker->randomElement($status),
+   ];
+});
+
+//用户套餐使用记录
+$factory->define(\App\Models\Channels\Channel_detail::class, function (Faker $faker){
+    return [
+        'time' =>ceil($faker->numberBetween(0, 120)/15)*15,
     ];
 });
 
@@ -77,12 +105,33 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
     ];
 });
 
+
+//信道服务单, 暂时不填充
 $factory->define(\App\Models\Channels\Channel::class, function (Faker $faker){
     $status = ['待审核','运营调配', '已完成', '拒绝'];
     return [
         "channel_id"=> 'X'.date('Ymd', time()).rand(0,1000),
         "status"=>  $faker->randomElement($status),
         "source" => rand(0,5),
+    ];
+});
+
+$factory->define(\App\Models\Utils\Device::class, function (Faker $faker){
+    $tpye = [0,1];
+    $pro = [0,1,2,3,4,5];
+    $status = ['停用', '重要', '一般', '自用', '损坏', '专项处理'];
+    return [
+        "type"=>  $faker->randomElement($tpye),
+        'id5'=>$faker->randomElement($tpye),
+        'device_id'=> $faker->md5,
+        'ip' => $faker->ipv4,
+        's/n' => null,
+        'profession_id'=> $faker->randomElement($pro),
+        'status' => $faker->randomElement($status),
+        'aerial' => 1,
+        'pa' => 2,
+        'lnb' => 3,
+        'built_at'=>$faker->date('Y-m-d H:i:s'),
     ];
 });
 

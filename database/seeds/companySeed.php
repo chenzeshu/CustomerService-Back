@@ -15,16 +15,18 @@ class companySeed extends Seeder
             //每个单位做2个人
             $company->employees()->save(factory(App\Models\Employee::class)->make());
             $company->employees()->save(factory(App\Models\Employee::class)->make());
-            //合同
-            $company->contracts()->save(factory(\App\Models\Contract::class)->make());
+
+            //制造2个普通合同
             $company->contracts()->save(factory(\App\Models\Contract::class)->make());
 
-            $company->contracts()->get()->each(function ($contract){
-                //普通服务单
-                $contract->services()->save(factory(\App\Models\Services\Service::class)->make());
-                //信道服务单
-                $contract->channels()->save(factory(\App\Models\Channels\Channel::class)->make());
-            });
+            //制造2个信道合同及对应的套餐
+            $company->contract_cs()->save(factory(\App\Models\Contract_C::class)->make());
+            $company->contract_cs()->save(factory(\App\Models\Contract_C::class)->make());
+
+            //每个单位3个设备
+            $company->devices()->save(factory(\App\Models\Utils\Device::class)->make());
+            $company->devices()->save(factory(\App\Models\Utils\Device::class)->make());
+            $company->devices()->save(factory(\App\Models\Utils\Device::class)->make());
             //回访表
 
         });

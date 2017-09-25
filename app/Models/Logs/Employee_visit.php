@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Channels;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Plan extends Model
+class Employee_visit extends Model
 {
     protected $guarded = [];
 }

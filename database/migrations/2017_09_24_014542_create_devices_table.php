@@ -20,8 +20,8 @@ class CreateDevicesTable extends Migration
             $table->integer('type');  //ad/非ad
             $table->integer('id5'); //传站类型的id
             $table->string('device_id');
-            $table->string('ip');
-            $table->string('s/n');
+            $table->string('ip')->nullable();
+            $table->string('s/n')->nullable();
             $table->integer('profession_id');
             $table->enum('status', ['停用','重要','一般','自用', '损坏', '专项处理'])->default('一般');
             $table->string('aerial');

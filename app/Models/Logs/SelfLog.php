@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Utils;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class SelfLog extends Model
 {
-    //
+    protected $guarded = [];
 }
