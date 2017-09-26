@@ -10,6 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,5 +19,5 @@ Route::get('/', function () {
 
 
 Route::get('/test', function (){
-  dd(factory(\App\Models\Channels\Channel_plan::class)->make());
+
 });

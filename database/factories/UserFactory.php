@@ -52,8 +52,8 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
         "type2"=>$faker->randomElement($type2),
         "PM"=>rand(0,100),
         "TM"=>rand(0,100),
-        "time1" => $faker->dateTime(),
-        "time2" =>$faker->dateTime(),
+        "time1" => $faker->date('Y-m-d H:i:s'),
+        "time2" =>$faker->date('Y-m-d H:i:s'),
         "money" => $faker->randomFloat(2,0, 10000000),
         "coor" => rand(0,10)
     ];
@@ -63,9 +63,9 @@ $factory->define(\App\Models\Contract_C::class, function (Faker $faker){
     return [
         "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
         "PM"=>rand(0,100),
-        "time" => $faker->dateTime(),
-        "beginline" =>$faker->dateTime(),
-        "deadline" =>$faker->dateTime(),
+        "time" => $faker->date('Y-m-d H:i:s'),
+        "beginline" =>$faker->date('Y-m-d H:i:s'),
+        "deadline" =>$faker->date('Y-m-d H:i:s'),
         "money" => $faker->randomFloat(2,0, 10000000),
     ];
 });
@@ -99,8 +99,8 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
         "customer" => rand(0,100),
         "charge_if" => $faker->randomElement($charge),
         "charge" => $faker->randomFloat(2, 0, 1000),
-        "time1" => $faker->dateTime(),
-        "time2" => $faker->dateTime(),
+        "time1" => $faker->date('Y-m-d H:i:s'),
+        "time2" => $faker->date('Y-m-d H:i:s'),
         'day_sum'=>rand(0,10),
     ];
 });
