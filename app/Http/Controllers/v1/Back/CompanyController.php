@@ -5,11 +5,16 @@ namespace App\Http\Controllers\v1\Back;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\company\CompanyStoreRequest;
 use App\Models\Company;
+use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
-    use ReturnTrait;
+    use ReturnTrait, PageTrait;
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +23,14 @@ class CompanyController extends Controller
     public function index()
     {
         $data = Company::all()->toArray();
-        return $this->res('2000', '公司信息',  ['data'=>$data]);
+        return $this->res('2000', '公司信息', $data);
+    }
+
+    public function page($page, $pageSize)
+    {
+        $data = $this->getPaginator($page, $pageSize);
+//        $data = DB::table('companies')->offset($begin)->limit($pageSize)->get();
+        return $this->res('2000', '公司分页信息', $data);
     }
 
     /**
@@ -30,7 +42,7 @@ class CompanyController extends Controller
     public function store(CompanyStoreRequest $request)
     {
         $data = Company::create($request->all());
-        return $this->res('2002', '添加成功', ['data'=>$data]);
+        return $this->res('2002', '添加成功', $data);
     }
 
     /**
@@ -44,6 +56,7 @@ class CompanyController extends Controller
         //todo 前端提供员工入口
         //todo 前端提供合同入口
         //todo 前端提供服务入口
+        //todo 前端提供已有套餐入口
     }
 
     /**
@@ -53,7 +66,7 @@ class CompanyController extends Controller
     public function showEmps($id)
     {
         $data = Company::findOrFail($id)->employees()->get();
-        return $this->res(2005, '员工信息', ['data' => $data]);
+        return $this->res(2005, '员工信息', $data);
     }
 
     /**
@@ -63,7 +76,7 @@ class CompanyController extends Controller
     public function showContracts($id)
     {
         $data = Company::findOrFail($id)->contracts()->get();
-        return $this->res(2006, '合同信息', ['data'=> $data]);
+        return $this->res(2006, '合同信息', $data);
     }
 
     /**
@@ -73,7 +86,7 @@ class CompanyController extends Controller
     public function showServices($id)
     {
         $data = Company::findOrFail($id)->services()->get();
-        return $this->res(2007, '普通服务单信息', ['data'=> $data]);
+        return $this->res(2007, '普通服务单信息', $data);
     }
 
     /**
@@ -83,7 +96,7 @@ class CompanyController extends Controller
     public function showChannels($id)
     {
         $data = Company::findOrFail($id)->channels()->get();
-        return $this->res(2008, '信道服务单信息', ['data'=> $data]);
+        return $this->res(2008, '信道服务单信息', $data);
     }
     
     /**

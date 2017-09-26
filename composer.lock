@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2209086d6b3e2d5e0b152780a09bfac2",
+    "content-hash": "2fdf1fbc114af6b99857ec862c79267d",
     "packages": [
         {
             "name": "chenzeshu/chen-utils",
-            "version": "dev-master",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/chenzeshu/chen-utils.git",
-                "reference": "c02014760cb6de20ee57a1b9d2aac47cd68f3ff6"
+                "reference": "2f21e33277ca4a57d7cdbdb60581c9c2ec4973c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/chenzeshu/chen-utils/c02014760cb6de20ee57a1b9d2aac47cd68f3ff6.zip",
-                "reference": "c02014760cb6de20ee57a1b9d2aac47cd68f3ff6",
+                "url": "https://files.phpcomposer.com/files/chenzeshu/chen-utils/2f21e33277ca4a57d7cdbdb60581c9c2ec4973c9.zip",
+                "reference": "2f21e33277ca4a57d7cdbdb60581c9c2ec4973c9",
                 "shasum": ""
             },
             "type": "dev",
@@ -37,7 +37,7 @@
                 }
             ],
             "description": "functions collected",
-            "time": "2017-09-19 08:43:58"
+            "time": "2017-09-26T09:34:27+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -438,16 +438,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.5.7",
+            "version": "v5.5.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "7a7b7c92ac6feae474cfe036a06643f5052d2e40"
+                "reference": "bfbe20d32ee9f98c89df852847827407a5127be4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/laravel/framework/7a7b7c92ac6feae474cfe036a06643f5052d2e40.zip",
-                "reference": "7a7b7c92ac6feae474cfe036a06643f5052d2e40",
+                "url": "https://files.phpcomposer.com/files/laravel/framework/bfbe20d32ee9f98c89df852847827407a5127be4.zip",
+                "reference": "bfbe20d32ee9f98c89df852847827407a5127be4",
                 "shasum": ""
             },
             "require": {
@@ -566,7 +566,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2017-09-19T17:46:51+00:00"
+            "time": "2017-09-24T19:09:38+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -1270,16 +1270,16 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "3.7.0",
+            "version": "3.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "0ef23d1b10cf1bc576e9d865a7e9c47982c5715e"
+                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/ramsey/uuid/0ef23d1b10cf1bc576e9d865a7e9c47982c5715e.zip",
-                "reference": "0ef23d1b10cf1bc576e9d865a7e9c47982c5715e",
+                "url": "https://files.phpcomposer.com/files/ramsey/uuid/45cffe822057a09e05f7bd09ec5fb88eeecd2334.zip",
+                "reference": "45cffe822057a09e05f7bd09ec5fb88eeecd2334",
                 "shasum": ""
             },
             "require": {
@@ -1348,7 +1348,7 @@
                 "identifier",
                 "uuid"
             ],
-            "time": "2017-08-04T13:39:04+00:00"
+            "time": "2017-09-22T20:46:04+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3302,16 +3302,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.3.0",
+            "version": "6.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb"
+                "reference": "c0ff817b36a827e64bf5f57bc72278150cf30a77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/sebastianbergmann/phpunit/9501bab711403a1ab5b8378a8adb4ec3db3debdb.zip",
-                "reference": "9501bab711403a1ab5b8378a8adb4ec3db3debdb",
+                "url": "https://files.phpcomposer.com/files/sebastianbergmann/phpunit/c0ff817b36a827e64bf5f57bc72278150cf30a77.zip",
+                "reference": "c0ff817b36a827e64bf5f57bc72278150cf30a77",
                 "shasum": ""
             },
             "require": {
@@ -3382,7 +3382,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-08-04T05:20:39+00:00"
+            "time": "2017-09-24T07:25:54+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -4095,9 +4095,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "chenzeshu/chen-utils": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

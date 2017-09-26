@@ -2,7 +2,7 @@
 
 ## simple introduction
 1. 采用`laravel`开发
-2. 采用`chen-utils`提供返回数据统一格式
+2. 采用`chen-utils`提供返回数据统一格式(没有使用`Fractal`/5.5的`Eloquent:RESOURCE`)
 3. 采用`jwt-auth`进行API验证 
 4. 面相客户端的接口提供基于微信支付向员工打赏的功能
 5. 20170925统计表数目 : 35; 预计1.0版表数目: 40+

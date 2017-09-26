@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\ServiceStoreRequest;
 use App\Models\Services\Service;
+use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class ServiceController extends Controller
 {
-    use ReturnTrait;
+    use ReturnTrait, PageTrait;
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +18,8 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        return $this->res(200, 'Service');
+        $data = $this->getPaginator(3, 20);
+        return $this->res(200, 'Service', $data);
     }
 
     /**
@@ -35,7 +36,7 @@ class ServiceController extends Controller
 
         //todo 存储
         $data = Service::create($request->all());
-        return $this->res(200, "新建信道服务单成功", ['data'=>$data]);
+        return $this->res(200, "新建信道服务单成功", $data);
     }
 
     //todo 派单时的方法及触发短信/邮件/内部通知

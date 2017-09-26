@@ -6,10 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
-        "chenzeshu/chen-utils": "dev-master",
+        "chenzeshu/chen-utils": "0.0.4",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "tymon/jwt-auth": "^0.5.12"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
