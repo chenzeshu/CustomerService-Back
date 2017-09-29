@@ -29,7 +29,7 @@ class ContractController extends Controller
      */
     public function store(ContractStoreRequest $request)
     {
-        //如果从company入口进入, 前端记录了company_id
+        //如果从company入口进入, 前端记录并并入了company_id
         $data = Contract::create($request->all());
 
         return $this->res(200, "新建合同成功", ['data'=>$data]);

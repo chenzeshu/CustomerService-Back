@@ -8,10 +8,6 @@ use App\Models\Company;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-
 class CompanyController extends Controller
 {
     use ReturnTrait, PageTrait;
@@ -29,7 +25,6 @@ class CompanyController extends Controller
     public function page($page, $pageSize)
     {
         $data = $this->getPaginator($page, $pageSize);
-//        $data = DB::table('companies')->offset($begin)->limit($pageSize)->get();
         return $this->res('2000', '公司分页信息', $data);
     }
 

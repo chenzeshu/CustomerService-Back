@@ -34,15 +34,18 @@ class LoginController extends Controller
         $pass = $request->password;
         $user = User::where('phone', $phone)->first();
 
-        if($user && Hash::check($pass, $user->password)){
+        if($user && Hash::check($pass, $user->password)) {
             $jwt_token = JWTAuth::fromUser($user);
-            if($res = $this->sms->sendSms( config('sms.signature'),config('sms.AdminLogin.login'), $user->phone, [
-                'customer'=>$user->name])){
-                return $this->res(1000, $user->name.'已登陆成功', ['token'=>$jwt_token]);
-            }
-            else {
-                return '登陆成功但短信发送失败';
-            }
+            return $this->res(1000, $user->name . '已登陆成功', ['token' => $jwt_token]);
+
+            //todo 短信服务, 已测试成功, 暂注释
+//            if($res = $this->sms->sendSms( config('sms.signature'),config('sms.AdminLogin.login'), $user->phone, [
+//                'customer'=>$user->name])){
+//                return $this->res(1000, $user->name.'已登陆成功', ['token'=>$jwt_token]);
+//            }
+//            else {
+//                return '登陆成功但短信发送失败';
+//            }
 
         } else {
             throw new WrongInputExp();
@@ -51,9 +54,10 @@ class LoginController extends Controller
 
     }
 
-    public function checkJwtn()
+    public function check()
     {
-        return true;
+        //todo 如果通过了中间件, 自然返回ture
+        return $this->res(1000, '登陆成功');
     }
     
 

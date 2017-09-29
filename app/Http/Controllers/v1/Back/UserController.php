@@ -17,6 +17,12 @@ class UserController extends Controller
         return $this->res(200, 'back-end users', $data);
     }
 
+    public function page($page, $pageSize)
+    {
+        $data = $this->getPaginator($page, $pageSize);
+        return $this->res(200, 'back-end users', $data);
+    }
+
     public function show($id)
     {
         $data = User::find($id);

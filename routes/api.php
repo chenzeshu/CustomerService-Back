@@ -24,41 +24,58 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
     Route::post('/login', 'LoginController@login');
     //todo 开发完后将需要jwt验证的模块放入下方;
-
-    //todo Users
-    Route::resource('/users', 'UserController');
-
-    //todo company
-    Route::group(['prefix'=>'company'], function (){
-        Route::get('/page/{page}/{pageSize}','CompanyController@page');
-    });
-    Route::get('/company/emps/{id}', 'CompanyController@showEmps');
-    Route::get('/company/contracts/{id}', 'CompanyController@showContracts');
-    Route::get('/company/services/{id}', 'CompanyController@showServices');
-    Route::get('/company/channels/{id}', 'CompanyController@showChannels');
-        //fixme 分页
-
-
-    Route::resource('/company','CompanyController');
-
-    //todo emp
-    Route::resource('/employee','EmployeeController');
-
-
-    //todo contracts
-    Route::resource('/contracts','ContractController');
-
-
-    //todo services
-    Route::resource('/services','ServiceController');
-
-
-    //todo channels
-    Route::resource('/channels','ChannelController');
-
-
-
+/** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
+        //todo checkJWT
+            Route::get('/check', 'LoginController@check');
 
+
+
+//todo Users
+        Route::group(['prefix'=>'users'], function () {
+            Route::get('/page/{page}/{pageSize}', 'UserController@page');
+            Route::resource('/', 'UserController');
+        });
+
+        //todo company
+        Route::group(['prefix'=>'company'], function (){
+            Route::get('/page/{page}/{pageSize}','CompanyController@page');
+
+            //todo 得到某个单独的数据
+            Route::get('/emps/{id}', 'CompanyController@showEmps');
+            Route::get('/contracts/{id}', 'CompanyController@showContracts');
+            Route::get('/services/{id}', 'CompanyController@showServices');
+            Route::get('/channels/{id}', 'CompanyController@showChannels');
+
+            Route::resource('/','CompanyController');
+        });
+
+        //todo emp
+        Route::group(['prefix'=>'employees'], function(){
+            Route::resource('/','EmployeeController');
+        });
+
+        //todo contracts
+        Route::group(['prefix'=>'contracts'], function(){
+            Route::resource('/','ContractController');
+        });
+
+        //todo services
+        Route::group(['prefix'=>'services'], function(){
+            Route::resource('/','ServiceController');
+        });
+
+        //todo contract_cs
+        Route::group(['prefix'=>'Contractcs'], function(){
+            Route::resource('/','ContractcController');
+        });
+
+        //todo channels
+        Route::group(['prefix'=>'channels'], function(){
+            Route::resource('/','ChannelController');
+        });
+
+        //todo utils
+        //todo
     });
 });
