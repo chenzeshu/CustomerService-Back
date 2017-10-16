@@ -24,6 +24,8 @@ class Cors
                 //设置响应头信息
                 header('Access-Control-Allow-Origin: '.$origin);
                 header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization');
+                header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//                header('Access-Control-Allow-Methods: head, get, post, put, delete, patch ');
                 header('Access-Control-Expose-Headers: Authorization');
             }
         }

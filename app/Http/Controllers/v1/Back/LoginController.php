@@ -3,23 +3,52 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\LoginExp\WrongInputExp;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Company\CompanyCollection;
+use App\Models\Company;
+use App\Models\Utils\Profession;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class LoginController extends Controller
 {
-    use ReturnTrait;
+    use ReturnTrait, TestTrait;
 
     protected $sms;
 
     function __construct(Sms $sms)
     {
         $this->sms = $sms;
+    }
+
+    public function test()
+    {
+        $page = 2;
+        $pageSize = 10;
+        $begin = ($page -1 ) * $pageSize;
+
+        $data = Company::offset($begin)->limit($pageSize)->get();
+        $pros = Profession::all()->toArray();
+        foreach ( $data as $company){
+            foreach ($pros as $pro){
+                if($pro['id'] == $company->profession){
+                    $company->profession = $pro['name'];
+                }else{
+                    $company->profession = "其他行业";
+                }
+            }
+        }
+        $total = ceil(Company::count() / $pageSize);
+        $data= [
+            'data'=> $data,
+            'total'=> $total
+        ];
+        return $this->res('2000', 200, $data);
     }
 
     /**
@@ -46,7 +75,6 @@ class LoginController extends Controller
 //            else {
 //                return '登陆成功但短信发送失败';
 //            }
-
         } else {
             throw new WrongInputExp();
         }

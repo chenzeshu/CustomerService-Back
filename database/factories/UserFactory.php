@@ -25,10 +25,11 @@ $factory->define(App\User::class, function (Faker $faker) {
 });
 
 $factory->define(\App\Models\Company::class, function (Faker $faker) {
+    $pros = ['电力','环保','水利','安监','消防'];
     return [
         'name' => $faker->company,
         'address' => $faker->address,
-        'profession'=> rand(0,10),
+        'profession'=> $faker->randomElement($pros),
         'type' => '已签约'
     ];
 });

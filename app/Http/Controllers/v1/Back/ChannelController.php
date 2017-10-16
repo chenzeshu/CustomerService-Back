@@ -58,7 +58,7 @@ class ChannelController extends Controller
      */
     public function update(ChannelStoreRequest $request, $id)
     {
-        //fixme 不支持修改合同单号, 所以前端只有灰色, 没有修改可能
+        //fixme 不支持修改信号服务单号, 所以前端只有灰色, 没有修改可能
         $re = Channel::find($id)->update($request->all());
         if($re){
             return $this->res(200, "修改服务单成功");

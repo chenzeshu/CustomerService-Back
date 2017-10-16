@@ -17,6 +17,7 @@ class UtilsSeed extends Seeder
             ['name'=>'环保'],
             ['name'=>'消防'],
             ['name'=>'电力'],
+            ['name'=>'安监'],
         ]);
 
         DB::table('coors')->insert([

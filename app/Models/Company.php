@@ -7,6 +7,7 @@ use App\Models\Channels\Channel_nums;
 use App\Models\Channels\Channel_plan;
 use App\Models\Services\Service;
 use App\Models\Utils\Device;
+use App\Models\Utils\Profession;
 use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
@@ -53,5 +54,9 @@ class Company extends Model
         return $this->hasManyThrough(Channel_plan::class, Contract_C::class);
     }
 
+    public function professions()
+    {
+        return $this->hasMany(Profession::class);
+    }
 }
 

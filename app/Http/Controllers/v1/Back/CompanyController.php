@@ -5,12 +5,21 @@ namespace App\Http\Controllers\v1\Back;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\company\CompanyStoreRequest;
 use App\Models\Company;
+use App\Models\Utils\Profession;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
     use ReturnTrait, PageTrait;
+
+    protected $pros;    //行业表信息
+    protected $pageSize;  //每页数量
+    protected $page;    //起始页面
+    protected $begin;   //起始位置
+    protected $total; //数组总数, 页数的计算交给前端
+    protected $data;  //分页详细内容
     /**
      * Display a listing of the resource.
      *
@@ -22,10 +31,38 @@ class CompanyController extends Controller
         return $this->res('2000', '公司信息', $data);
     }
 
+    private function init($page, $pageSize){
+        $this->page = $page;
+        $this->pageSize = $pageSize;
+        $this->begin = ($page -1 ) * $pageSize;
+        $this->pros = Profession::all()->toArray();
+    }
+
+    private function transformPros($data){
+        foreach ( $data as $company){
+            foreach ($this->pros as $pro){
+                if($pro['id'] == $company->profession){
+                    $company->profession = $pro['name'];
+                }else{
+                    $company->profession = "其他行业";
+                }
+            }
+        }
+        $this->data = $data;
+    }
+
+    //拿到总页数
+//    private function getTotal(){
+//        $this->total = ceil(Company::count() / $this->pageSize);
+//    }
+
     public function page($page, $pageSize)
     {
+        $this->pageInit($page, $pageSize);
+        $this->init($page, $pageSize);
         $data = $this->getPaginator($page, $pageSize);
-        return $this->res('2000', '公司分页信息', $data);
+        $data[ 'pros'] = $this->pros;
+        return $this->res('2000', 200, $data);
     }
 
     /**
@@ -101,7 +138,8 @@ class CompanyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CompanyStoreRequest $request, $id)
+//    public function update(CompanyStoreRequest $request, $id)
+    public function update(Request $request, $id)
     {
         /** $re boolean */
         $re = Company::find($id)->update($request->all());
@@ -121,8 +159,17 @@ class CompanyController extends Controller
     }
 
     //要求关键字模糊查询
-    public function search($name)
+    public function search($name, $page, $pageSize)
     {
-        
+        $this->init($page, $pageSize);
+        $data = Company::where('name', 'like', '%'.$name.'%')->orderBy('id', 'desc')->offset($this->begin)->limit($pageSize)->get();
+        $total = Company::where('name', 'like', '%'.$name.'%')->count();
+        $this->transformPros($data);
+
+        $data= [
+            'data'=> $this->data,
+            'total'=> $total,
+        ];
+        return $this->res(200, '搜索结果', $data);
     }
 }
