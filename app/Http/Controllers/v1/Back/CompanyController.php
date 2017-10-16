@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
-    use ReturnTrait, PageTrait;
+    use ReturnTrait;
 
     protected $pros;    //行业表信息
     protected $pageSize;  //每页数量
@@ -32,8 +32,8 @@ class CompanyController extends Controller
     }
 
     private function init($page, $pageSize){
-        $this->page = $page;
-        $this->pageSize = $pageSize;
+//        $this->page = $page;
+//        $this->pageSize = $pageSize;
         $this->begin = ($page -1 ) * $pageSize;
         $this->pros = Profession::all()->toArray();
     }
@@ -51,17 +51,17 @@ class CompanyController extends Controller
         $this->data = $data;
     }
 
-    //拿到总页数
-//    private function getTotal(){
-//        $this->total = ceil(Company::count() / $this->pageSize);
-//    }
 
     public function page($page, $pageSize)
     {
-        $this->pageInit($page, $pageSize);
         $this->init($page, $pageSize);
-        $data = $this->getPaginator($page, $pageSize);
-        $data[ 'pros'] = $this->pros;
+        $companies = Company::orderBy('id', 'desc')->offset($this->begin)->limit($pageSize)->get()->toArray();
+        $total =  Company::count();
+        $data = [
+            'data'=> $companies,
+            'pros' => $this->pros,
+            'total' => $total
+        ];
         return $this->res('2000', 200, $data);
     }
 

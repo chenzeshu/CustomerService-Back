@@ -60,7 +60,7 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
     ];
 });
 
-$factory->define(\App\Models\Contract_C::class, function (Faker $faker){
+$factory->define(\App\Models\Contract_c::class, function (Faker $faker){
     return [
         "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
         "PM"=>rand(0,100),

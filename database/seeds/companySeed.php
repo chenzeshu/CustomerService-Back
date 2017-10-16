@@ -29,7 +29,7 @@ class companySeed extends Seeder
             });
 
             //todo 制造2个信道合同 + 2个套餐/合同  //暂时不搞信道服务单, 手动申请测试
-            factory(\App\Models\Contract_C::class, config('app.seeding.contract_c'))->make()->each(function ($contract_c) use ($company){
+            factory(\App\Models\Contract_c::class, config('app.seeding.contract_c'))->make()->each(function ($contract_c) use ($company){
                 $company->contract_cs()->save($contract_c);
                 factory(\App\Models\Channels\Channel_plan::class, config('app.seeding.plan'))->make()->each(function ($plan) use ($contract_c){
                     $contract_c->channel_plans()->save($plan);
