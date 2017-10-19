@@ -48,5 +48,6 @@ class UtilsSeed extends Seeder
             ['name'=>'其他']
         ]);
 
+        factory(\App\Models\Doc::class, 100)->create();
     }
 }

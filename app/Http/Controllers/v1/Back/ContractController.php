@@ -5,7 +5,11 @@ namespace App\Http\Controllers\v1\Back;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\contract\ContractStoreRequest;
 use App\Models\Contract;
+use App\Models\Employee;
+use App\Models\Utils\Contract_type;
+use App\Models\Utils\Coor;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use Illuminate\Support\Facades\DB;
 
 class ContractController extends Controller
 {
@@ -19,6 +23,35 @@ class ContractController extends Controller
     {
         return $this->res(200, 'contract');
     }
+
+    public function page($page, $pageSize)
+    {
+        $begin = ( $page -1 ) * $pageSize;
+        $cons = Contract::orderBy('id', 'desc')->offset($begin)->limit($pageSize)
+            ->with('company')
+            ->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->PM = DB::select("select `id`, `name` from employees where id in ({$item->PM})");
+                $item->TM = DB::select("select `id`, `name` from employees where id in ({$item->TM})");
+                $item->document = DB::select("select * from docs where id in ({$item->document})");
+                return $item;
+            })
+            ->toArray();
+        
+        //前期因为合作商都没有超过10个, 所以直接当成utils了, 后期应该做成查询
+        $coors = Coor::all()->toArray();
+        $types = Contract_type::all()->toArray();
+        $total = Contract::count();
+        $data = [
+            'data' => $cons,
+            'total' => $total,
+            'coors' => $coors,
+            'types' => $types,
+        ];
+        return $this->res(200, '普合信息', $data);
+    }
+
 
 
     /**

@@ -42,11 +42,21 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo emp
         Route::group(['prefix'=>'employees'], function(){
+            Route::get('/page/{page}/{pageSize}', 'EmployeeController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
+            Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
+            Route::post('/update/{id}', 'EmployeeController@update');
+            Route::get('/delete/{id}','EmployeeController@destroy');
             Route::resource('/','EmployeeController');
         });
 
         //todo contracts
         Route::group(['prefix'=>'contracts'], function(){
+            Route::get('/page/{page}/{pageSize}', 'ContractController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
+            Route::get('/sc/{companyName}','ContractController@searchCompanies');  //todo 模糊搜索单位
+            Route::post('/update/{id}', 'ContractController@update');
+            Route::get('/delete/{id}','ContractController@destroy');
             Route::resource('/','ContractController');
         });
 

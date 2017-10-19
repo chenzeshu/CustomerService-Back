@@ -49,14 +49,16 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
     $type2 = ['销售', '客服', '临时'];
     return [
         "contract_id" => 'F'.date('Ymd', time()).rand(0,1000),
+        'name'=>$faker->name,
         "type1"=>rand(0,5),
         "type2"=>$faker->randomElement($type2),
-        "PM"=>rand(0,100),
-        "TM"=>rand(0,100),
+        "PM"=>rand(0,100).','.rand(0,100),
+        "TM"=>rand(0,100).','.rand(0,100),
         "time1" => $faker->date('Y-m-d H:i:s'),
         "time2" =>$faker->date('Y-m-d H:i:s'),
         "money" => $faker->randomFloat(2,0, 10000000),
-        "coor" => rand(0,10)
+        "coor" => rand(0,10),
+        "document" => rand(0,100).','.rand(0,100),
     ];
 });
 
@@ -64,6 +66,7 @@ $factory->define(\App\Models\Contract_c::class, function (Faker $faker){
     return [
         "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
         "PM"=>rand(0,100),
+        'name'=>$faker->name,
         "time" => $faker->date('Y-m-d H:i:s'),
         "beginline" =>$faker->date('Y-m-d H:i:s'),
         "deadline" =>$faker->date('Y-m-d H:i:s'),
@@ -134,5 +137,13 @@ $factory->define(\App\Models\Utils\Device::class, function (Faker $faker){
         'lnb' => 3,
         'built_at'=>$faker->date('Y-m-d H:i:s'),
     ];
+});
+
+$factory->define(\App\Models\Doc::class, function (Faker $faker){
+    $arr = ['public/documents/2017-10/haha.doc', 'public/documents/2017-11/beauty.doc', 'public/documents/2017-12/beautys.doc'];
+   return [
+      "name" => $faker->name,
+      "path" => $faker->randomElement($arr)
+   ];
 });
 

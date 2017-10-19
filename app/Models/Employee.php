@@ -11,6 +11,10 @@ class Employee extends Model
 
     ];
 
+    protected $hidden = [
+//        'openid'
+    ];
+
     public function company()
     {
         return $this->belongsTo(Company::class);

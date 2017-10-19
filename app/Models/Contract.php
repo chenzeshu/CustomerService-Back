@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Channels\Channel;
 use App\Models\Services\Service;
+use App\Models\Utils\Contract_type;
 use Illuminate\Database\Eloquent\Model;
 
 class Contract extends Model

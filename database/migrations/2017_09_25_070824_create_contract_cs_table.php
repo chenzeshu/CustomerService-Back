@@ -17,6 +17,7 @@ class CreateContractCsTable extends Migration
             $table->increments('id');
             $table->integer('company_id');
             $table->string('contract_id');  //信道合同编号
+            $table->string('name');  //合同名称
             $table->string('PM',50);
             $table->timestamp('time');
             $table->timestamp('beginline')->nullable();

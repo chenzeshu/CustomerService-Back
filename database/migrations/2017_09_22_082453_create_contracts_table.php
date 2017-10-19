@@ -16,6 +16,7 @@ class CreateContractsTable extends Migration
         Schema::create('contracts', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id');
+            $table->string('name'); //合同名称
             $table->string('contract_id');
             $table->string('type1');
             $table->enum('type2', ['销售', '客服', '临时'])->default('销售');

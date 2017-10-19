@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers\v1\Back;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\company\CompanyStoreRequest;
 use App\Models\Company;
 use App\Models\Utils\Profession;
-use Chenzeshu\ChenUtils\Traits\PageTrait;
-use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
 
-class CompanyController extends Controller
+class CompanyController extends ApiController
 {
-    use ReturnTrait;
-
     protected $pros;    //行业表信息
     protected $pageSize;  //每页数量
     protected $page;    //起始页面
@@ -154,7 +149,7 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        $re = Company::find($id)->delete();
+        $re = Company::destroy($id);
         return true == $re ? $this->res('2004', '删除成功') : $this->res('-2004', '删除失败');
     }
 
@@ -162,8 +157,16 @@ class CompanyController extends Controller
     public function search($name, $page, $pageSize)
     {
         $this->init($page, $pageSize);
-        $data = Company::where('name', 'like', '%'.$name.'%')->orderBy('id', 'desc')->offset($this->begin)->limit($pageSize)->get();
-        $total = Company::where('name', 'like', '%'.$name.'%')->count();
+        $data = Company::where('name', 'like', '%'.$name.'%')
+                        ->orderBy('id', 'desc')
+                        ->offset($this->begin)
+                        ->limit($pageSize)
+                        ->get()
+                        ->toArray();
+
+        $total = Company::where('name', 'like', '%'.$name.'%')
+                        ->count();
+
         $this->transformPros($data);
 
         $data= [
