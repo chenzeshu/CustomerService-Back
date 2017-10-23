@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\Back;
 use App\Models\Company;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends ApiController
 {
@@ -59,18 +60,37 @@ class EmployeeController extends ApiController
     }
 
     /**
-     * 添加员工时, 模糊搜索公司
+     * 模糊搜索公司
      */
     public function searchCompanies($companyName)
     {
         $companies = Company::where('name', 'like', '%'.$companyName.'%')
                             ->limit(10)
-                            ->get()
+                            ->get(['id', 'name'])
                             ->toArray();
         $total  = Company::where('name', 'like', '%'.$companyName.'%')
                          ->count();
         $data = [
             'data' => $companies,
+            'sTotal' => $total
+        ];
+        return $this->res(200, '搜索结果', $data);
+    }
+
+    /**
+     * 模糊搜索员工
+     */
+    public function searchEmps($empName)
+    {
+        $emps = DB::table('employees')
+                    ->where('name','like', "%".$empName."%")
+                    ->limit(10)
+                    ->get(['id', 'name']);
+        $total = Employee::where('name', 'like', '%'.$empName.'%')
+                          ->count();
+
+        $data = [
+            'data' => $emps,
             'sTotal' => $total
         ];
         return $this->res(200, '搜索结果', $data);
@@ -129,20 +149,11 @@ class EmployeeController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        $changed_at = null;
         if($request->status == 'online'){
-            $changed_at = date('Y-m-d H:i:s', time());
+            $request->change_at = date('Y-m-d H:i:s', time());
         }
 
-        Employee::findOrFail($request->id)->update([
-            'name'=>$request->name,
-            'company_id' => $request->company_id,
-            'phone'=>$request->phone,
-            'email'=>$request->email,
-            'status'=>$request->status,
-            'openid'=>$request->openid,
-            'changed_at'=> $changed_at
-        ]);
+        Employee::findOrFail($request->id)->update($request->except('company'));
 
         return $this->res('2003', '修改成功');
     }

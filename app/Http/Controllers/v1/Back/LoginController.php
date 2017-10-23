@@ -16,31 +16,25 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Middleware\BaseMiddleware;
 
 class LoginController extends Controller
 {
     use ReturnTrait, TestTrait;
 
     protected $sms;
+    protected $auth;
 
-    function __construct(Sms $sms)
+    function __construct(Sms $sms, \Tymon\JWTAuth\JWTAuth $auth)
     {
         $this->sms = $sms;
+        $this->auth = $auth;
     }
 
     public function test()
     {
-        $data = Contract::orderBy('id', 'desc')->offset(10)->limit(10)
-            ->with('company')
-            ->get()
-            ->map(function ($item){
-                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->PM = DB::select("select 'id', 'name' from employees where id in ({$item->PM})");
-                $item->TM = DB::select("select 'id', 'name' from employees where id in ({$item->TM})");
-                $item->document = DB::select("select * from docs where id in ({$item->document})");
-                return $item;
-            })
-            ->toArray();
+        $empName = "m";
+        $data = DB::table('employees')->where('name','like', "%".$empName."%")->get(['id', 'name']);
         return $this->res('2000', 200, $data);
     }
 
@@ -80,5 +74,6 @@ class LoginController extends Controller
         //todo 如果通过了中间件, 自然返回ture
         return $this->res(1000, '登陆成功');
     }
+
 
 }

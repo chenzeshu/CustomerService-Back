@@ -29,7 +29,6 @@ class ContractStoreRequest extends FormRequest
             "type1" => 'required',
             "type2" => 'required',
             "PM" => 'required',
-            "TM" => 'required',
             "time1" => 'required',
         ];
     }
@@ -42,7 +41,6 @@ class ContractStoreRequest extends FormRequest
           "type1.required" => '必须提交合同类型',
           "type2.required" => '必须提交签订类型',
           "PM.required" => '必须选择项目经理',
-          "TM.required" => '必须选择技术经理',
           "time1.required" => '必须提交签订时间',
         ];
     }

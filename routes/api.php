@@ -12,8 +12,29 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
 
+//    Route::group(['prefix'=>'employees'], function(){
+//        Route::get('/page/{page}/{pageSize}', 'EmployeeController@page');
+//        Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
+//        Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
+//        Route::get('/se/{empName}','EmployeeController@searchEmps');  //todo 模糊搜索员工
+//        Route::post('/update/{id}', 'EmployeeController@update');
+//        Route::get('/delete/{id}','EmployeeController@destroy');
+//        Route::resource('/','EmployeeController');
+//    });
+
+    //todo contracts
+    Route::group(['prefix'=>'contracts'], function(){
+        Route::get('/page/{page}/{pageSize}', 'ContractController@page');
+        Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
+        Route::post('/update/{id}', 'ContractController@update');
+        Route::get('/delete/{id}','ContractController@destroy');
+        Route::resource('/','ContractController');
+    });
+
+
 /** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
+//    Route::group(['middleware'=>[]], function (){
         //todo checkJWT
             Route::get('/check', 'LoginController@check');
 
@@ -45,20 +66,20 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/page/{page}/{pageSize}', 'EmployeeController@page');
             Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
             Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
+            Route::get('/se/{empName}','EmployeeController@searchEmps');  //todo 模糊搜索员工
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
             Route::resource('/','EmployeeController');
         });
 
-        //todo contracts
-        Route::group(['prefix'=>'contracts'], function(){
-            Route::get('/page/{page}/{pageSize}', 'ContractController@page');
-            Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
-            Route::get('/sc/{companyName}','ContractController@searchCompanies');  //todo 模糊搜索单位
-            Route::post('/update/{id}', 'ContractController@update');
-            Route::get('/delete/{id}','ContractController@destroy');
-            Route::resource('/','ContractController');
-        });
+//        //todo contracts
+//        Route::group(['prefix'=>'contracts'], function(){
+//            Route::get('/page/{page}/{pageSize}', 'ContractController@page');
+//            Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
+//            Route::post('/update/{id}', 'ContractController@update');
+//            Route::get('/delete/{id}','ContractController@destroy');
+//            Route::resource('/','ContractController');
+//        });
 
         //todo services
         Route::group(['prefix'=>'services'], function(){

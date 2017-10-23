@@ -32,9 +32,9 @@ class ContractController extends Controller
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->PM = DB::select("select `id`, `name` from employees where id in ({$item->PM})");
-                $item->TM = DB::select("select `id`, `name` from employees where id in ({$item->TM})");
-                $item->document = DB::select("select * from docs where id in ({$item->document})");
+                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
+                $item->TM = $item->TM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->TM})");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
                 return $item;
             })
             ->toArray();
@@ -62,10 +62,13 @@ class ContractController extends Controller
      */
     public function store(ContractStoreRequest $request)
     {
-        //如果从company入口进入, 前端记录并并入了company_id
-        $data = Contract::create($request->all());
+        //contract_id规则写在前端
 
-        return $this->res(200, "新建合同成功", ['data'=>$data]);
+
+        //如果从company入口进入, 前端记录并并入了company_id
+        $data = Contract::create($request->except('company'));
+
+        return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
 
     /**
@@ -90,12 +93,14 @@ class ContractController extends Controller
      */
     public function update(ContractStoreRequest $request, $id)
     {
+        //todo 文件
+
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
-        $re = Contract::find($id)->update($request->all());
+        $re = Contract::find($id)->update($request->except(['document','company']));
         if($re){
-            return $this->res(200, "修改合同成功");
+            return $this->res(2003, "修改合同成功");
         } else {
-            return $this->res(500, "修改合同失败");
+            return $this->res(-2003, "修改合同失败");
         }
 
     }
@@ -110,7 +115,7 @@ class ContractController extends Controller
     {
         $re = Contract::find($id)->delete();
         if($re){
-            return $this->res(200, "删除合同成功");
+            return $this->res(2004, "删除合同成功");
         } else {
             return $this->res(500, "删除合同失败");
         }

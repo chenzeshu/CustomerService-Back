@@ -28,7 +28,6 @@
             for ( let key in text.errors){
                 console.log(`${key} : ${text.errors[key]}`)
             }
-
         }
     })
 </script>
