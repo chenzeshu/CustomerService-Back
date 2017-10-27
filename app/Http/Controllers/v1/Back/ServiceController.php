@@ -4,9 +4,13 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\ServiceStoreRequest;
+use App\Models\Company;
 use App\Models\Services\Service;
+use App\Models\Utils\Service_source;
+use App\Models\Utils\Service_type;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
 {
@@ -23,6 +27,36 @@ class ServiceController extends Controller
     }
 
     /**
+     * 分页
+     * @param $page
+     * @param $pageSize
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function page($page, $pageSize)
+    {
+        $begin = ( $page -1 ) * $pageSize;
+        $services = Service::orderBy('id', 'desc')->offset($begin)->limit($pageSize)->with('contract')->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->man = $item->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->man})");
+                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->customer})");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
+                $item->company = Company::where('id', $item['contract']['company_id'])->get(['id', 'name'])[0];
+                return $item;
+            })
+            ->toArray();
+        $total = Service::count();
+        $types = Service_type::all()->toArray();
+        $sources = Service_source::all()->toArray();
+        $data = [
+            'data' => $services,
+            'total' => $total,
+            'types' => $types,
+            'sources' => $sources
+        ];
+        return $this->res(200, '员工信息', $data);
+    }
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -30,13 +64,11 @@ class ServiceController extends Controller
      */
     public function store(ServiceStoreRequest $request)
     {
-        //创建时前端直接不提供`已派单`选项
-        //todo 然后后台也做一次检查
-        $this->checkStatus($request);
+        //todo 前端右侧可以做一个派单
 
         //todo 存储
         $data = Service::create($request->all());
-        return $this->res(200, "新建信道服务单成功", $data);
+        return $this->res(2002, "新建信道服务单成功", $data);
     }
 
     //todo 派单时的方法及触发短信/邮件/内部通知
@@ -67,13 +99,11 @@ class ServiceController extends Controller
     public function update(ServiceStoreRequest $request, $id)
     {
         //fixme 不支持修改合同单号, 所以前端只有灰色, 没有修改可能
-        //fixme 当状态修改为派单时, 不支持修改, 修改派单的API在上面
-        $this->checkStatus($request);
 
         //todo 修改
-        $re = Service::find($id)->update($request->all());
+        $re = Service::find($id)->update($request->except(['contract','company']));
         if($re){
-            return $this->res(200, "修改服务单成功");
+            return $this->res(2003, "修改服务单成功");
         } else {
             return $this->res(500, "修改服务单失败");
         }
@@ -89,17 +119,10 @@ class ServiceController extends Controller
     {
         $re = Service::find($id)->delete();
         if($re){
-            return $this->res(200, "删除服务单成功");
+            return $this->res(2004, "删除服务单成功");
         } else {
             return $this->res(500, "删除服务单失败");
         }
     }
 
-
-
-    private function checkStatus($request){
-        if($request->has('status') && $request->status == '已派单'){
-            return $this->res(500, "请点击右侧派单功能");
-        }
-    }
 }

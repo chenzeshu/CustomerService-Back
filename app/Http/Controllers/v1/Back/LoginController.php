@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Company\CompanyCollection;
 use App\Models\Company;
 use App\Models\Contract;
+use App\Models\Services\Service;
 use App\Models\Utils\Profession;
 use App\Services\Sms;
 use App\User;
@@ -33,9 +34,17 @@ class LoginController extends Controller
 
     public function test()
     {
-        $empName = "m";
-        $data = DB::table('employees')->where('name','like', "%".$empName."%")->get(['id', 'name']);
-        return $this->res('2000', 200, $data);
+        $services = Service::orderBy('id', 'desc')->offset(10)->limit(10)->with('contract')->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->man = $item->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->man})");
+                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->customer})");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
+                $item->company = Company::where('id', $item['contract']['company_id'])->get(['id', 'name'])[0];
+                return $item;
+            })
+            ->toArray();
+        return $services;
     }
 
     /**

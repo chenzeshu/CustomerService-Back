@@ -37,6 +37,7 @@ class ServiceStoreRequest extends FormRequest
             "contract_id.required" => '必须提交所属合同编号',
             "service_id.required" => '必须提交普通服务单编号',
             "customer.required" => '必须选择客户联系人',
+            "man.required" => '必须选择客服人员',
             "time1.required" => '必须提交受理时间'
         ];
     }

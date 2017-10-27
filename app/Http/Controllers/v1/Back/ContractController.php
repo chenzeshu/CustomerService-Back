@@ -64,7 +64,6 @@ class ContractController extends Controller
     {
         //contract_id规则写在前端
 
-
         //如果从company入口进入, 前端记录并并入了company_id
         $data = Contract::create($request->except('company'));
 
@@ -113,11 +112,34 @@ class ContractController extends Controller
      */
     public function destroy($id)
     {
-        $re = Contract::find($id)->delete();
+        $re = Contract::destroy($id);
         if($re){
             return $this->res(2004, "删除合同成功");
         } else {
             return $this->res(500, "删除合同失败");
         }
+    }
+
+    //要求关键字模糊查询
+    public function search($name,  $page, $pageSize)
+    {
+        $begin = ( $page -1 ) * $pageSize;
+        $emp = Contract::where('name', 'like', '%'.$name.'%')
+            ->orderBy('id', 'desc')
+            ->offset($begin)
+            ->limit($pageSize)
+            ->with('company')
+            ->get()
+            ->toArray();
+
+        $total = Contract::where('name', 'like', '%'.$name.'%')
+            ->count();
+
+        $data= [
+            'data'=> $emp,
+            'total'=> $total,
+        ];
+
+        return $this->res(200, '搜索结果', $data);
     }
 }

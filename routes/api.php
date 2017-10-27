@@ -67,22 +67,27 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
             Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
             Route::get('/se/{empName}','EmployeeController@searchEmps');  //todo 模糊搜索员工
+            Route::get('/scon/{contract_id}','EmployeeController@searchContracts');  //todo 模糊搜索普通合同编号
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
             Route::resource('/','EmployeeController');
         });
 
-//        //todo contracts
-//        Route::group(['prefix'=>'contracts'], function(){
-//            Route::get('/page/{page}/{pageSize}', 'ContractController@page');
-//            Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
-//            Route::post('/update/{id}', 'ContractController@update');
-//            Route::get('/delete/{id}','ContractController@destroy');
-//            Route::resource('/','ContractController');
-//        });
+        //todo contracts
+        Route::group(['prefix'=>'contracts'], function(){
+            Route::get('/page/{page}/{pageSize}', 'ContractController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ContractController@update');
+            Route::get('/delete/{id}','ContractController@destroy');
+            Route::resource('/','ContractController');
+        });
 
         //todo services
         Route::group(['prefix'=>'services'], function(){
+            Route::get('/page/{page}/{pageSize}', 'ServiceController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ServiceController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ServiceController@update');
+            Route::get('/delete/{id}','ServiceController@destroy');
             Route::resource('/','ServiceController');
         });
 

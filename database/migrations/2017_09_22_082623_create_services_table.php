@@ -19,8 +19,8 @@ class CreateServicesTable extends Migration
             $table->string('service_id');
             $table->enum('status', ['待审核', '拒绝', '待派单', '已派单', '申请完成', '已完成', '申述中'])->default('待审核');
             //员工拥有访问申请完成的api的权限, 访问此权限时, 会向管理员发送三位一体通知  所以还要封装一下邮件的类
-            $table->string('source',50)->nullable();
-            $table->string('type',50)->nullable();
+            $table->integer('source',50)->nullable();
+            $table->integer('type',50)->nullable();
             $table->string('man',50)->nullable();
             $table->string('customer',50);
             $table->enum('charge_if',['收费', '未收费'])->default('未收费');

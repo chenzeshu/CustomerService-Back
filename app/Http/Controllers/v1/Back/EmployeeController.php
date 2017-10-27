@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Models\Company;
+use App\Models\Contract;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -91,6 +92,22 @@ class EmployeeController extends ApiController
 
         $data = [
             'data' => $emps,
+            'sTotal' => $total
+        ];
+        return $this->res(200, '搜索结果', $data);
+    }
+
+    public function searchContracts($contract_id)
+    {
+        $contracts = DB::table('contracts')
+            ->where('contract_id','like', "%".$contract_id."%")
+            ->limit(10)
+            ->get(['id', 'contract_id']);
+        $total = Contract::where('contract_id', 'like', '%'.$contract_id.'%')
+            ->count();
+
+        $data = [
+            'data' => $contracts,
             'sTotal' => $total
         ];
         return $this->res(200, '搜索结果', $data);
