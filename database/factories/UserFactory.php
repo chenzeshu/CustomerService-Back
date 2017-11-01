@@ -93,7 +93,8 @@ $factory->define(\App\Models\Channels\Channel_detail::class, function (Faker $fa
 
 $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
     $status = ['待审核','拒绝', '已派单', '已完成', '申请完成', '申述中'];
-    $charge = ['收费', "未收费"];
+    $charge = ['收费', "不收费"];
+    $charge_flag = ['到款', "未到款"];
     return [
         "service_id" => 'F'.date('Ymd', time()).rand(0,1000),
         "status" => $faker->randomElement($status),
@@ -102,6 +103,7 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
         "man" => rand(0,100),
         "customer" => rand(0,100),
         "charge_if" => $faker->randomElement($charge),
+        "charge_flag" => $faker->randomElement($charge_flag),
         "charge" => $faker->randomFloat(2, 0, 1000),
         "time1" => $faker->date('Y-m-d H:i:s'),
         "time2" => $faker->date('Y-m-d H:i:s'),

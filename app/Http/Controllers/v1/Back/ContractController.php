@@ -52,8 +52,6 @@ class ContractController extends Controller
         return $this->res(200, '普合信息', $data);
     }
 
-
-
     /**
      * Store a newly created resource in storage.
      *
@@ -80,8 +78,6 @@ class ContractController extends Controller
     {
         //
     }
-
-
 
     /**
      * Update the specified resource in storage.

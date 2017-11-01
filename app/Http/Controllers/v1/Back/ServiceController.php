@@ -10,6 +10,7 @@ use App\Models\Utils\Service_source;
 use App\Models\Utils\Service_type;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
@@ -66,6 +67,12 @@ class ServiceController extends Controller
     {
         //todo 前端右侧可以做一个派单
 
+
+        //todo 检查响应时间
+        if($request->status == "待审核" || $request->status == "已派单"){
+            $request['time3'] = date('Y-m-d H:i:s', time());
+        }
+
         //todo 存储
         $data = Service::create($request->all());
         return $this->res(2002, "新建信道服务单成功", $data);
@@ -88,7 +95,6 @@ class ServiceController extends Controller
         //
     }
 
-
     /**
      * Update the specified resource in storage.
      *
@@ -98,10 +104,17 @@ class ServiceController extends Controller
      */
     public function update(ServiceStoreRequest $request, $id)
     {
-        //fixme 不支持修改合同单号, 所以前端只有灰色, 没有修改可能
+        $update = Service::find($id);
 
+        //fixme 不支持修改合同单号, 所以前端只有灰色, 没有修改可能
+        if($request->status == "待审核" && $update->status != "待审核"){  //变成待审核后, 更新响应起始时间
+            $request->time3 = date('Y-m-d H:i:s', time());
+        }
+        if($request->status == "已派单" && $update->status != "已派单"){   //变成已派单后, 更新响应起始时间
+            $request->time3 = date('Y-m-d H:i:s', time());
+        }
         //todo 修改
-        $re = Service::find($id)->update($request->except(['contract','company']));
+        $re = $update->update($request->except(['contract','company']));
         if($re){
             return $this->res(2003, "修改服务单成功");
         } else {
