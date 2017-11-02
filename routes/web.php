@@ -10,9 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-use Faker\Factory as Faker;
-use Illuminate\Support\Facades\DB;
-
 Route::get('/', function () {
     return view('welcome');
 });
