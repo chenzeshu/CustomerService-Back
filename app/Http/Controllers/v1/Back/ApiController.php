@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class ApiController extends Controller
 {
@@ -19,15 +20,13 @@ class ApiController extends Controller
 
     public function webhook(Request $request)
     {
-        dd($request);
-        $signature = "sha1=".hash_hmac('sha256', json_decode($request->payload), env('WEBHOOK_SECRET_TOKEN'));
 
-        dd($signature);
+        $signature = "sha1=".hash_hmac('sha1',json_decode($request->payload), env('WEBHOOK_SECRET_TOKEN'));
 
-        if($signature == $request->header('X-Hub-Signature')){
+//        if(true){
             system('deploy.sh');
-        }else {
-            return false;
-        }
+//        }else {
+//            return false;
+//        }
     }
 }
