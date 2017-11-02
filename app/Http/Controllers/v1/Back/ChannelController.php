@@ -8,9 +8,8 @@ use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class ChannelController extends Controller
+class ChannelController extends ApiController
 {
-    use ReturnTrait;
     /**
      * Display a listing of the resource.
      *
