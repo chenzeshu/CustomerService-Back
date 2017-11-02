@@ -9,9 +9,8 @@ use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 
 //信道合同
-class ContractcController extends Controller
+class ContractcController extends ApiController
 {
-    use PageTrait, ReturnTrait;
 
     public function page($page, $pageSize)
     {

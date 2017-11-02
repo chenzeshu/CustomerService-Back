@@ -13,9 +13,8 @@ use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ServiceController extends Controller
+class ServiceController extends ApiController
 {
-    use ReturnTrait, PageTrait;
     /**
      * Display a listing of the resource.
      *

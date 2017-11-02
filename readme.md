@@ -14,4 +14,5 @@ ps : 注意mysql5.7的sql_mode问题
 3. 基于vue的前端制作
 4. 自身短信与邮件的队列化
 5. 单元测试
-6. need to added
+6. 自动化备份
+7. need to be added

@@ -19,9 +19,9 @@ use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Middleware\BaseMiddleware;
 
-class LoginController extends Controller
+class LoginController extends ApiController
 {
-    use ReturnTrait, TestTrait;
+    use  TestTrait;
 
     protected $sms;
     protected $auth;

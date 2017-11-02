@@ -17,7 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-Route::get('/test', function (){
-
-});
+Route::post('/update', 'v1\Back\ApiController@webhook');

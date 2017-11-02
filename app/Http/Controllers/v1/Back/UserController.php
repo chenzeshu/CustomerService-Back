@@ -7,10 +7,8 @@ use App\User;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
-    use ReturnTrait, PageTrait;
-
     public function index()
     {
        $data = $this->getPaginator(1, 5);
