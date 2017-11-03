@@ -20,13 +20,12 @@ class ApiController extends Controller
 
     public function webhook(Request $request)
     {
+        $signature = "sha1=".hash_hmac('sha1', $request->getContent(), env('WEBHOOK_SECRET_TOKEN'));
 
-        $signature = "sha1=".hash_hmac('sha1',json_decode($request->payload), env('WEBHOOK_SECRET_TOKEN'));
-
-//        if(true){
+        if(strcmp($signature, $request->header('X-Hub-Signature')) == 0){
             system('deploy.sh');
-//        }else {
-//            return false;
-//        }
+        }else {
+            return false;
+        }
     }
 }

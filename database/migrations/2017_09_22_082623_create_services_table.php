@@ -28,6 +28,7 @@ class CreateServicesTable extends Migration
             $table->enum('charge_if',['收费', '不收费'])->default('不收费');
             $table->enum('charge_flag',['到款', '未到款'])->default('未到款');
             $table->decimal('charge',10,2)->nullable();
+            $table->decimal('time4',10,2)->nullable(); //到款时间
             $table->timestamp('time1');
             $table->timestamp('time2')->nullable();
             $table->tinyInteger('day_sum')->nullable();  //占用工时
