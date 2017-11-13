@@ -4,9 +4,10 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\contractc\ContractcRequest;
-use App\Models\Contract_c;
+use App\Models\Contractc;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use Illuminate\Support\Facades\DB;
 
 //信道合同
 class ContractcController extends ApiController
@@ -14,25 +15,64 @@ class ContractcController extends ApiController
 
     public function page($page, $pageSize)
     {
-        $data = $this->getPaginator($page, $pageSize);
+        $begin = ( $page -1 ) * $pageSize;
+        $cons = Contractc::orderBy('id', 'desc')->offset($begin)->limit($pageSize)
+            ->with('company')
+            ->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
+                return $item;
+            })
+            ->toArray();
+
+        $total = Contractc::count();
+        $data = [
+            'data' => $cons,
+            'total' => $total,
+        ];
         return $this->res(200, '信道合同', $data);
     }
 
     public function store(ContractcRequest $request)
     {
-        $data = Contract_c::create($request->all());
-        return $this->res(200, '新建信道合同成功', $data);
+        $data = Contractc::create($request->except('company'));
+        return $this->res(2002, '新建信道合同成功', $data);
     }
 
     public function update(ContractcRequest $request, $id)
     {
-        $re = Contract_c::findOrFail($id)->update($request->all());
-        return $this->res(200, '更新信道合同成功', $re);
+        $re = Contractc::findOrFail($id)->update($request->except('company'));
+        return $this->res(2003, '更新信道合同成功', $re);
     }
 
     public function destroy($id)
     {
-        $re = Contract_c::findOrFail($id)->delete();
-        return $this->res(200, '删除成功', $re);
+        $re = Contractc::findOrFail($id)->delete();
+        return $this->res(2004, '删除成功', $re);
+    }
+
+    //要求关键字模糊查询
+    public function search($contract_id,  $page, $pageSize)
+    {
+        $begin = ( $page -1 ) * $pageSize;
+        $emp = Contractc::where('contract_id', 'like', '%'.$contract_id.'%')
+            ->orderBy('id', 'desc')
+            ->offset($begin)
+            ->limit($pageSize)
+            ->with('company')
+            ->get()
+            ->toArray();
+
+        $total = Contractc::where('name', 'like', '%'.$contract_id.'%')
+            ->count();
+
+        $data= [
+            'data'=> $emp,
+            'total'=> $total,
+        ];
+
+        return $this->res(200, '搜索结果', $data);
     }
 }

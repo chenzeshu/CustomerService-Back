@@ -2,7 +2,7 @@
 
 namespace App\Models\Channels;
 
-use App\Models\Contract_c;
+use App\Models\Contractc;
 use Illuminate\Database\Eloquent\Model;
 
 class Channel_plan extends Model
@@ -11,7 +11,7 @@ class Channel_plan extends Model
 
     public function contract_c()
     {
-        return $this->belongsTo(Contract_c::class);
+        return $this->belongsTo(Contractc::class);
     }
 
     //每次套餐使用的细节

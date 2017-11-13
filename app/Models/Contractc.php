@@ -6,7 +6,7 @@ use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_plan;
 use Illuminate\Database\Eloquent\Model;
 
-class Contract_c extends Model
+class Contractc extends Model
 {
     protected $guarded = [];
 

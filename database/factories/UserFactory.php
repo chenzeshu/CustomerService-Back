@@ -62,7 +62,7 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
     ];
 });
 
-$factory->define(\App\Models\Contract_c::class, function (Faker $faker){
+$factory->define(\App\Models\Contractc::class, function (Faker $faker){
     return [
         "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
         "PM"=>rand(0,100),
@@ -98,7 +98,7 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
     return [
         "service_id" => 'F'.date('Ymd', time()).rand(0,1000),
         "status" => $faker->randomElement($status),
-        "source" => rand(0,5),
+        "source" => rand(0,4),
         "type"=> rand(0,5),
         "man" => rand(0,100),
         "customer" => rand(0,100),
@@ -115,10 +115,13 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
 //信道服务单, 暂时不填充
 $factory->define(\App\Models\Channels\Channel::class, function (Faker $faker){
     $status = ['待审核','运营调配', '已完成', '拒绝'];
+    $type = ['内部用星', '外部用星'];
     return [
         "channel_id"=> 'X'.date('Ymd', time()).rand(0,1000),
+        "employee_id" => rand(3,100),
         "status"=>  $faker->randomElement($status),
-        "source" => rand(0,5),
+        "source" => rand(1,4),
+        "type"=>$faker->randomElement($type),
     ];
 });
 

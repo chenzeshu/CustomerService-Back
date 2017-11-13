@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Models\Company;
 use App\Models\Contract;
+use App\Models\Contractc;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,11 +80,12 @@ class EmployeeController extends ApiController
     }
 
     /**
-     * 模糊搜索员工
+     * 模糊搜索外部员工
      */
-    public function searchEmps($empName)
+    public function searchOutEmps($empName)
     {
         $emps = DB::table('employees')
+                    ->where('company_id',"!=",1)
                     ->where('name','like', "%".$empName."%")
                     ->limit(10)
                     ->get(['id', 'name']);
@@ -97,6 +99,29 @@ class EmployeeController extends ApiController
         return $this->res(200, '搜索结果', $data);
     }
 
+    /**
+     * 模糊搜索内部员工
+     */
+    public function searchInnerEmps($empName)
+    {
+        $emps = DB::table('employees')
+            ->where('company_id', 1)
+            ->where('name','like', "%".$empName."%")
+            ->limit(10)
+            ->get(['id', 'name']);
+        $total = Employee::where('name', 'like', '%'.$empName.'%')
+            ->count();
+
+        $data = [
+            'data' => $emps,
+            'sTotal' => $total
+        ];
+        return $this->res(200, '搜索结果', $data);
+    }
+
+    /**
+     * 搜索普通合同
+     */
     public function searchContracts($contract_id)
     {
         $contracts = DB::table('contracts')
@@ -104,6 +129,25 @@ class EmployeeController extends ApiController
             ->limit(10)
             ->get(['id', 'contract_id']);
         $total = Contract::where('contract_id', 'like', '%'.$contract_id.'%')
+            ->count();
+
+        $data = [
+            'data' => $contracts,
+            'sTotal' => $total
+        ];
+        return $this->res(200, '搜索结果', $data);
+    }
+
+    /**
+     * 搜索信道合同
+     */
+    public function searchContractcs($contract_id)
+    {
+        $contracts = DB::table('contractcs')
+            ->where('contract_id','like', "%".$contract_id."%")
+            ->limit(10)
+            ->get(['id', 'contract_id']);
+        $total = Contractc::where('contract_id', 'like', '%'.$contract_id.'%')
             ->count();
 
         $data = [

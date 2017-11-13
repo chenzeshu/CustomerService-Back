@@ -2,7 +2,7 @@
 
 namespace App\Models\Channels;
 
-use App\Models\Contract_c;
+use App\Models\Contractc;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,7 +19,7 @@ class Channel extends Model
 
     public function contract_c()
     {
-        return $this->belongsTo(Contract_c::class);
+        return $this->belongsTo(Contractc::class);
     }
 
     //人可以查到名下的所有信道服务单

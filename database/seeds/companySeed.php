@@ -28,10 +28,16 @@ class companySeed extends Seeder
                 });
             });
 
-            //todo 制造2个信道合同 + 2个套餐/合同  //暂时不搞信道服务单, 手动申请测试
-            factory(\App\Models\Contract_c::class, config('app.seeding.contract_c'))->make()->each(function ($contract_c) use ($company){
+            //todo 制造2个信道合同 + 2个套餐/合同
+            factory(\App\Models\Contractc::class, config('app.seeding.contract_c'))->make()->each(function ($contract_c) use ($company){
                 $company->contract_cs()->save($contract_c);
+                factory(App\Models\Channels\Channel::class, config('app.seeding.channel'))->make()->each(function ($channel) use ($contract_c){
+                    //信道服务单
+                    $contract_c->channels()->save($channel);
+                });
+
                 factory(\App\Models\Channels\Channel_plan::class, config('app.seeding.plan'))->make()->each(function ($plan) use ($contract_c){
+                    //套餐/合同
                     $contract_c->channel_plans()->save($plan);
                 });
             });

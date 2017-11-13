@@ -19,7 +19,7 @@ class ChannelStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'contract_id' => 'required',
+            'contractc_id' => 'required',
             'channel_id' => 'required',
             "customer" => 'required',
         ];
@@ -28,7 +28,7 @@ class ChannelStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            "contract_id.required" => '必须提交所属合同编号',
+            "contractc_id.required" => '必须提交所属合同编号',
             "channel_id.required" => '必须提交信道服务单编号',
             "customer.required" => '必须提交客户申请人',
         ];

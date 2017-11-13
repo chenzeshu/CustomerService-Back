@@ -34,7 +34,7 @@ class Company extends Model
 
     public function contract_cs()
     {
-        return $this->hasMany(Contract_c::class);
+        return $this->hasMany(Contractc::class);
     }
 
     public function services()
@@ -45,13 +45,13 @@ class Company extends Model
     //通过信道合同查到单位名下的所有信道服务单
     public function channels()
     {
-        return $this->hasManyThrough(Channel::class, Contract_C::class);
+        return $this->hasManyThrough(Channel::class, Contractc::class);
     }
 
     //通过信道合同查到单位名下的所有信道套餐
     public function channel_plans()
     {
-        return $this->hasManyThrough(Channel_plan::class, Contract_C::class);
+        return $this->hasManyThrough(Channel_plan::class, Contractc::class);
     }
 
     public function professions()

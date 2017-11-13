@@ -4,9 +4,11 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Requests\channel\ChannelStoreRequest;
 use App\Models\Channels\Channel;
+use App\Models\Utils\Service_source;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class ChannelController extends ApiController
 {
@@ -20,6 +22,29 @@ class ChannelController extends ApiController
         return $this->res(200, 'channels');
     }
 
+
+    public function page($page, $pageSize)
+    {
+        $begin = ( $page -1 ) * $pageSize;
+        $cons = Channel::orderBy('id', 'desc')->offset($begin)->limit($pageSize)
+            ->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
+                $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = {$item->source}");
+                return $item;
+            })
+            ->toArray();
+        $sources = Service_source::all()->toArray();
+        $total = Channel::count();
+        $data = [
+            'data' => $cons,
+            'total' => $total,
+            'sources' => $sources
+        ];
+        return $this->res(200, '信道合同', $data);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -28,12 +53,12 @@ class ChannelController extends ApiController
      */
     public function store(ChannelStoreRequest $request)
     {
-        $data = Channel::create($request->all());
+        $data = Channel::create($request->except(['customer','source_info']));
 
         //fixme
         //触发新建申请单记录event + 填充关联单位 + 设备
 
-        return $this->res(200, "新建信道服务单成功", ['data'=>$data]);
+        return $this->res(2002, "新建信道服务单成功", ['data'=>$data]);
     }
 
     /**
@@ -58,9 +83,9 @@ class ChannelController extends ApiController
     public function update(ChannelStoreRequest $request, $id)
     {
         //fixme 不支持修改信号服务单号, 所以前端只有灰色, 没有修改可能
-        $re = Channel::find($id)->update($request->all());
+        $re = Channel::find($id)->update($request->except(['customer','source_info']));
         if($re){
-            return $this->res(200, "修改服务单成功");
+            return $this->res(2003, "修改服务单成功");
         } else {
             return $this->res(500, "修改服务单失败");
         }
@@ -79,7 +104,7 @@ class ChannelController extends ApiController
     {
         $re = Channel::find($id)->delete();
         if($re){
-            return $this->res(200, "删除服务单成功");
+            return $this->res(2004, "删除服务单成功");
         } else {
             return $this->res(500, "删除服务单失败");
         }

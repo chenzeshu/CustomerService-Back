@@ -66,8 +66,10 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/page/{page}/{pageSize}', 'EmployeeController@page');
             Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
             Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
-            Route::get('/se/{empName}','EmployeeController@searchEmps');  //todo 模糊搜索员工
+            Route::get('/se/out/{empName}','EmployeeController@searchOutEmps');  //todo 模糊搜索外部员工
+            Route::get('/se/inner/{empName}','EmployeeController@searchInnerEmps');  //todo 模糊搜索中网员工
             Route::get('/scon/{contract_id}','EmployeeController@searchContracts');  //todo 模糊搜索普通合同编号
+            Route::get('/sconc/{contract_id}','EmployeeController@searchContractcs');  //todo 模糊搜索信道合同编号
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
             Route::resource('/','EmployeeController');
@@ -92,12 +94,20 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         });
 
         //todo contract_cs
-        Route::group(['prefix'=>'Contractcs'], function(){
+        Route::group(['prefix'=>'contractcs'], function(){
+            Route::get('/page/{page}/{pageSize}', 'ContractcController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ContractcController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ContractcController@update');
+            Route::get('/delete/{id}','ContractcController@destroy');
             Route::resource('/','ContractcController');
         });
 
         //todo channels
         Route::group(['prefix'=>'channels'], function(){
+            Route::get('/page/{page}/{pageSize}', 'ChannelController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ChannelController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ChannelController@update');
+            Route::get('/delete/{id}','ChannelController@destroy');
             Route::resource('/','ChannelController');
         });
 

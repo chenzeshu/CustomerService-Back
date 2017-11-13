@@ -13,7 +13,7 @@ class CreateContractCsTable extends Migration
      */
     public function up()
     {
-        Schema::create('contract_cs', function (Blueprint $table) {
+        Schema::create('contractcs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id');
             $table->string('contract_id');  //信道合同编号
@@ -36,6 +36,6 @@ class CreateContractCsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('contract_cs');
+        Schema::dropIfExists('contractcs');
     }
 }
