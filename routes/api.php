@@ -140,6 +140,15 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::resource('/','ServiceSourceController');
         });
 
+        //todo profession 行业
+        Route::group(['prefix'=>'pros', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'ProfessionController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ProfessionController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ProfessionController@update');
+            Route::get('/delete/{id}','ProfessionController@destroy');
+            Route::resource('/','ProfessionController');
+        });
+
         /**
          * File
          * file没有add,   file只在各个环境下add,  本处只做展示, 检索, 修删
