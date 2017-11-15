@@ -12,16 +12,6 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
 
-//    Route::group(['prefix'=>'employees'], function(){
-//        Route::get('/page/{page}/{pageSize}', 'EmployeeController@page');
-//        Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
-//        Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
-//        Route::get('/se/{empName}','EmployeeController@searchEmps');  //todo 模糊搜索员工
-//        Route::post('/update/{id}', 'EmployeeController@update');
-//        Route::get('/delete/{id}','EmployeeController@destroy');
-//        Route::resource('/','EmployeeController');
-//    });
-
     //todo contracts
     Route::group(['prefix'=>'contracts'], function(){
         Route::get('/page/{page}/{pageSize}', 'ContractController@page');
@@ -30,7 +20,6 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         Route::get('/delete/{id}','ContractController@destroy');
         Route::resource('/','ContractController');
     });
-
 
 /** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
@@ -111,10 +100,111 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::resource('/','ChannelController');
         });
 
-        //todo utils
-        Route::group(['prefix'=>'utils', 'namespace'=>'Utils'], function (){
-            Route::resource('pros', 'ProfessionController');
+        /***************************************************************************************************
+        ***************                          工具类                                     ****************
+        ***************************************************************************************************/
+
+        //todo coors
+        Route::group(['prefix'=>'coors', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'CoorController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','CoorController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'CoorController@update');
+            Route::get('/delete/{id}','CoorController@destroy');
+            Route::resource('/','CoorController');
         });
-        //todo
+
+        //todo contractType
+        Route::group(['prefix'=>'contractTypes', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'ContractTypeController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ContractTypeController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ContractTypeController@update');
+            Route::get('/delete/{id}','ContractTypeController@destroy');
+            Route::resource('/','ContractTypeController');
+        });
+
+        //todo serviceType
+        Route::group(['prefix'=>'serviceTypes', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'ServiceTypeController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ServiceTypeController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ServiceTypeController@update');
+            Route::get('/delete/{id}','ServiceTypeController@destroy');
+            Route::resource('/','ServiceTypeController');
+        });
+
+        //todo serviceSource
+        Route::group(['prefix'=>'serviceSources', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'ServiceSourceController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ServiceSourceController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ServiceSourceController@update');
+            Route::get('/delete/{id}','ServiceSourceController@destroy');
+            Route::resource('/','ServiceSourceController');
+        });
+
+        /**
+         * File
+         * file没有add,   file只在各个环境下add,  本处只做展示, 检索, 修删
+         */
+        Route::group(['prefix'=>'files', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'FileController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','FileController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'FileController@update');
+            Route::get('/delete/{id}','FileController@destroy');
+            Route::resource('/','FileController');
+        });
+
+        //todo 带宽表 info1
+        Route::group(['prefix'=>'info1', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'Info1Controller@page');
+            Route::get('/s/{name}/{page}/{pageSize}','Info1Controller@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'Info1Controller@update');
+            Route::get('/delete/{id}','Info1Controller@destroy');
+            Route::resource('/','Info1Controller');
+        });
+
+        //todo 站类型表 info2
+        Route::group(['prefix'=>'info2', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'Info2Controller@page');
+            Route::get('/s/{name}/{page}/{pageSize}','Info2Controller@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'Info2Controller@update');
+            Route::get('/delete/{id}','Info2Controller@destroy');
+            Route::resource('/','Info2Controller');
+        });
+
+        //todo 通信卫星表 info3
+        Route::group(['prefix'=>'info3', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'Info3Controller@page');
+            Route::get('/s/{name}/{page}/{pageSize}','Info3Controller@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'Info3Controller@update');
+            Route::get('/delete/{id}','Info3Controller@destroy');
+            Route::resource('/','Info3Controller');
+        });
+
+        //todo 频率表 info4
+        Route::group(['prefix'=>'info4', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'Info4Controller@page');
+            Route::get('/s/{name}/{page}/{pageSize}','Info4Controller@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'Info4Controller@update');
+            Route::get('/delete/{id}','Info4Controller@destroy');
+            Route::resource('/','Info4Controller');
+        });
+
+        //todo 极化表 info5
+        Route::group(['prefix'=>'info5', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'Info5Controller@page');
+            Route::get('/s/{name}/{page}/{pageSize}','Info5Controller@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'Info5Controller@update');
+            Route::get('/delete/{id}','Info5Controller@destroy');
+            Route::resource('/','Info5Controller');
+        });
+
+        //todo 网络类型表 info6
+        Route::group(['prefix'=>'info6', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'Info6Controller@page');
+            Route::get('/s/{name}/{page}/{pageSize}','Info6Controller@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'Info6Controller@update');
+            Route::get('/delete/{id}','Info6Controller@destroy');
+            Route::resource('/','Info6Controller');
+        });
+
     });
 });

@@ -97,7 +97,6 @@ class ContractController extends Controller
         } else {
             return $this->res(-2003, "修改合同失败");
         }
-
     }
 
     /**

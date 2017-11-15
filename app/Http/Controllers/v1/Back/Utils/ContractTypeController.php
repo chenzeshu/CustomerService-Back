@@ -3,23 +3,18 @@
 namespace App\Http\Controllers\v1\Back\Utils;
 
 use App\Http\Controllers\v1\Back\ApiController;
-use App\Models\Utils\Profession;
+use App\Models\Utils\Contract_type;
 use Illuminate\Http\Request;
 
-class ProfessionController extends ApiController
-{
-    public function index()
-    {
-        $data = Profession::all()->toArray();
-        return $data;
-    }
 
+class ContractTypeController extends ApiController
+{
     public function page($page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
-        $cons = Profession::offset($begin)->limit($pageSize)->get()
-            ->toArray();
-        $total = Profession::count();
+        $cons = Contract_type::offset($begin)->limit($pageSize)
+            ->get()->toArray();
+        $total = Contract_type::count();
         $data = [
             'data' => $cons,
             'total' => $total
@@ -30,7 +25,7 @@ class ProfessionController extends ApiController
     public function store(Request $request)
     {
         //如果从company入口进入, 前端记录并并入了company_id
-        $data = Profession::create($request->all());
+        $data = Contract_type::create($request->all());
 
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
@@ -38,7 +33,7 @@ class ProfessionController extends ApiController
     public function update(Request $request, $id)
     {
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
-        $re = Profession::find($id)->update($request->all());
+        $re = Contract_type::find($id)->update($request->all());
         if($re){
             return $this->res(2003, "修改合同成功");
         } else {
@@ -48,7 +43,7 @@ class ProfessionController extends ApiController
 
     public function destroy($id)
     {
-        $re = Profession::destroy($id);
+        $re = Contract_type::destroy($id);
         if($re){
             return $this->res(2004, "删除合同成功");
         } else {
@@ -60,13 +55,13 @@ class ProfessionController extends ApiController
     public function search($name,  $page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
-        $emp = Profession::where('name', 'like', '%'.$name.'%')
+        $emp = Contract_type::where('name', 'like', '%'.$name.'%')
             ->offset($begin)
             ->limit($pageSize)
             ->get()
             ->toArray();
 
-        $total = Profession::where('name', 'like', '%'.$name.'%')
+        $total = Contract_type::where('name', 'like', '%'.$name.'%')
             ->count();
 
         $data= [
