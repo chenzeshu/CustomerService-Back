@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\ServiceStoreRequest;
 use App\Models\Company;
 use App\Models\Services\Service;
+use App\Models\Services\Visit;
 use App\Models\Utils\Service_source;
 use App\Models\Utils\Service_type;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
@@ -35,7 +36,7 @@ class ServiceController extends ApiController
     public function page($page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
-        $services = Service::orderBy('id', 'desc')->offset($begin)->limit($pageSize)->with('contract')->get()
+        $services = Service::orderBy('id', 'desc')->offset($begin)->limit($pageSize)->with(['contract','visits.employees'])->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
                 $item->man = $item->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->man})");
@@ -134,6 +135,16 @@ class ServiceController extends ApiController
             return $this->res(2004, "删除服务单成功");
         } else {
             return $this->res(500, "删除服务单失败");
+        }
+    }
+
+    public function visit(Request $request, $id)
+    {
+        $re = Service::findOrFail($id)->visits()->updateOrCreate($request->except(['employees', 'status','id']));
+        if($re){
+            return $this->res(2005, "填写回访成功");
+        } else {
+            return $this->res(500, "填写回访失败");
         }
     }
 

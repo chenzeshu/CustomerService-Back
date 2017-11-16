@@ -25,6 +25,10 @@ class companySeed extends Seeder
                 $company->contracts()->save($contract);
                 factory(\App\Models\Services\Service::class, config('app.seeding.service'))->make()->each(function ($service) use ($contract){
                    $contract->services()->save($service);
+                   //todo 回访
+                   factory(\App\Models\Services\Visit::class, 1)->make()->each(function ($visit) use ($service){
+                      $service->visits()->save($visit);
+                   });
                 });
             });
 

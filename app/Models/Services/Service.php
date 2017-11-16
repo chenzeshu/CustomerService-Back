@@ -22,7 +22,7 @@ class Service extends Model
         return $this->hasManyThrough(Company::class, Contract::class, 'id', 'id', 'contract_id', 'company_id');
     }
 
-    public function visit()
+    public function visits()
     {
         return $this->hasMany(Visit::class);
     }

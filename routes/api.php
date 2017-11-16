@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-use Faker\Generator as Faker;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -80,6 +79,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/update/{id}', 'ServiceController@update');
             Route::get('/delete/{id}','ServiceController@destroy');
             Route::resource('/','ServiceController');
+
+            /** 回访 */
+            Route::post('/visit/{id}', 'ServiceController@visit');
         });
 
         //todo contract_cs

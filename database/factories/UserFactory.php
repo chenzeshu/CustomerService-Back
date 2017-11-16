@@ -102,12 +102,25 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
         "type"=> rand(0,5),
         "man" => rand(0,100),
         "customer" => rand(0,100),
+        "visit" => rand(0,100),
         "charge_if" => $faker->randomElement($charge),
         "charge_flag" => $faker->randomElement($charge_flag),
         "charge" => $faker->randomFloat(2, 0, 1000),
         "time1" => $faker->date('Y-m-d H:i:s'),
         "time2" => $faker->date('Y-m-d H:i:s'),
         'day_sum'=>rand(0,10),
+    ];
+});
+
+$factory->define(\App\Models\Services\Visit::class, function (Faker $faker){
+    $deal = ['待解决','已解决','未解决'];
+    return [
+      "service_id" => rand(0,100),
+      "visitor" => rand(0,100),
+      "result_deal" => $faker->randomElement($deal),
+      "result_rating" => rand(0,4),
+      "result_visit" => rand(0,4),
+      "time" => $faker->date('Y-m-d H:i:s'),
     ];
 });
 

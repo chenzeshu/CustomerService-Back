@@ -37,6 +37,7 @@ class CreateServicesTable extends Migration
             $table->text('remark')->nullable(); //备注
             $table->text('document')->nullable();
             $table->text('allege')->nullable(); //申述内容
+            $table->integer('visit')->nullable(); //申述内容
             $table->timestamps();
         });
     }
