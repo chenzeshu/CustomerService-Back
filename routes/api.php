@@ -7,18 +7,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
-
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
-
-    //todo contracts
-    Route::group(['prefix'=>'contracts'], function(){
-        Route::get('/page/{page}/{pageSize}', 'ContractController@page');
-        Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
-        Route::post('/update/{id}', 'ContractController@update');
-        Route::get('/delete/{id}','ContractController@destroy');
-        Route::resource('/','ContractController');
-    });
 
 /** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
@@ -215,6 +205,24 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/update/{id}', 'Info6Controller@update');
             Route::get('/delete/{id}','Info6Controller@destroy');
             Route::resource('/','Info6Controller');
+        });
+
+        //todo 设备
+        Route::group(['prefix'=>'devices', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'DeviceController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','DeviceController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'DeviceController@update');
+            Route::get('/delete/{id}','DeviceController@destroy');
+            Route::resource('/','DeviceController');
+        });
+
+        //todo 信道套餐
+        Route::group(['prefix'=>'plans', 'namespace'=>'Utils'], function (){
+            Route::get('/page/{page}/{pageSize}', 'PlanController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','PlanController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'PlanController@update');
+            Route::get('/delete/{id}','PlanController@destroy');
+            Route::resource('/','PlanController');
         });
 
     });

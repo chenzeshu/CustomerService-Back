@@ -5,9 +5,11 @@ namespace App\Http\Controllers\v1\Back;
 use App\Exceptions\LoginExp\WrongInputExp;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Company\CompanyCollection;
+use App\Models\Channels\Channel_info2;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Services\Service;
+use App\Models\Utils\Device;
 use App\Models\Utils\Profession;
 use App\Services\Sms;
 use App\User;
@@ -34,17 +36,8 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $services = Service::orderBy('id', 'desc')->offset(10)->limit(10)->with('contract')->get()
-            ->map(function ($item){
-                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->man = $item->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->man})");
-                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->customer})");
-                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
-                $item->company = Company::where('id', $item['contract']['company_id'])->get(['id', 'name'])[0];
-                return $item;
-            })
-            ->toArray();
-        return $services;
+       $data = Device::findOrFail(1)->with(['company','channel_info2'])->get();
+       return $data;
     }
 
     /**

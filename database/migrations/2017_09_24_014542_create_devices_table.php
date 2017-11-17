@@ -17,11 +17,11 @@ class CreateDevicesTable extends Migration
         Schema::create('devices', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('company_id');
-            $table->integer('type');  //ad/非ad
+            $table->enum('type',['ad','非ad'])->default('ad');  //ad/非ad
             $table->integer('id5'); //传站类型的id
             $table->string('device_id');
             $table->string('ip')->nullable();
-            $table->string('s/n')->nullable();
+            $table->string('sn')->nullable();
             $table->integer('profession_id');
             $table->enum('status', ['停用','重要','一般','自用', '损坏', '专项处理'])->default('一般');
             $table->string('aerial');

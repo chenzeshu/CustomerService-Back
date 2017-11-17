@@ -139,20 +139,20 @@ $factory->define(\App\Models\Channels\Channel::class, function (Faker $faker){
 });
 
 $factory->define(\App\Models\Utils\Device::class, function (Faker $faker){
-    $tpye = [0,1];
+    $type = ['ad','非ad'];
     $pro = [0,1,2,3,4,5];
     $status = ['停用', '重要', '一般', '自用', '损坏', '专项处理'];
     return [
-        "type"=>  $faker->randomElement($tpye),
-        'id5'=>$faker->randomElement($tpye),
+        "type"=>  $faker->randomElement($type),
+        'id5'=>rand(1,2),
         'device_id'=> $faker->md5,
         'ip' => $faker->ipv4,
-        's/n' => null,
+        'sn' => $faker->uuid,
         'profession_id'=> $faker->randomElement($pro),
         'status' => $faker->randomElement($status),
         'aerial' => 1,
         'pa' => 2,
-        'lnb' => 3,
+        'lnb' => 'lnb型号',
         'built_at'=>$faker->date('Y-m-d H:i:s'),
     ];
 });

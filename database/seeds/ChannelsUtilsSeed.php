@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Faker\Generator as Faker;
 class ChannelsUtilsSeed extends Seeder
 {
     /**
@@ -9,7 +10,7 @@ class ChannelsUtilsSeed extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(Faker $faker)
     {
         //带宽表
         DB::table('channel_info1s')->insert([
@@ -49,14 +50,14 @@ class ChannelsUtilsSeed extends Seeder
 
         //套餐表
         DB::table('plans')->insert([
-           [ 't1'=>'点对点', 't2'=>'512k', 't3'=>'独享'],
-           [ 't1'=>'点对点', 't2'=>'512k', 't3'=>'共享'],
-           [ 't1'=>'点对点', 't2'=>'2m',   't3'=>'独享'],
-           [ 't1'=>'点对点', 't2'=>'2m',   't3'=>'共享'],
-           [ 't1'=>'星状网', 't2'=>'512k', 't3'=>'独享'],
-           [ 't1'=>'星状网', 't2'=>'512k', 't3'=>'共享'],
-           [ 't1'=>'星状网', 't2'=>'2m',   't3'=>'独享'],
-           [ 't1'=>'星状网', 't2'=>'2m',   't3'=>'共享'],
+           ['name'=>$faker->name, 't1'=>'点对点', 't2'=>'512k', 't3'=>'独享'],
+           ['name'=>$faker->name,  't1'=>'点对点', 't2'=>'512k', 't3'=>'共享'],
+           ['name'=>$faker->name,  't1'=>'点对点', 't2'=>'2m',   't3'=>'独享'],
+           ['name'=>$faker->name,  't1'=>'点对点', 't2'=>'2m',   't3'=>'共享'],
+           ['name'=>$faker->name,  't1'=>'星状网', 't2'=>'512k', 't3'=>'独享'],
+           ['name'=>$faker->name,  't1'=>'星状网', 't2'=>'512k', 't3'=>'共享'],
+           ['name'=>$faker->name,  't1'=>'星状网', 't2'=>'2m',   't3'=>'独享'],
+           ['name'=>$faker->name,  't1'=>'星状网', 't2'=>'2m',   't3'=>'共享'],
         ]);
     }
 }
