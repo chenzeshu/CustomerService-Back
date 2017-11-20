@@ -35,13 +35,13 @@ $factory->define(\App\Models\Company::class, function (Faker $faker) {
 });
 
 $factory->define(\App\Models\Employee::class, function (Faker $faker) {
-    $arr = ['offline', 'online'];
+    $arr = ['offline', 'online', '离职'];
     return [
         'name' => $faker->name,
         'openid' => $faker->unique()->creditCardNumber,
         'email' => $faker->unique()->safeEmail,
         'phone'=> $faker->unique()->phoneNumber,
-        'status' => 'online'
+        'status' => $faker->randomElement($arr)
     ];
 });
 
@@ -98,8 +98,8 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
     return [
         "service_id" => 'F'.date('Ymd', time()).rand(0,1000),
         "status" => $faker->randomElement($status),
-        "source" => rand(0,4),
-        "type"=> rand(0,5),
+        "source" => rand(1,4),
+        "type"=> rand(1,5),
         "man" => rand(0,100),
         "customer" => rand(0,100),
         "visit" => rand(0,100),

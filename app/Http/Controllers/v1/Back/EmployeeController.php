@@ -37,6 +37,49 @@ class EmployeeController extends ApiController
     }
 
     /**
+     * 筛选出待审核的用户
+     */
+    public function verify()
+    {
+        $emp = Employee::where('status','=','offline')->with('company')->get()->toArray();
+        $total = Employee::where('status','=','offline')->count();
+        $data = [
+            'data' => $emp,
+            'total' => $total,
+        ];
+        return $this->res(200, '待审核用户', $data);
+    }
+
+    /**
+     * 通过未审核者(将offline或"离职"者直接转变成"online")
+     */
+    public function pass($id)
+    {
+        $re = Employee::findOrFail($id)->update([
+           'status'=>'online'
+        ]);
+
+        //todo 应该同时发送微信小程序消息+一条短信给被通过的用户
+        //...
+        return $this->res(200, '审核通过, 用户将收到通知');
+    }
+
+    /**
+     * 拒绝未审核者(将offline或"离职"者直接转变成"online")
+     */
+    public function rej($id)
+    {
+        $re = Employee::findOrFail($id)->update([
+            'status'=>'拒绝'
+        ]);
+
+        //todo 应该同时发送微信小程序消息+一条短信给被拒绝的用户
+        //fixme    万一是恶意注册???
+        //...
+        return $this->res(200, '已拒绝, 用户将收到通知');
+    }
+
+    /**
      * 要求关键字模糊查询
      */
     public function search($name, $page, $pageSize)

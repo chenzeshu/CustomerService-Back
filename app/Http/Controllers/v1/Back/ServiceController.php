@@ -11,6 +11,7 @@ use App\Models\Utils\Service_source;
 use App\Models\Utils\Service_type;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -57,6 +58,46 @@ class ServiceController extends ApiController
         ];
         return $this->res(200, '员工信息', $data);
     }
+
+    /**
+     * 筛选出待审核的服务单
+     */
+    public function verify()
+    {
+        $emp = Service::where('status','=','待审核')
+            ->with(['customer', 'contract', 'source', 'type'])
+            ->get()
+            ->each(function ($ser){
+                $ser->project_manager = $ser->contract->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
+            })
+            ->toArray();
+        $total = Service::where('status','=','待审核')->count();
+        $data = [
+            'data' => $emp,
+            'total' => $total,
+        ];
+        return $this->res(200, '待审核用户', $data);
+    }
+
+    /**
+     * 通过未审核者(将offline或"离职"者直接转变成"online")
+     */
+    public function pass($id)
+    {
+        $re = Service::findOrFail($id)->update([
+            'status'=>'待派单'
+        ]);
+        return $this->res(200, '审核通过, 用户将收到通知');
+    }
+
+    public function rej($id)
+    {
+        $re = Service::findOrFail($id)->update([
+            'status'=>'拒绝'
+        ]);
+        return $this->res(200, '已拒绝, 用户将收到通知');
+    }
+
     /**
      * Store a newly created resource in storage.
      *

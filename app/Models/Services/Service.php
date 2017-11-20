@@ -4,6 +4,9 @@ namespace App\Models\Services;
 
 use App\Models\Company;
 use App\Models\Contract;
+use App\Models\Employee;
+use App\Models\Utils\Service_source;
+use App\Models\Utils\Service_type;
 use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
@@ -25,5 +28,30 @@ class Service extends Model
     public function visits()
     {
         return $this->hasMany(Visit::class);
+    }
+
+    /**
+     * ORM对应客户联系人
+     */
+    public function customer()
+    {
+        return $this->hasMany(Employee::class, 'id', 'customer');
+    }
+
+    /**
+     * 服务类型
+     */
+    public function source()
+    {
+        return $this->hasMany(Service_source::class, 'id', 'source');
+    }
+
+
+    /**
+     * 服务来源
+     */
+    public function type()
+    {
+        return $this->hasMany(Service_type::class, 'id', 'type');
     }
 }

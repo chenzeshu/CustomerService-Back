@@ -50,6 +50,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/sconc/{contract_id}','EmployeeController@searchContractcs');  //todo 模糊搜索信道合同编号
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
+            Route::get('/verify', 'EmployeeController@verify');  //todo 筛选未审核者
+            Route::get('/pass/{id}', 'EmployeeController@pass');  //todo 通过未审核者
+            Route::get('/rej/{id}', 'EmployeeController@rej');  //todo 拒绝未审核者
             Route::resource('/','EmployeeController');
         });
 
@@ -68,6 +71,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','ServiceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ServiceController@update');
             Route::get('/delete/{id}','ServiceController@destroy');
+            Route::get('/verify', 'ServiceController@verify');  //todo 筛选未审核者
+            Route::get('/pass/{id}', 'ServiceController@pass');  //todo 通过未审核者
+            Route::get('/rej/{id}', 'ServiceController@rej');  //todo 拒绝未审核者
             Route::resource('/','ServiceController');
 
             /** 回访 */
