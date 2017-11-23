@@ -4,6 +4,10 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Requests\channel\ChannelStoreRequest;
 use App\Models\Channels\Channel;
+use App\Models\Channels\Channel_info3;
+use App\Models\Channels\Channel_info4;
+use App\Models\Channels\Channel_info5;
+use App\Models\Utils\Plan;
 use App\Models\Utils\Service_source;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
@@ -26,7 +30,16 @@ class ChannelController extends ApiController
     public function page($page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
-        $cons = Channel::orderBy('id', 'desc')->offset($begin)->limit($pageSize)
+        $cons = Channel::orderBy('id', 'desc')->where('status', "!=", '待审核')->offset($begin)->limit($pageSize)
+            ->with(['contractc',
+                'channel_applys.channel_operative.tongxin',
+                'channel_applys.channel_operative.jihua',
+                'channel_applys.channel_operative.pinlv',
+                'channel_applys.channel_operative.plan',
+                'channel_applys.channel_real.tongxin',
+                'channel_applys.channel_real.jihua',
+                'channel_applys.channel_real.pinlv',
+                'channel_applys.channel_real.checker'])
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
@@ -36,13 +49,22 @@ class ChannelController extends ApiController
             })
             ->toArray();
         $sources = Service_source::all()->toArray();
-        $total = Channel::count();
+        $pinlvs = Channel_info4::all()->toArray();
+        $tongxins = Channel_info3::all()->toArray();
+        $jihuas = Channel_info5::all()->toArray();
+        $plans = Plan::all()->toArray();
+
+        $total = Channel::where('status', "!=", '待审核')->count();
         $data = [
             'data' => $cons,
             'total' => $total,
-            'sources' => $sources
+            'sources' => $sources,
+            'pinlvs' => $pinlvs,
+            'jihuas' => $jihuas,
+            'tongxins' => $tongxins,
+            'plans' => $plans,
         ];
-        return $this->res(200, '信道合同', $data);
+        return $this->res(200, '信道服务单', $data);
     }
 
     /**

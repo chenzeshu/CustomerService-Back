@@ -37,7 +37,7 @@ class ServiceController extends ApiController
     public function page($page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
-        $services = Service::orderBy('id', 'desc')->offset($begin)->limit($pageSize)->with(['contract','visits.employees'])->get()
+        $services = Service::orderBy('id', 'desc')->where('status', "!=", '待审核')->offset($begin)->limit($pageSize)->with(['contract','visits.employees'])->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
                 $item->man = $item->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->man})");
@@ -47,7 +47,7 @@ class ServiceController extends ApiController
                 return $item;
             })
             ->toArray();
-        $total = Service::count();
+        $total = Service::where('status', "!=", '待审核')->count();
         $types = Service_type::all()->toArray();
         $sources = Service_source::all()->toArray();
         $data = [
@@ -179,6 +179,12 @@ class ServiceController extends ApiController
         }
     }
 
+    /**
+     * 回访
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function visit(Request $request, $id)
     {
         $re = Service::findOrFail($id)->visits()->updateOrCreate($request->except(['employees', 'status','id']));

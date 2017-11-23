@@ -98,6 +98,15 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::resource('/','ChannelController');
         });
 
+        //todo 信道申请
+        Route::group(['prefix'=>'apply', 'namespace'=>'Channels'], function(){
+            Route::get('/page/{page}/{pageSize}', 'ApplyController@page');
+            Route::post('/update/{id}', 'ApplyController@update');  //修改 + 审核通过
+            Route::post('/operative/{id}', 'ApplyController@updateOperative');  //更新运行调配表
+            Route::post('/real/{id}', 'ApplyController@updateReal');  //更新实际表
+            Route::get('/rej/{id}','ApplyController@rej');  //拒绝
+            Route::resource('/', 'ApplyController');
+        });
         /***************************************************************************************************
         ***************                          工具类                                     ****************
         ***************************************************************************************************/

@@ -138,6 +138,47 @@ $factory->define(\App\Models\Channels\Channel::class, function (Faker $faker){
     ];
 });
 
+//信道服务单申请
+$factory->define(\App\Models\Channels\Channel_apply::class, function (Faker $faker){
+    return [
+        "id1" => rand(1,8),
+        "id2" => rand(1,2),
+        "id3" => rand(1,2),
+        "id4" => rand(1,2),
+        't1'=>$faker->date('Y-m-d H:i:s'),
+        't2'=>$faker->date('Y-m-d H:i:s'),
+        'remark'=>$faker->name,
+    ];
+});
+
+//信道服务单运营调配
+$factory->define(\App\Models\Channels\Channel_operative::class, function (Faker $faker){
+    return [
+        "id1" => rand(1,8),
+        "id2" => rand(1,2),
+        "id3" => rand(1,2),
+        "id4" => rand(1,2),
+        't1'=>$faker->date('Y-m-d H:i:s'),
+        't2'=>$faker->date('Y-m-d H:i:s'),
+        'remark'=>$faker->name,
+    ];
+});
+
+
+//信道服务单实际
+$factory->define(\App\Models\Channels\Channel_real::class, function (Faker $faker){
+    return [
+        "id1" => rand(1,8),
+        "id2" => rand(1,2),
+        "id3" => rand(1,2),
+        "id4" => rand(1,2),
+        'checker_id' => rand(1,100),  //fixme 实际只能从中网员工里选, faker阶段先随便写
+        't1'=>$faker->date('Y-m-d H:i:s'),
+        't2'=>$faker->date('Y-m-d H:i:s'),
+        'remark'=>$faker->name,
+    ];
+});
+
 $factory->define(\App\Models\Utils\Device::class, function (Faker $faker){
     $type = ['ad','非ad'];
     $pro = [0,1,2,3,4,5];

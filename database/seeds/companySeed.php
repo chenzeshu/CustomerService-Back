@@ -38,6 +38,18 @@ class companySeed extends Seeder
                 factory(App\Models\Channels\Channel::class, config('app.seeding.channel'))->make()->each(function ($channel) use ($contract_c){
                     //信道服务单
                     $contract_c->channels()->save($channel);
+                    //信道申请单
+                    factory(\App\Models\Channels\Channel_apply::class, 1)->make()->each(function ($apply) use ($channel){
+                       $channel->channel_applys()->save($apply);
+
+                        factory(\App\Models\Channels\Channel_operative::class, 1)->make()->each(function ($o) use ($apply){
+                            $apply->channel_operative()->save($o);
+                        });
+                        factory(\App\Models\Channels\Channel_real::class, 1)->make()->each(function ($real) use ($apply){
+                            $apply->channel_real()->save($real);
+
+                        });
+                    });
                 });
 
                 factory(\App\Models\Channels\Channel_plan::class, config('app.seeding.plan'))->make()->each(function ($plan) use ($contract_c){

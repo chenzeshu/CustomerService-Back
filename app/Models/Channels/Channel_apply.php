@@ -24,13 +24,13 @@ class Channel_apply extends Model
         return $this->hasMany(Channel_relation::class);
     }
     
-    public function channel_operatives()
+    public function channel_operative()
     {
-        return $this->hasMany(Channel_operative::class);
+        return $this->hasOne(Channel_operative::class);
     }
 
     public function channel_real()
     {
-        return $this->hasMany(Channel_real::class);
+        return $this->hasOne(Channel_real::class);
     }
 }

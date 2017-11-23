@@ -6,6 +6,7 @@ use App\Exceptions\LoginExp\WrongInputExp;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Company\CompanyCollection;
 use App\Models\Channels\Channel_info2;
+use App\Models\Channels\Channel_real;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Services\Service;
@@ -36,8 +37,13 @@ class LoginController extends ApiController
 
     public function test()
     {
-       $data = Device::findOrFail(1)->with(['company','channel_info2'])->get();
-       return $data;
+        $data = Channel_real::where('channel_apply_id', 206)->first();
+        if($data){
+            return $data;
+        }else {
+            echo "123";
+        }
+
     }
 
     /**

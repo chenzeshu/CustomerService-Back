@@ -20,8 +20,8 @@ class CreateChannelAppliesTable extends Migration
             $table->integer('id2')->nullable();
             $table->integer('id3')->nullable();
             $table->integer('id4')->nullable();
-            $table->timestamp('begin_time')->nullable();  //开始时间 必填
-            $table->timestamp('end_time')->nullable();  //结束时间 必填
+            $table->timestamp('t1')->nullable();  //开始时间 必填
+            $table->timestamp('t2')->nullable();  //结束时间 必填
             $table->text('remark')->nullable();
             $table->timestamps();
         });
