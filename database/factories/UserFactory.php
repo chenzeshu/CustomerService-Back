@@ -151,6 +151,15 @@ $factory->define(\App\Models\Channels\Channel_apply::class, function (Faker $fak
     ];
 });
 
+//信道服务单节点
+$factory->define(\App\Models\Channels\Channel_relation::class, function (Faker $faker){
+   return [
+       'company_id' => rand(1,50),
+       'device_id' => rand(1,150),  //fixme 按理 , 只能筛选出单位id下关联的device, 此处为了方便填充先这样了
+       'id5' => rand(1,2),
+   ];
+});
+
 //信道服务单运营调配
 $factory->define(\App\Models\Channels\Channel_operative::class, function (Faker $faker){
     return [

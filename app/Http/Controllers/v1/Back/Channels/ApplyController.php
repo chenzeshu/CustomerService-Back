@@ -20,10 +20,14 @@ class ApplyController extends ApiController
         $applies = Channel::where('status','=','待审核')
             ->offset($begin)
             ->limit($pageSize)
-            ->with(['employee.company' ,'contractc', 'channel_applys', 'plans', 'tongxin','jihua', 'pinlv', 'source'])
+            ->with(['employee.company' ,'contractc',
+                'channel_applys.channel_relations.company',
+                'channel_applys.channel_relations.device',
+                'plans', 'tongxin','jihua', 'pinlv', 'source'])
             ->get()
             ->toArray();
         $total = Channel::where('status','=','待审核')->count();
+        //fixme 工具表的检索, 建议无更新每周一次/有更新时更新, 存到缓存里去, 不然太占代码量
         $tongxin = Channel_info3::all()->toArray();
         $jihua = Channel_info5::all()->toArray();
         $pinlv = Channel_info4::all()->toArray();
@@ -38,9 +42,15 @@ class ApplyController extends ApiController
         return $this->res(200, '待审核', $data);
     }
 
+    /**
+     * 补完申请并通过审核进入"运营调配"
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id)
     {
-        $re1 = Channel_apply::findOrFail($id)->update($request->all());
+        $re1 = Channel_apply::findOrFail($id)->update($request->except('channel_relations'));
         $re2 = Channel_apply::findOrFail($id)->channel()->update([
             'status'=>'运营调配'
         ]);
@@ -49,6 +59,11 @@ class ApplyController extends ApiController
         }
     }
 
+    /**
+     * 拒绝, 不通过审核
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function rej($id)
     {
         $re = Channel::findOrFail($id)->update([

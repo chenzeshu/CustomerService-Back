@@ -47,7 +47,9 @@ class companySeed extends Seeder
                         });
                         factory(\App\Models\Channels\Channel_real::class, 1)->make()->each(function ($real) use ($apply){
                             $apply->channel_real()->save($real);
-
+                        });
+                        factory(\App\Models\Channels\Channel_relation::class, rand(1,4))->make()->each(function ($relation) use ($apply){  //1-4个节点
+                            $apply->channel_relations()->save($relation);
                         });
                     });
                 });

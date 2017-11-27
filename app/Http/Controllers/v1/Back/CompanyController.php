@@ -33,20 +33,6 @@ class CompanyController extends ApiController
         $this->pros = Profession::all()->toArray();
     }
 
-    private function transformPros($data){
-        foreach ( $data as $company){
-            foreach ($this->pros as $pro){
-                if($pro['id'] == $company->profession){
-                    $company->profession = $pro['name'];
-                }else{
-                    $company->profession = "其他行业";
-                }
-            }
-        }
-        $this->data = $data;
-    }
-
-
     public function page($page, $pageSize)
     {
         $this->init($page, $pageSize);
@@ -167,10 +153,8 @@ class CompanyController extends ApiController
         $total = Company::where('name', 'like', '%'.$name.'%')
                         ->count();
 
-        $this->transformPros($data);
-
         $data= [
-            'data'=> $this->data,
+            'data'=> $data,
             'total'=> $total,
         ];
         return $this->res(200, '搜索结果', $data);
