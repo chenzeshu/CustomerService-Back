@@ -43,51 +43,54 @@ class LoginController extends ApiController
             return $data;
         }else {
             echo "123";
-        }
+        } 
+    }
 
-        //todo
-        // $page = 1;
-        // $pageSize = 10;
-        // $begin = ( $page -1 ) * $pageSize;
-        // $cons = Channel::orderBy('id', 'desc')->where('status', "!=", '待审核')->offset($begin)->limit($pageSize)
-        //     ->with(['contractc',
-        //         'channel_applys.channel_relations.company',
-        //         'channel_applys.channel_relations.device',
-        //         'channel_applys.channel_operative.tongxin',
-        //         'channel_applys.channel_operative.jihua',
-        //         'channel_applys.channel_operative.pinlv',
-        //         'channel_applys.channel_operative.plan',
-        //         'channel_applys.channel_real.tongxin',
-        //         'channel_applys.channel_real.jihua',
-        //         'channel_applys.channel_real.pinlv',
-        //         'channel_applys.channel_real.checker'])
-        //     ->get()
-        //     ->map(function ($item){
-        //         //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-        //         $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
-        //         $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = {$item->source}");
-        //         return $item;
-        //     })
-        //     ->toArray();
-        // $sources = Service_source::all()->toArray();
-        // $pinlvs = Channel_info4::all()->toArray();
-        // $tongxins = Channel_info3::all()->toArray();
-        // $jihuas = Channel_info5::all()->toArray();
-        // $plans = Plan::all()->toArray();
-        // $zhantypes =Channel_info2::all()->toArray();
+    public function test2()
+    {
+    	//todo
+        $page = 1;
+        $pageSize = 10;
+        $begin = ( $page -1 ) * $pageSize;
+        $cons = Channel::orderBy('id', 'desc')->where('status', "!=", '待审核')->offset($begin)->limit($pageSize)
+            ->with(['contractc',
+                'channel_applys.channel_relations.company',
+                'channel_applys.channel_relations.device',
+                'channel_applys.channel_operative.tongxin',
+                'channel_applys.channel_operative.jihua',
+                'channel_applys.channel_operative.pinlv',
+                'channel_applys.channel_operative.plan',
+                'channel_applys.channel_real.tongxin',
+                'channel_applys.channel_real.jihua',
+                'channel_applys.channel_real.pinlv',
+                'channel_applys.channel_real.checker'])
+            ->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
+                $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = {$item->source}");
+                return $item;
+            })
+            ->toArray();
+        $sources = Service_source::all()->toArray();
+        $pinlvs = Channel_info4::all()->toArray();
+        $tongxins = Channel_info3::all()->toArray();
+        $jihuas = Channel_info5::all()->toArray();
+        $plans = Plan::all()->toArray();
+        $zhantypes =Channel_info2::all()->toArray();
 
-        // $total = Channel::where('status', "!=", '待审核')->count();
-        // $data = [
-        //     'data' => $cons,
-        //     'total' => $total,
-        //     'sources' => $sources,
-        //     'pinlvs' => $pinlvs,
-        //     'jihuas' => $jihuas,
-        //     'tongxins' => $tongxins,
-        //     'plans' => $plans,
-        //     'zhantypes'=>$zhantypes,
-        // ];
-        // return $this->res(200, '信道服务单', $data);
+        $total = Channel::where('status', "!=", '待审核')->count();
+        $data = [
+            'data' => $cons,
+            'total' => $total,
+            'sources' => $sources,
+            'pinlvs' => $pinlvs,
+            'jihuas' => $jihuas,
+            'tongxins' => $tongxins,
+            'plans' => $plans,
+            'zhantypes'=>$zhantypes,
+        ];
+        return $this->res(200, '信道服务单', $data);
     }
 
     /**

@@ -9,7 +9,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
-
+    Route::get('/test2', 'LoginController@test2');
 /** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
 //    Route::group(['middleware'=>[]], function (){
