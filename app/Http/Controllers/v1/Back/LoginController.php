@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Company\CompanyCollection;
 use App\Models\Channels\Channel_info2;
 use App\Models\Channels\Channel_real;
+use App\Models\Channels\Channel_relation;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Services\Service;
@@ -37,7 +38,7 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $data = Channel_real::where('channel_apply_id', 206)->first();
+        $data = DB::table('channel_relations')->groupBy('device_id')->get();
         if($data){
             return $data;
         }else {

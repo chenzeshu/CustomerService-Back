@@ -101,7 +101,6 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         Route::post('channel_apply/deleteRelation', 'Channels\RelationController@deleteRelation');
         Route::post('channel_apply/addDeviceToChannel', 'Channels\RelationController@addDeviceToChannel');
 
-
         //todo 信道申请
         Route::group(['prefix'=>'apply', 'namespace'=>'Channels'], function(){
             Route::get('/page/{page}/{pageSize}', 'ApplyController@page');

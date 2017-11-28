@@ -14,6 +14,11 @@ class RelationController extends ApiController
      */
     public function addDeviceToChannel(Request $request)
     {
+        //todo 检查是否重复
+        $check = Channel_relation::where($request->all())->first();
+        if($check){
+            return $this->res(2006,'节点已存在');
+        }
         $re = Channel_relation::create($request->all());
         if($re){
             return $this->res(2003,'增加节点成功');
