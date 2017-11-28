@@ -200,6 +200,21 @@ class EmployeeController extends ApiController
         return $this->res(200, '搜索结果', $data);
     }
 
+    /**
+     * 搜索设备
+     */
+    public function searchDevices($company_id)
+    {
+        $devices = Company::findOrFail($company_id)->devices()->get();
+        $total = Company::findOrFail($company_id)->devices()->count();
+
+        $data = [
+            'data' => $devices,
+            'sTotal' => $total
+        ];
+        return $this->res(200, '搜索结果', $data);
+    }
+
     public function store(Request $request)
     {
         $company_id = $request->company_id;

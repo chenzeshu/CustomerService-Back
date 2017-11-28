@@ -48,6 +48,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/se/inner/{empName}','EmployeeController@searchInnerEmps');  //todo 模糊搜索中网员工
             Route::get('/scon/{contract_id}','EmployeeController@searchContracts');  //todo 模糊搜索普通合同编号
             Route::get('/sconc/{contract_id}','EmployeeController@searchContractcs');  //todo 模糊搜索信道合同编号
+            Route::get('/sd/{company_id}','EmployeeController@searchDevices');  //todo 准确搜索单位id下的设备
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
             Route::get('/verify', 'EmployeeController@verify');  //todo 筛选未审核者
@@ -97,6 +98,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/delete/{id}','ChannelController@destroy');
             Route::resource('/','ChannelController');
         });
+        Route::post('channel_apply/deleteRelation', 'Channels\RelationController@deleteRelation');
+        Route::post('channel_apply/addDeviceToChannel', 'Channels\RelationController@addDeviceToChannel');
+
 
         //todo 信道申请
         Route::group(['prefix'=>'apply', 'namespace'=>'Channels'], function(){

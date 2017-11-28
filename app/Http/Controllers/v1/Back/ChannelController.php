@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Requests\channel\ChannelStoreRequest;
 use App\Models\Channels\Channel;
+use App\Models\Channels\Channel_info2;
 use App\Models\Channels\Channel_info3;
 use App\Models\Channels\Channel_info4;
 use App\Models\Channels\Channel_info5;
@@ -32,6 +33,8 @@ class ChannelController extends ApiController
         $begin = ( $page -1 ) * $pageSize;
         $cons = Channel::orderBy('id', 'desc')->where('status', "!=", '待审核')->offset($begin)->limit($pageSize)
             ->with(['contractc',
+                'channel_applys.channel_relations.company',
+                'channel_applys.channel_relations.device',
                 'channel_applys.channel_operative.tongxin',
                 'channel_applys.channel_operative.jihua',
                 'channel_applys.channel_operative.pinlv',
@@ -53,6 +56,7 @@ class ChannelController extends ApiController
         $tongxins = Channel_info3::all()->toArray();
         $jihuas = Channel_info5::all()->toArray();
         $plans = Plan::all()->toArray();
+        $zhantypes =Channel_info2::all()->toArray();
 
         $total = Channel::where('status', "!=", '待审核')->count();
         $data = [
@@ -63,6 +67,7 @@ class ChannelController extends ApiController
             'jihuas' => $jihuas,
             'tongxins' => $tongxins,
             'plans' => $plans,
+            'zhantypes'=>$zhantypes,
         ];
         return $this->res(200, '信道服务单', $data);
     }
