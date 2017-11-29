@@ -37,11 +37,15 @@ class ServiceController extends ApiController
     public function page($page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
-        $services = Service::orderBy('id', 'desc')->where('status', "!=", '待审核')->offset($begin)->limit($pageSize)->with(['contract','visits.employees'])->get()
+        $services = Service::where('status', "!=", '待审核')
+            ->orderBy('updated_at', 'desc')
+            ->offset($begin)->limit($pageSize)
+            ->with(['contract','visits.employees','refer_man'])
+            ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->man = $item->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->man})");
-                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->customer})");
+                $item->man = $item->man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->man})");
+                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->customer})");
                 $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
                 $item->company = Company::where('id', $item['contract']['company_id'])->get(['id', 'name'])[0];
                 return $item;
@@ -64,14 +68,15 @@ class ServiceController extends ApiController
      */
     public function verify()
     {
-        $emp = Service::where('status','=','待审核')
+        $emp = Service::where('status','=','待审核');
+        collect($emp)
             ->with(['customer', 'contract', 'source', 'type'])
             ->get()
             ->each(function ($ser){
                 $ser->project_manager = $ser->contract->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
             })
             ->toArray();
-        $total = Service::where('status','=','待审核')->count();
+        $total = collect($emp)->count();
         $data = [
             'data' => $emp,
             'total' => $total,
@@ -155,7 +160,7 @@ class ServiceController extends ApiController
             $request->time3 = date('Y-m-d H:i:s', time());
         }
         //todo 修改
-        $re = $update->update($request->except(['contract','company']));
+        $re = $update->update($request->except(['contract','company', 'visits']));
         if($re){
             return $this->res(2003, "修改服务单成功");
         } else {

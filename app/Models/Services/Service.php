@@ -11,9 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
-    protected $guarded = [
-
-    ];
+    protected $guarded = [ ];
 
     public function contract()
     {
@@ -28,6 +26,11 @@ class Service extends Model
     public function visits()
     {
         return $this->hasMany(Visit::class);
+    }
+
+    public function refer_man()
+    {
+        return $this->hasMany(Employee::class, 'id','refer_man')->select(['id', 'name', 'phone']);
     }
 
     /**
@@ -45,7 +48,6 @@ class Service extends Model
     {
         return $this->hasMany(Service_source::class, 'id', 'source');
     }
-
 
     /**
      * 服务来源

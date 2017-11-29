@@ -50,22 +50,22 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
     return [
         "contract_id" => 'F'.date('Ymd', time()).rand(0,1000),
         'name'=>$faker->name,
-        "type1"=>rand(0,5),
+        "type1"=>rand(1,5),
         "type2"=>$faker->randomElement($type2),
-        "PM"=>rand(0,100).','.rand(0,100),
-        "TM"=>rand(0,100).','.rand(0,100),
+        "PM"=>rand(1,100).','.rand(1,100),
+        "TM"=>rand(1,100).','.rand(1,100),
         "time1" => $faker->date('Y-m-d H:i:s'),
         "time2" =>$faker->date('Y-m-d H:i:s'),
         "money" => $faker->randomFloat(2,0, 10000000),
-        "coor" => rand(0,10),
-        "document" => rand(0,100).','.rand(0,100),
+        "coor" => rand(1,10),
+        "document" => rand(1,100).','.rand(1,100),
     ];
 });
 
 $factory->define(\App\Models\Contractc::class, function (Faker $faker){
     return [
         "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
-        "PM"=>rand(0,100),
+        "PM"=>rand(1,100),
         'name'=>$faker->name,
         "time" => $faker->date('Y-m-d H:i:s'),
         "beginline" =>$faker->date('Y-m-d H:i:s'),
@@ -78,7 +78,7 @@ $factory->define(\App\Models\Contractc::class, function (Faker $faker){
 $factory->define(\App\Models\Channels\Channel_plan::class, function (Faker $faker){
     $status = ['用完', '正常'];
    return [
-        'plan' => rand(0,7),
+        'plan' => rand(1,7),
         'full_time' =>ceil($faker->numberBetween(0, 1500)/15)*15,
         'flag' => $faker->randomElement($status),
    ];
@@ -100,9 +100,10 @@ $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
         "status" => $faker->randomElement($status),
         "source" => rand(1,4),
         "type"=> rand(1,5),
-        "man" => rand(0,100),
-        "customer" => rand(0,100),
-        "visit" => rand(0,100),
+        "refer_man" => rand(1,100),
+        "man" => rand(1,100),
+        "customer" => rand(1,100),
+        "visit" => rand(1,100),
         "charge_if" => $faker->randomElement($charge),
         "charge_flag" => $faker->randomElement($charge_flag),
         "charge" => $faker->randomFloat(2, 0, 1000),
@@ -116,14 +117,13 @@ $factory->define(\App\Models\Services\Visit::class, function (Faker $faker){
     $deal = ['待解决','已解决','未解决'];
     return [
       "service_id" => rand(0,100),
-      "visitor" => rand(0,100),
+      "visitor" => rand(1,100),
       "result_deal" => $faker->randomElement($deal),
       "result_rating" => rand(0,4),
       "result_visit" => rand(0,4),
       "time" => $faker->date('Y-m-d H:i:s'),
     ];
 });
-
 
 //信道服务单, 暂时不填充
 $factory->define(\App\Models\Channels\Channel::class, function (Faker $faker){
@@ -190,7 +190,7 @@ $factory->define(\App\Models\Channels\Channel_real::class, function (Faker $fake
 
 $factory->define(\App\Models\Utils\Device::class, function (Faker $faker){
     $type = ['ad','非ad'];
-    $pro = [0,1,2,3,4,5];
+    $pro = [1,2,3,4,5];
     $status = ['停用', '重要', '一般', '自用', '损坏', '专项处理'];
     return [
         "type"=>  $faker->randomElement($type),

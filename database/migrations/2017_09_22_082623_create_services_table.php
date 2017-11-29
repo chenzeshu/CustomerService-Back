@@ -23,6 +23,7 @@ class CreateServicesTable extends Migration
             //员工拥有访问申请完成的api的权限, 访问此权限时, 会向管理员发送三位一体通知  所以还要封装一下邮件的类
             $table->integer('source')->nullable();
             $table->integer('type')->nullable();
+            $table->string('refer_man')->nullable(); //fixme 提交人
             $table->string('man',50)->nullable();
             $table->string('customer',50);
             $table->enum('charge_if',['收费', '不收费'])->default('不收费');

@@ -31,7 +31,10 @@ class ChannelController extends ApiController
     public function page($page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
-        $cons = Channel::orderBy('id', 'desc')->where('status', "!=", '待审核')->offset($begin)->limit($pageSize)
+        $cons = Channel::where('status', "!=", '待审核')
+            ->orderBy('updated_at', 'desc')
+            ->offset($begin)
+            ->limit($pageSize)
             ->with(['contractc',
                 'channel_applys.channel_relations.company',
                 'channel_applys.channel_relations.device',
@@ -52,7 +55,7 @@ class ChannelController extends ApiController
             })
             ->toArray();
         $sources = Service_source::all()->toArray();
-        $pinlvs = Channel_info4::all()->toArray();
+//        $pinlvs = Channel_info4::all()->toArray();
         $tongxins = Channel_info3::all()->toArray();
         $jihuas = Channel_info5::all()->toArray();
         $plans = Plan::all()->toArray();
@@ -63,7 +66,7 @@ class ChannelController extends ApiController
             'data' => $cons,
             'total' => $total,
             'sources' => $sources,
-            'pinlvs' => $pinlvs,
+//            'pinlvs' => $pinlvs,
             'jihuas' => $jihuas,
             'tongxins' => $tongxins,
             'plans' => $plans,
