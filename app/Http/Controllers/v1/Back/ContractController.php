@@ -4,8 +4,8 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\contract\ContractStoreRequest;
+use App\Http\Traits\UploadTrait;
 use App\Models\Contract;
-use App\Models\Employee;
 use App\Models\Utils\Contract_type;
 use App\Models\Utils\Coor;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
@@ -13,7 +13,13 @@ use Illuminate\Support\Facades\DB;
 
 class ContractController extends Controller
 {
-    use ReturnTrait;
+    use ReturnTrait, UploadTrait;
+
+    function __construct()
+    {
+        $this->save_path = "contracts";
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -63,6 +69,12 @@ class ContractController extends Controller
         //contract_id规则写在前端
 
         //如果从company入口进入, 前端记录并并入了company_id
+        if($request->has('fileList')){
+            $ids = $this->moveAndSaveFiles($request->fileList);
+            $request['document'] = $ids;
+            unset($request['fileList']);
+        }
+
         $data = Contract::create($request->except('company'));
 
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
@@ -89,14 +101,18 @@ class ContractController extends Controller
     public function update(ContractStoreRequest $request, $id)
     {
         //todo 文件
+        if($request->has('fileList')){
+            //todo 检查过滤新旧文件
+            $doc_id =  Contract::where('id', $id)->first(['document']);
+            $request['document'] = $this->getFinalIds($request, $doc_id);
+            unset($request['fileList']);
+        }
 
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
-        $re = Contract::find($id)->update($request->except(['document','company']));
-        if($re){
-            return $this->res(2003, "修改合同成功");
-        } else {
-            return $this->res(-2003, "修改合同失败");
-        }
+        $re = Contract::find($id)->update($request->except(['company']));
+
+        return $re ? $this->res(2003, "修改合同成功") : $this->res(-2003, "修改合同失败");
+
     }
 
     /**
@@ -107,7 +123,9 @@ class ContractController extends Controller
      */
     public function destroy($id)
     {
-        $re = Contract::destroy($id);
+        $con = Contract::findOrFail($id);
+        $this->deleteFilesForDestroy($con->document);
+        $re = $con->delete();
         if($re){
             return $this->res(2004, "删除合同成功");
         } else {
@@ -115,7 +133,7 @@ class ContractController extends Controller
         }
     }
 
-    //要求关键字模糊查询
+    //todo 要求关键字模糊查询
     public function search($name,  $page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
@@ -137,4 +155,6 @@ class ContractController extends Controller
 
         return $this->res(200, '搜索结果', $data);
     }
+
+
 }

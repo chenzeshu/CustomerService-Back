@@ -10,6 +10,12 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');
+
+
+/** ===================== ========== FileUpload =========== =========================*/
+    //todo 公用上传/临时删除file
+    Route::post('upload', 'ContractController@uploadFileToTemp');
+    Route::post('deleteFile','ContractController@deleteFile');
 /** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
 //    Route::group(['middleware'=>[]], function (){
@@ -63,6 +69,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractController@update');
             Route::get('/delete/{id}','ContractController@destroy');
+
             Route::resource('/','ContractController');
         });
 

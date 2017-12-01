@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\ServiceStoreRequest;
+use App\Http\Traits\UploadTrait;
 use App\Models\Company;
 use App\Models\Services\Service;
 use App\Models\Services\Visit;
@@ -17,6 +18,13 @@ use Illuminate\Support\Facades\DB;
 
 class ServiceController extends ApiController
 {
+    use UploadTrait;
+
+    function __construct()
+    {
+        $this->save_path = "services";
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -39,15 +47,16 @@ class ServiceController extends ApiController
         $begin = ( $page -1 ) * $pageSize;
         $services = Service::where('status', "!=", '待审核')
             ->orderBy('updated_at', 'desc')
-            ->offset($begin)->limit($pageSize)
-            ->with(['contract','visits.employees','refer_man'])
+            ->offset($begin)
+            ->limit($pageSize)
+            ->with(['contract.company','visits.employees','refer_man'])
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
                 $item->man = $item->man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->man})");
                 $item->customer = $item->customer == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->customer})");
+                $item->refer_man = $item->refer_man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->refer_man})");
                 $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
-                $item->company = Company::where('id', $item['contract']['company_id'])->get(['id', 'name'])[0];
                 return $item;
             })
             ->toArray();
@@ -60,7 +69,7 @@ class ServiceController extends ApiController
             'types' => $types,
             'sources' => $sources
         ];
-        return $this->res(200, '员工信息', $data);
+        return $this->res(200, '服务单信息', $data);
     }
 
     /**
@@ -68,24 +77,23 @@ class ServiceController extends ApiController
      */
     public function verify()
     {
-        $emp = Service::where('status','=','待审核');
-        collect($emp)
+        $emp = Service::where('status','=','待审核')
             ->with(['customer', 'contract', 'source', 'type'])
             ->get()
             ->each(function ($ser){
-                $ser->project_manager = $ser->contract->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
+                $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
             })
             ->toArray();
-        $total = collect($emp)->count();
+        $total = Service::where('status','=','待审核')->count();
         $data = [
             'data' => $emp,
             'total' => $total,
         ];
-        return $this->res(200, '待审核用户', $data);
+        return $this->res(200, '待审核服务申请', $data);
     }
 
     /**
-     * 通过未审核者(将offline或"离职"者直接转变成"online")
+     * 通过未审核服务单
      */
     public function pass($id)
     {
@@ -112,6 +120,13 @@ class ServiceController extends ApiController
     public function store(ServiceStoreRequest $request)
     {
         //todo 前端右侧可以做一个派单
+
+        //todo  文件上传
+        if($request->has('fileList')){
+            $ids = $this->moveAndSaveFiles($request->fileList);
+            $request['document'] = $ids;
+            unset($request['fileList']);
+        }
 
 
         //todo 检查响应时间
@@ -151,6 +166,13 @@ class ServiceController extends ApiController
     public function update(ServiceStoreRequest $request, $id)
     {
         $update = Service::find($id);
+        //todo 文件
+        if($request->has('fileList')){
+            //todo 检查过滤新旧文件
+            $doc_id =  Service::where('id', $id)->first(['document']);
+            $request['document'] = $this->getFinalIds($request, $doc_id);
+            unset($request['fileList']);
+        }
 
         //fixme 不支持修改合同单号, 所以前端只有灰色, 没有修改可能
         if($request->status == "待审核" && $update->status != "待审核"){  //变成待审核后, 更新响应起始时间

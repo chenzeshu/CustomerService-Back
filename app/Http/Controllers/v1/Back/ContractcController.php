@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\contractc\ContractcRequest;
+use App\Http\Traits\UploadTrait;
 use App\Models\Contractc;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
@@ -12,6 +13,12 @@ use Illuminate\Support\Facades\DB;
 //信道合同
 class ContractcController extends ApiController
 {
+    use UploadTrait;
+
+    function __construct()
+    {
+        $this->save_path = "contractcs";
+    }
 
     public function page($page, $pageSize)
     {
@@ -37,12 +44,27 @@ class ContractcController extends ApiController
 
     public function store(ContractcRequest $request)
     {
+        //todo  文件上传
+        if($request->has('fileList')){
+            $ids = $this->moveAndSaveFiles($request->fileList);
+            $request['document'] = $ids;
+            unset($request['fileList']);
+        }
+
         $data = Contractc::create($request->except('company'));
         return $this->res(2002, '新建信道合同成功', $data);
     }
 
     public function update(ContractcRequest $request, $id)
     {
+        //todo 文件
+        if($request->has('fileList')){
+            //todo 检查过滤新旧文件
+            $doc_id =  Contractc::where('id', $id)->first(['document']);
+            $request['document'] = $this->getFinalIds($request, $doc_id);
+            unset($request['fileList']);
+        }
+
         $re = Contractc::findOrFail($id)->update($request->except('company'));
         return $this->res(2003, '更新信道合同成功', $re);
     }

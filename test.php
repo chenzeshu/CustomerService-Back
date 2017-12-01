@@ -1,3 +1,4 @@
 <?php
-$i = "haha";
-echo $i;
+$ids = "1,2,3,4,";
+$ids = substr($ids, 0, -1);
+echo $ids;

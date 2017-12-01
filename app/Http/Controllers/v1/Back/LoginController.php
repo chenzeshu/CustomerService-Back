@@ -10,6 +10,7 @@ use App\Models\Channels\Channel_real;
 use App\Models\Channels\Channel_relation;
 use App\Models\Company;
 use App\Models\Contract;
+use App\Models\Doc;
 use App\Models\Services\Service;
 use App\Models\Utils\Device;
 use App\Models\Utils\Profession;
@@ -26,6 +27,7 @@ use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Middleware\BaseMiddleware;
 
@@ -44,12 +46,19 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $data = DB::table('channel_relations')->where('device_id', 1)->get();
-        if($data){
-            return $data;
-        }else {
-            echo "123";
-        } 
+        $emp = Service::where('status','=','待审核')
+            ->with(['customer', 'contract', 'source', 'type'])
+            ->get()
+            ->each(function ($ser){
+                $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
+            })
+            ->toArray();
+        $total = Service::where('status','=','待审核')->count();
+        $data = [
+            'data' => $emp,
+            'total' => $total,
+        ];
+        return $this->res(200, '待审核服务申请', $data);
     }
 
     public function test2()
