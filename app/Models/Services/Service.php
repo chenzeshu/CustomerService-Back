@@ -5,6 +5,7 @@ namespace App\Models\Services;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Employee;
+use App\Models\Money\ServiceMoney;
 use App\Models\Utils\Service_source;
 use App\Models\Utils\Service_type;
 use Illuminate\Database\Eloquent\Model;

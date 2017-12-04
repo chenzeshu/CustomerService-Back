@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_plan;
+use App\Models\Money\ChannelMoney;
 use Illuminate\Database\Eloquent\Model;
 
 class Contractc extends Model
@@ -27,5 +28,11 @@ class Contractc extends Model
         return $this->belongsTo(Company::class);
     }
 
-
+    /**
+     * 到款情况
+     */
+    public function ChannelMoney()
+    {
+        return $this->hasOne(ChannelMoney::class);
+    }
 }

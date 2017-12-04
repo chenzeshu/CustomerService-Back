@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\contract\ContractStoreRequest;
 use App\Http\Traits\UploadTrait;
 use App\Models\Contract;
+use App\Models\Money\ServiceMoneyDetail;
 use App\Models\Utils\Contract_type;
 use App\Models\Utils\Coor;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ContractController extends Controller
@@ -34,7 +36,11 @@ class ContractController extends Controller
     {
         $begin = ( $page -1 ) * $pageSize;
         $cons = Contract::orderBy('id', 'desc')->offset($begin)->limit($pageSize)
-            ->with('company')
+            ->with([
+                'company',
+                'ServiceMoney.ServiceMoneyDetails',
+                'ServiceMoney.checker',
+            ])
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
@@ -76,7 +82,8 @@ class ContractController extends Controller
         }
 
         $data = Contract::create($request->except('company'));
-
+        //todo 再造一个空money记录
+        $data->ServiceMoney()->create([]);
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
 
@@ -112,7 +119,49 @@ class ContractController extends Controller
         $re = Contract::find($id)->update($request->except(['company']));
 
         return $re ? $this->res(2003, "修改合同成功") : $this->res(-2003, "修改合同失败");
+    }
 
+    /**
+     * 更新合同详情
+     * @param $contract_id
+     */
+    public function updateMoney($contract_id, Request $request)
+    {
+        Contract::findOrFail($contract_id)
+            ->ServiceMoney()
+            ->update($request->except([
+                'checker',
+                'contract_id',
+                'reach',
+                'service_money_details',
+                'left'
+            ]));
+
+        return $this->res(2006, '成功');
+    }
+
+    /**
+     * 新建历次回款记录
+     */
+    public function createMoneyDetail($contract_id, Request $request)
+    {
+        Contract::findOrFail($contract_id)
+            ->ServiceMoney()
+            ->first()
+            ->ServiceMoneyDetails()
+            ->create($request->all());
+
+        return $this->res(2006, '成功');
+    }
+
+    /**
+     * 历次回款记录的删除
+     */
+    public function delMoneyDetail($money_detail_id)
+    {
+        ServiceMoneyDetail::destroy($money_detail_id);
+
+        return $this->res(2006, '成功');
     }
 
     /**

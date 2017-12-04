@@ -69,7 +69,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractController@update');
             Route::get('/delete/{id}','ContractController@destroy');
-
+            Route::post('/updateMoney/{contract_id}', 'ContractController@updateMoney');  //回款详情更新/创建
+            Route::post('/createMoneyDetail/{contract_id}', 'ContractController@createMoneyDetail');  //历次回款记录--创建
+            Route::get('/delMoneyDetail/{money_detail_id}', 'ContractController@delMoneyDetail');       //历次回款记录--删除
             Route::resource('/','ContractController');
         });
 
@@ -94,6 +96,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','ContractcController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractcController@update');
             Route::get('/delete/{id}','ContractcController@destroy');
+            Route::post('/updateMoney/{contractc_id}', 'ContractcController@updateMoney');  //回款详情更新/创建
+            Route::post('/createMoneyDetail/{contractc_id}', 'ContractcController@createMoneyDetail');  //历次回款记录--创建
+            Route::get('/delMoneyDetail/{money_detail_id}', 'ContractcController@delMoneyDetail');       //历次回款记录--删除
             Route::resource('/','ContractcController');
         });
 

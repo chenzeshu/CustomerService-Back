@@ -50,15 +50,37 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
     return [
         "contract_id" => 'F'.date('Ymd', time()).rand(0,1000),
         'name'=>$faker->name,
-        "type1"=>rand(1,5),
+        "type1"=>rand(1,3),
         "type2"=>$faker->randomElement($type2),
         "PM"=>rand(1,100).','.rand(1,100),
         "TM"=>rand(1,100).','.rand(1,100),
         "time1" => $faker->date('Y-m-d H:i:s'),
         "time2" =>$faker->date('Y-m-d H:i:s'),
-        "money" => $faker->randomFloat(2,0, 10000000),
         "coor" => rand(1,10),
         "document" => rand(1,100).','.rand(1,100),
+    ];
+});
+
+//服务合同到款一览
+$factory->define(\App\Models\Money\ServiceMoney::class, function (Faker $faker){
+    $type = ['不分次', '分次付款'];
+    $finish = ['未结清', '结清'];
+    return [
+        "money" => $faker->randomFloat(2,500000, 10000000),
+        "type" =>  $faker->randomElement($type),
+        "finish" =>  $faker->randomElement($finish),
+        "num" => rand(1, 4),
+        "t1" =>$faker->date('Y-m-d H:i:s'),
+        "t2" =>$faker->date('Y-m-d H:i:s'),
+        'checker_id' => rand(1,4)
+    ];
+});
+//信道合同到款细节
+$factory->define(\App\Models\Money\ServiceMoneyDetail::class, function (Faker $faker){
+    return [
+        "money" => $faker->randomFloat(2,0, 10000000),
+        "t1" =>$faker->date('Y-m-d H:i:s'),
+        "t2" =>$faker->date('Y-m-d H:i:s'),
     ];
 });
 
@@ -70,7 +92,29 @@ $factory->define(\App\Models\Contractc::class, function (Faker $faker){
         "time" => $faker->date('Y-m-d H:i:s'),
         "beginline" =>$faker->date('Y-m-d H:i:s'),
         "deadline" =>$faker->date('Y-m-d H:i:s'),
+    ];
+});
+
+//信道合同到款情况
+$factory->define(\App\Models\Money\ChannelMoney::class, function (Faker $faker){
+    $type = ['不分次', '分次付款'];
+    $finish = ['未结清', '结清'];
+    return [
+        "money" => $faker->randomFloat(2,500000, 1000000),
+        "type" =>  $faker->randomElement($type),
+        "finish" =>  $faker->randomElement($finish),
+        "num" => rand(1, 4),
+        "t1" =>$faker->date('Y-m-d H:i:s'),
+        "t2" =>$faker->date('Y-m-d H:i:s'),
+        'checker_id' => rand(1,4)
+    ];
+});
+//到款细节
+$factory->define(\App\Models\Money\ChannelMoneyDetail::class, function (Faker $faker){
+    return [
         "money" => $faker->randomFloat(2,0, 10000000),
+        "t1" =>$faker->date('Y-m-d H:i:s'),
+        "t2" =>$faker->date('Y-m-d H:i:s'),
     ];
 });
 

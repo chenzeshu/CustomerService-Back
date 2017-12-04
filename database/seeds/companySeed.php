@@ -23,6 +23,18 @@ class companySeed extends Seeder
             //todo 制造2个普通合同 + 2个服务单/合同
             factory(\App\Models\Contract::class, config('app.seeding.contract'))->make()->each(function ($contract) use ($company){
                 $company->contracts()->save($contract);
+
+                //服务合同回款
+                factory(\App\Models\Money\ServiceMoney::class, 1)->make()->each(function ($money) use ($contract){
+                    $contract->ServiceMoney()->save($money);
+
+                    //历次回款详情
+                    factory(\App\Models\Money\ServiceMoneyDetail::class, $money['num'])->make()->each(function ($detail) use ($money){
+                        $money->ServiceMoneyDetails()->save($detail);
+                    });
+                });
+
+                //普通服务单
                 factory(\App\Models\Services\Service::class, config('app.seeding.service'))->make()->each(function ($service) use ($contract){
                    $contract->services()->save($service);
                    //todo 回访
@@ -35,8 +47,19 @@ class companySeed extends Seeder
             //todo 制造2个信道合同 + 2个套餐/合同
             factory(\App\Models\Contractc::class, config('app.seeding.contract_c'))->make()->each(function ($contract_c) use ($company){
                 $company->contract_cs()->save($contract_c);
+
+                //回款
+                factory(\App\Models\Money\ChannelMoney::class, 1)->make()->each(function ($money) use ($contract_c){
+                    $contract_c->ChannelMoney()->save($money);
+
+                    //历次回款详情
+                    factory(\App\Models\Money\ChannelMoneyDetail::class, $money['num'])->make()->each(function ($detail) use ($money){
+                        $money->ChannelMoneyDetails()->save($detail);
+                    });
+                });
+
+                //信道服务单
                 factory(App\Models\Channels\Channel::class, config('app.seeding.channel'))->make()->each(function ($channel) use ($contract_c){
-                    //信道服务单
                     $contract_c->channels()->save($channel);
                     //信道申请单
                     factory(\App\Models\Channels\Channel_apply::class, 1)->make()->each(function ($apply) use ($channel){

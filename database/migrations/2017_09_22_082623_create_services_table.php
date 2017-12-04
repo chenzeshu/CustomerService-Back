@@ -41,6 +41,8 @@ class CreateServicesTable extends Migration
             $table->integer('visit')->nullable(); //申述内容
             $table->timestamps();
         });
+
+
     }
 
     /**
@@ -51,5 +53,6 @@ class CreateServicesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('services');
+
     }
 }
