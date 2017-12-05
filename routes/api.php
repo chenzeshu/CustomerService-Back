@@ -11,7 +11,6 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');
 
-
 /** ===================== ========== FileUpload =========== =========================*/
     //todo 公用上传/临时删除file
     Route::post('upload', 'ContractController@uploadFileToTemp');
@@ -65,7 +64,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo contracts
         Route::group(['prefix'=>'contracts'], function(){
-            Route::get('/page/{page}/{pageSize}', 'ContractController@page');
+            Route::get('/page/{page}/{pageSize}/{finish?}/{other?}', 'ContractController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractController@update');
             Route::get('/delete/{id}','ContractController@destroy');
@@ -77,7 +76,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo services
         Route::group(['prefix'=>'services'], function(){
-            Route::get('/page/{page}/{pageSize}', 'ServiceController@page');
+            Route::get('/page/{page}/{pageSize}/{status?}/{reach?}', 'ServiceController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ServiceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ServiceController@update');
             Route::get('/delete/{id}','ServiceController@destroy');
@@ -92,7 +91,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo contract_cs
         Route::group(['prefix'=>'contractcs'], function(){
-            Route::get('/page/{page}/{pageSize}', 'ContractcController@page');
+            Route::get('/page/{page}/{pageSize}/{finish?}/{other?}', 'ContractcController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ContractcController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractcController@update');
             Route::get('/delete/{id}','ContractcController@destroy');
@@ -104,7 +103,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo channels
         Route::group(['prefix'=>'channels'], function(){
-            Route::get('/page/{page}/{pageSize}', 'ChannelController@page');
+            Route::get('/page/{page}/{pageSize}/{status?}/{other?}', 'ChannelController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ChannelController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ChannelController@update');
             Route::get('/delete/{id}','ChannelController@destroy');

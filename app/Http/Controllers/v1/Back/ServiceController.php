@@ -42,10 +42,21 @@ class ServiceController extends ApiController
      * @param $pageSize
      * @return \Illuminate\Http\JsonResponse
      */
-    public function page($page, $pageSize)
+    public function page($page, $pageSize, $status="", $charge_flag="")
     {
         $begin = ( $page -1 ) * $pageSize;
         $services = Service::where('status', "!=", '待审核')
+            ->where(function ($query) use ($status, $charge_flag){
+                if($status != ""){
+                    $query->where('status', $status);
+                }
+                if($charge_flag != ""){
+                    $query->where([
+                        'charge_if'=>'收费',
+                        'charge_flag'=> $charge_flag
+                    ]);
+                }
+            })
             ->orderBy('updated_at', 'desc')
             ->offset($begin)
             ->limit($pageSize)
@@ -60,7 +71,19 @@ class ServiceController extends ApiController
                 return $item;
             })
             ->toArray();
-        $total = Service::where('status', "!=", '待审核')->count();
+        $total = Service::where('status', "!=", '待审核')
+            ->where(function ($query) use ($status, $charge_flag){
+                if($status != ""){
+                    $query->where('status', $status);
+                }
+                if($charge_flag != ""){
+                    $query->where([
+                        'charge_if'=>'收费',
+                        'charge_flag'=> $charge_flag
+                    ]);
+                }
+            })
+            ->count();
         $types = Service_type::all()->toArray();
         $sources = Service_source::all()->toArray();
         $data = [

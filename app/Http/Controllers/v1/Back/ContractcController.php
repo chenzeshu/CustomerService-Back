@@ -22,16 +22,28 @@ class ContractcController extends ApiController
         $this->save_path = "contractcs";
     }
 
-    public function page($page, $pageSize)
+    public function page($page, $pageSize, $finish="", $other="")
     {
         $begin = ( $page -1 ) * $pageSize;
-        $cons = Contractc::orderBy('id', 'desc')->offset($begin)->limit($pageSize)
+        $consModel = Contractc::orderBy('id', 'desc')
             ->with([
                 'company',
-                'ChannelMoney.ChannelMoneyDetails',
-                'ChannelMoney.checker',
+                'ChannelMoney'=>function($query) use ($finish){
+                    if($finish != ""){
+                        $query->where('finish', $finish);
+                    }
+                    $query->with([
+                        'ChannelMoneyDetails',
+                        'checker',
+                    ]);
+                },
             ])
             ->get()
+            ->reject(function ($value, $key){
+                return $value->ChannelMoney == null;
+            });
+         $cons = $consModel
+            ->splice($begin, $pageSize)
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
                 $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
@@ -40,7 +52,7 @@ class ContractcController extends ApiController
             })
             ->toArray();
 
-        $total = Contractc::count();
+        $total = $consModel->count();
         $data = [
             'data' => $cons,
             'total' => $total,

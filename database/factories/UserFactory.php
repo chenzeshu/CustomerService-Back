@@ -136,7 +136,7 @@ $factory->define(\App\Models\Channels\Channel_detail::class, function (Faker $fa
 });
 
 $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
-    $status = ['待审核','拒绝', '已派单', '已完成', '申请完成', '申述中'];
+    $status = ['待审核','拒绝', '待派单', '已派单', '已完成', '申请完成', '申述中'];
     $charge = ['收费', "不收费"];
     $charge_flag = ['到款', "未到款"];
     return [

@@ -28,24 +28,38 @@ class ChannelController extends ApiController
     }
 
 
-    public function page($page, $pageSize)
+    /**
+     * @param $page
+     * $other 为配合前端预留的参数, 目前channelController用不上
+     */
+    public function page($page, $pageSize, $status = "", $other = "")
     {
         $begin = ( $page -1 ) * $pageSize;
         $cons = Channel::where('status', "!=", '待审核')
+            ->where(function ($query) use ($status){
+                if($status != ""){
+                    $query->where('status', $status);
+                }
+            })
             ->orderBy('updated_at', 'desc')
             ->offset($begin)
             ->limit($pageSize)
-            ->with(['contractc',
-                'channel_applys.channel_relations.company',
-                'channel_applys.channel_relations.device',
-                'channel_applys.channel_operative.tongxin',
-                'channel_applys.channel_operative.jihua',
-                'channel_applys.channel_operative.pinlv',
-                'channel_applys.channel_operative.plan',
-                'channel_applys.channel_real.tongxin',
-                'channel_applys.channel_real.jihua',
-                'channel_applys.channel_real.pinlv',
-                'channel_applys.channel_real.checker'])
+            ->with([
+                'contractc',
+                'channel_applys'=>function($query){
+                    $query->with([
+                        "channel_relations"=>function($re){
+                            $re->with(["company", "device"]);
+                        },
+                        "channel_operative"=>function($op){
+                           $op->with([ "tongxin","jihua","pinlv","plan"]);
+                        },
+                        "channel_real"=>function($real){
+                            $real->with(["tongxin","jihua","pinlv","checker"]);
+                        },
+                    ]);
+                }
+            ])
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
@@ -61,7 +75,12 @@ class ChannelController extends ApiController
         $plans = Plan::all()->toArray();
         $zhantypes =Channel_info2::all()->toArray();
 
-        $total = Channel::where('status', "!=", '待审核')->count();
+        $total = Channel::where('status', "!=", '待审核')
+            ->where(function ($query) use ($status){
+                if($status != ""){
+                    $query->where('status', $status);
+                }
+            })->count();
         $data = [
             'data' => $cons,
             'total' => $total,
@@ -113,7 +132,7 @@ class ChannelController extends ApiController
     public function update(ChannelStoreRequest $request, $id)
     {
         //fixme 不支持修改信号服务单号, 所以前端只有灰色, 没有修改可能
-        $re = Channel::find($id)->update($request->except(['customer','source_info']));
+        $re = Channel::find($id)->update($request->except(['customer','source_info', 'contractc', 'channel_applys']));
         if($re){
             return $this->res(2003, "修改服务单成功");
         } else {

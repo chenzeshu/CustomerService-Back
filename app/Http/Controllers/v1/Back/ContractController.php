@@ -32,16 +32,35 @@ class ContractController extends Controller
         return $this->res(200, 'contract');
     }
 
-    public function page($page, $pageSize)
+    /**
+     * @param $page
+     * @param $pageSize
+     * @param string $finish finish字段 是否结清
+     * @param string $other 预留字段
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function page($page, $pageSize, $finish="", $other="")
     {
         $begin = ( $page -1 ) * $pageSize;
-        $cons = Contract::orderBy('id', 'desc')->offset($begin)->limit($pageSize)
+        $consModel = Contract::orderBy('id', 'desc')
             ->with([
                 'company',
-                'ServiceMoney.ServiceMoneyDetails',
-                'ServiceMoney.checker',
+                'ServiceMoney'=>function($query) use ($finish){
+                    if($finish != ""){
+                        $query->where('finish', $finish);
+                    }
+                    $query->with([
+                        'ServiceMoneyDetails',
+                        'checker',
+                    ]);
+                },
             ])
             ->get()
+            ->reject(function ($value, $key){
+                return $value->ServiceMoney == null;
+            });
+        $cons = $consModel
+            ->splice($begin, $pageSize)
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
                 $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
@@ -50,11 +69,11 @@ class ContractController extends Controller
                 return $item;
             })
             ->toArray();
-        
+
+        $total =  $consModel->count();
         //前期因为合作商都没有超过10个, 所以直接当成utils了, 后期应该做成查询
         $coors = Coor::all()->toArray();
         $types = Contract_type::all()->toArray();
-        $total = Contract::count();
         $data = [
             'data' => $cons,
             'total' => $total,

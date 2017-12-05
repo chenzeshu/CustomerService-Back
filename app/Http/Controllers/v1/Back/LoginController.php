@@ -46,19 +46,27 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $emp = Service::where('status','=','待审核')
-            ->with(['customer', 'contract', 'source', 'type'])
+        $finish="未结清";
+        $cons = Contract::orderBy('id', 'desc')
+            ->with([
+                'company',
+                'ServiceMoney'=>function($query) use ($finish){
+                    if($finish != ""){
+                        $query->where('finish', $finish);
+                    }
+                    $query->with([
+                        'ServiceMoneyDetails',
+                        'checker',
+                    ]);
+                },
+            ])
+            ->offset(0)
+            ->limit(30)
             ->get()
-            ->each(function ($ser){
-                $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
-            })
-            ->toArray();
-        $total = Service::where('status','=','待审核')->count();
-        $data = [
-            'data' => $emp,
-            'total' => $total,
-        ];
-        return $this->res(200, '待审核服务申请', $data);
+            ->reject(function ($value, $key){
+                return $value->ServiceMoney == null;
+            });
+        return $cons;
     }
 
     public function test2()
