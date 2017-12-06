@@ -20,7 +20,7 @@ class CreateChannelOperativesTable extends Migration
             $table->integer('id1');  //用户套餐表的id 必填
             $table->integer('id2');
             $table->integer('id3');
-            $table->integer('id4');
+            $table->integer('id4'); //带宽
             $table->timestamp('t1')->nullable();  //开始时间 必填
             $table->timestamp('t2')->nullable();  //结束时间 必填
             $table->text('remark')->nullable();

@@ -6,6 +6,7 @@ use App\Http\Requests\company\CompanyStoreRequest;
 use App\Models\Company;
 use App\Models\Utils\Profession;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CompanyController extends ApiController
 {
@@ -27,10 +28,8 @@ class CompanyController extends ApiController
     }
 
     private function init($page, $pageSize){
-//        $this->page = $page;
-//        $this->pageSize = $pageSize;
         $this->begin = ($page -1 ) * $pageSize;
-        $this->pros = Profession::all()->toArray();
+        $this->pros = Cache::get('pros');
     }
 
     public function page($page, $pageSize)

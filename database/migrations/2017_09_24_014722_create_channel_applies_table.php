@@ -19,7 +19,7 @@ class CreateChannelAppliesTable extends Migration
             $table->integer('id1'); //用户套餐表的id 必填
             $table->integer('id2')->nullable();
             $table->integer('id3')->nullable();
-            $table->integer('id4')->nullable();
+            $table->integer('id4')->nullable();  //带宽
             $table->timestamp('t1')->nullable();  //开始时间 必填
             $table->timestamp('t2')->nullable();  //结束时间 必填
             $table->text('remark')->nullable();

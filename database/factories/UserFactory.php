@@ -78,7 +78,7 @@ $factory->define(\App\Models\Money\ServiceMoney::class, function (Faker $faker){
 //信道合同到款细节
 $factory->define(\App\Models\Money\ServiceMoneyDetail::class, function (Faker $faker){
     return [
-        "money" => $faker->randomFloat(2,0, 10000000),
+        "money" => $faker->randomFloat(2,0, 1000000),
         "t1" =>$faker->date('Y-m-d H:i:s'),
         "t2" =>$faker->date('Y-m-d H:i:s'),
     ];
@@ -87,6 +87,7 @@ $factory->define(\App\Models\Money\ServiceMoneyDetail::class, function (Faker $f
 $factory->define(\App\Models\Contractc::class, function (Faker $faker){
     return [
         "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
+        "money" => $faker->randomFloat(2,2000000, 6000000),
         "PM"=>rand(1,100),
         'name'=>$faker->name,
         "time" => $faker->date('Y-m-d H:i:s'),

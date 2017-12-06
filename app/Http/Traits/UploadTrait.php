@@ -67,7 +67,8 @@ trait UploadTrait
      */
     public function getOldAndNew($request, $doc_id)
     {
-        $old = DB::select("select `name`, `path` from docs where id in ({$doc_id['document']})");
+
+        $old = $doc_id['document'] == null ? [] : DB::select("select `name`, `path` from docs where id in ({$doc_id['document']})");
         $old = json_decode(json_encode($old),TRUE);  //否则 Object of class stdClass could not be converted to string
 
         $new = [];

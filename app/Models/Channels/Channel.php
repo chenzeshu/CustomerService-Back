@@ -7,6 +7,8 @@ use App\Models\Employee;
 use App\Models\Utils\Plan;
 use App\Models\Utils\Service_source;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class Channel extends Model
 {
@@ -14,6 +16,81 @@ class Channel extends Model
 
     ];
 
+    /** 辅助函数们 */
+    /**
+     * 拿到工具表缓存
+     * @return array
+     */
+    static function get_cache(){
+        $service_sources = Cache::get('service_sources');
+//        $pinlvs = Channel_info4::all()->toArray();
+        $tongxins = Cache::get('tongxins');
+        $jihuas = Cache::get('jihuas');
+        $plans = Cache::get('plans');
+        $zhantypes = Cache::get('zhantypes');
+
+        return [$service_sources, $tongxins, $jihuas, $plans, $zhantypes];
+    }
+
+    /**
+     *  分页基本筛选
+     */
+    static function basic_search($status){
+        return Channel::where('status', "!=", '待审核')
+                       ->where(function ($query) use ($status){
+                            if($status != ""){
+                                $query->where('status', $status);
+                            }
+                       });
+    }
+
+    /**
+     * 分页: 拿到符合筛选条件的分页数据
+     * @status 外部检索的状态
+     * @begin offset
+     * @pageSize 单页数据量
+     */
+    static function get_pagination($status, $begin, $pageSize){
+        return static::basic_search($status)
+            ->orderBy('updated_at', 'desc')
+            ->offset($begin)
+            ->limit($pageSize)
+            ->with([
+                'contractc',
+                'channel_applys'=>function($query){
+                    $query->with([
+                        "channel_relations"=>function($re){
+                            $re->with(["company", "device"]);
+                        },
+                        "channel_operative"=>function($op){
+                            $op->with([ "tongxin","jihua","pinlv","plan"]);
+                        },
+                        "channel_real"=>function($real){
+                            $real->with(["tongxin","jihua","pinlv","checker"]);
+                        },
+                    ]);
+                }
+            ])
+            ->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
+                $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = {$item->source}");
+                return $item;
+            })
+            ->toArray();
+    }
+
+    /**
+     * 分页: 拿到符合筛选条件的总数
+     * @status 外部检索的状态
+     */
+    static function get_total($status){
+        $total = static::basic_search($status)->count();
+        return $total;
+    }
+
+    /*****    ORM    *****/
     public function channel_applys()
     {
         return $this->hasMany(Channel_apply::class);
@@ -78,12 +155,12 @@ class Channel extends Model
     }
 
     /**
-     * 通过apply层频率
+     * 通过apply层带宽
      */
-    public function pinlv()
+    public function daikuan()
     {
         return $this->hasManyThrough(
-            Channel_info4::class,
+            Channel_info1::class,
             Channel_apply::class,
             'channel_id',
             'id',

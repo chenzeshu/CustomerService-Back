@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\v1\Back\Utils;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Jobs\Cache\Utils;
 use App\Models\Channels\Channel_info1;
 use Illuminate\Http\Request;
-
+use Illuminate\Console\Scheduling\Schedule;
 class Info1Controller extends ApiController
 {
     public function page($page, $pageSize)
@@ -18,23 +19,24 @@ class Info1Controller extends ApiController
             'data' => $cons,
             'total' => $total
         ];
-        return $this->res(200, '普合信息', $data);
+        return $this->res(200, '带宽类型', $data);
     }
 
     public function store(Request $request)
     {
         $data = Channel_info1::create($request->all());
-
-        return $this->res(2002, "新建合同成功", ['data'=>$data]);
+        Utils::dispatch("info1");
+        return $this->res(2002, "新建带宽成功", ['data'=>$data]);
     }
 
     public function update(Request $request, $id)
     {
         $re = Channel_info1::find($id)->update($request->all());
         if($re){
-            return $this->res(2003, "修改合同成功");
+            Utils::dispatch("info1");
+            return $this->res(2003, "修改带宽成功");
         } else {
-            return $this->res(-2003, "修改合同失败");
+            return $this->res(-2003, "修改带宽失败");
         }
     }
 
@@ -42,9 +44,10 @@ class Info1Controller extends ApiController
     {
         $re = Channel_info1::destroy($id);
         if($re){
-            return $this->res(2004, "删除合同成功");
+            Utils::dispatch("info1");
+            return $this->res(2004, "删除带宽成功");
         } else {
-            return $this->res(500, "删除合同失败");
+            return $this->res(500, "删除带宽失败");
         }
     }
 

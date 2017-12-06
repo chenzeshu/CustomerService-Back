@@ -25,6 +25,7 @@ use App\User;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -46,27 +47,7 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $finish="未结清";
-        $cons = Contract::orderBy('id', 'desc')
-            ->with([
-                'company',
-                'ServiceMoney'=>function($query) use ($finish){
-                    if($finish != ""){
-                        $query->where('finish', $finish);
-                    }
-                    $query->with([
-                        'ServiceMoneyDetails',
-                        'checker',
-                    ]);
-                },
-            ])
-            ->offset(0)
-            ->limit(30)
-            ->get()
-            ->reject(function ($value, $key){
-                return $value->ServiceMoney == null;
-            });
-        return $cons;
+        Cache::forget('contractcs');
     }
 
     public function test2()

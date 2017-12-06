@@ -2,17 +2,9 @@
 
 namespace App\Http\Controllers\v1\Back;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Service\ServiceStoreRequest;
 use App\Http\Traits\UploadTrait;
-use App\Models\Company;
 use App\Models\Services\Service;
-use App\Models\Services\Visit;
-use App\Models\Utils\Service_source;
-use App\Models\Utils\Service_type;
-use Chenzeshu\ChenUtils\Traits\PageTrait;
-use Chenzeshu\ChenUtils\Traits\ReturnTrait;
-use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,17 +18,6 @@ class ServiceController extends ApiController
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $data = $this->getPaginator(3, 20);
-        return $this->res(200, 'Service', $data);
-    }
-
-    /**
      * 分页
      * @param $page
      * @param $pageSize
@@ -45,52 +26,14 @@ class ServiceController extends ApiController
     public function page($page, $pageSize, $status="", $charge_flag="")
     {
         $begin = ( $page -1 ) * $pageSize;
-        $services = Service::where('status', "!=", '待审核')
-            ->where(function ($query) use ($status, $charge_flag){
-                if($status != ""){
-                    $query->where('status', $status);
-                }
-                if($charge_flag != ""){
-                    $query->where([
-                        'charge_if'=>'收费',
-                        'charge_flag'=> $charge_flag
-                    ]);
-                }
-            })
-            ->orderBy('updated_at', 'desc')
-            ->offset($begin)
-            ->limit($pageSize)
-            ->with(['contract.company','visits.employees','refer_man'])
-            ->get()
-            ->map(function ($item){
-                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->man = $item->man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->man})");
-                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->customer})");
-                $item->refer_man = $item->refer_man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->refer_man})");
-                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
-                return $item;
-            })
-            ->toArray();
-        $total = Service::where('status', "!=", '待审核')
-            ->where(function ($query) use ($status, $charge_flag){
-                if($status != ""){
-                    $query->where('status', $status);
-                }
-                if($charge_flag != ""){
-                    $query->where([
-                        'charge_if'=>'收费',
-                        'charge_flag'=> $charge_flag
-                    ]);
-                }
-            })
-            ->count();
-        $types = Service_type::all()->toArray();
-        $sources = Service_source::all()->toArray();
+        $services = Service::get_pagination($status, $charge_flag, $begin, $pageSize);
+        $total = Service::get_total($status, $charge_flag);
+        list($service_types, $service_sources) = Service::get_cache();
         $data = [
             'data' => $services,
             'total' => $total,
-            'types' => $types,
-            'sources' => $sources
+            'types' => $service_types,
+            'sources' => $service_sources
         ];
         return $this->res(200, '服务单信息', $data);
     }
@@ -150,7 +93,6 @@ class ServiceController extends ApiController
             $request['document'] = $ids;
             unset($request['fileList']);
         }
-
 
         //todo 检查响应时间
         if($request->status == "待审核" || $request->status == "已派单"){

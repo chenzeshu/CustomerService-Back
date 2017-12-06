@@ -4,11 +4,41 @@ namespace App\Models\Channels;
 
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Channel_apply extends Model
 {
     protected $guarded = [];
 
+    /***** cache *****/
+    static function get_cache(){
+        $tongxin = Cache::get('tongxins');
+        $jihua = Cache::get('jihuas');
+        $daikuan = Cache::get('daikuans');
+        return [$tongxin, $jihua, $daikuan];
+    }
+
+    /***** la-sql *****/
+    static function basic_search(){
+        return Channel::where('status','=','待审核');
+    }
+
+    static function get_pagination($begin, $pageSize){
+        return static::basic_search()->offset($begin)
+            ->limit($pageSize)
+            ->with(['employee.company' ,'contractc',
+                'channel_applys.channel_relations.company',
+                'channel_applys.channel_relations.device',
+                'plans', 'tongxin','jihua', 'daikuan', 'source'])
+            ->get()
+            ->toArray();
+    }
+
+    static function get_total(){
+        return static::basic_search()->count();
+    }
+
+    /***** ORM *****/
     public function channel()
     {
         return $this->belongsTo(Channel::class);

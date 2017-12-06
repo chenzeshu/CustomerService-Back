@@ -13,6 +13,7 @@ use App\Models\Utils\Service_source;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ChannelController extends ApiController
@@ -35,57 +36,14 @@ class ChannelController extends ApiController
     public function page($page, $pageSize, $status = "", $other = "")
     {
         $begin = ( $page -1 ) * $pageSize;
-        $cons = Channel::where('status', "!=", '待审核')
-            ->where(function ($query) use ($status){
-                if($status != ""){
-                    $query->where('status', $status);
-                }
-            })
-            ->orderBy('updated_at', 'desc')
-            ->offset($begin)
-            ->limit($pageSize)
-            ->with([
-                'contractc',
-                'channel_applys'=>function($query){
-                    $query->with([
-                        "channel_relations"=>function($re){
-                            $re->with(["company", "device"]);
-                        },
-                        "channel_operative"=>function($op){
-                           $op->with([ "tongxin","jihua","pinlv","plan"]);
-                        },
-                        "channel_real"=>function($real){
-                            $real->with(["tongxin","jihua","pinlv","checker"]);
-                        },
-                    ]);
-                }
-            ])
-            ->get()
-            ->map(function ($item){
-                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
-                $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = {$item->source}");
-                return $item;
-            })
-            ->toArray();
-        $sources = Service_source::all()->toArray();
-//        $pinlvs = Channel_info4::all()->toArray();
-        $tongxins = Channel_info3::all()->toArray();
-        $jihuas = Channel_info5::all()->toArray();
-        $plans = Plan::all()->toArray();
-        $zhantypes =Channel_info2::all()->toArray();
+        $cons = Channel::get_pagination($status, $begin, $pageSize);
+        $total = Channel::get_total($status);
+        list($service_sources, $tongxins, $jihuas, $plans, $zhantypes) = Channel::get_cache();
 
-        $total = Channel::where('status', "!=", '待审核')
-            ->where(function ($query) use ($status){
-                if($status != ""){
-                    $query->where('status', $status);
-                }
-            })->count();
         $data = [
             'data' => $cons,
             'total' => $total,
-            'sources' => $sources,
-//            'pinlvs' => $pinlvs,
+            'sources' => $service_sources,
             'jihuas' => $jihuas,
             'tongxins' => $tongxins,
             'plans' => $plans,

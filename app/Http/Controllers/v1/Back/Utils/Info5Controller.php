@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Back\Utils;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Jobs\Cache\Utils;
 use App\Models\Channels\Channel_info5;
 use Illuminate\Http\Request;
 
@@ -24,7 +25,7 @@ class Info5Controller extends ApiController
     public function store(Request $request)
     {
         $data = Channel_info5::create($request->all());
-
+        Utils::dispatch("info5");
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
 
@@ -32,6 +33,7 @@ class Info5Controller extends ApiController
     {
         $re = Channel_info5::find($id)->update($request->all());
         if($re){
+            Utils::dispatch("info5");
             return $this->res(2003, "修改合同成功");
         } else {
             return $this->res(-2003, "修改合同失败");
@@ -42,6 +44,7 @@ class Info5Controller extends ApiController
     {
         $re = Channel_info5::destroy($id);
         if($re){
+            Utils::dispatch("info5");
             return $this->res(2004, "删除合同成功");
         } else {
             return $this->res(500, "删除合同失败");

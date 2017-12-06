@@ -9,11 +9,78 @@ use App\Models\Money\ServiceMoney;
 use App\Models\Utils\Service_source;
 use App\Models\Utils\Service_type;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class Service extends Model
 {
     protected $guarded = [ ];
 
+    /**
+     * 拿到utils缓存
+     * $coors 合作商
+     * $types 合同类型
+     */
+    static function get_cache(){
+        $types = Cache::get('service_types');
+        $sources = Cache::get('service_sources');
+        return [$types, $sources];
+    }
+
+    /***** la-sql *****/
+    /**
+     * @param String $status 服务单状态
+     * @param String $charge_flag 是否到款
+     * @return $consModel 基本的[集合], 方便分页和总数的获取
+     */
+    static function basic_search($status, $charge_flag)
+    {
+        $services = Service::where('status', "!=", '待审核')
+            ->where(function ($query) use ($status, $charge_flag){
+                if($status != ""){
+                    $query->where('status', $status);
+                }
+                if($charge_flag != ""){
+                    $query->where([
+                        'charge_if'=>'收费',
+                        'charge_flag'=> $charge_flag
+                    ]);
+                }
+            });
+        return $services;
+    }
+
+    /**
+     *  分页数据
+     * @param String $status 服务单状态
+     * @param String $charge_flag 是否到款
+     */
+    static function get_pagination($status, $charge_flag, $begin, $pageSize){
+        return static::basic_search($status, $charge_flag)
+            ->orderBy('updated_at', 'desc')
+            ->offset($begin)
+            ->limit($pageSize)
+            ->with(['contract.company','visits.employees','refer_man'])
+            ->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(本次为配合前端提前做的search组件 -> 下次考虑聚合, 不做层级了)
+                $item->man = $item->man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->man})");
+                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->customer})");
+                $item->refer_man = $item->refer_man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->refer_man})");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
+                return $item;
+            })
+            ->toArray();
+    }
+
+    /**
+     * 分页: 拿到total总数
+     */
+    static function get_total($status, $charge_flag){
+        return static::basic_search($status, $charge_flag)->count();
+    }
+
+    /*****  ORM  *****/
     public function contract()
     {
         return $this->belongsTo(Contract::class);

@@ -3,23 +3,25 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Controllers\Controller;
+use App\Http\Repositories\ContractRepo;
 use App\Http\Requests\contract\ContractStoreRequest;
 use App\Http\Traits\UploadTrait;
+use App\Jobs\Cache\RefreshContracts;
 use App\Models\Contract;
 use App\Models\Money\ServiceMoneyDetail;
-use App\Models\Utils\Contract_type;
-use App\Models\Utils\Coor;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ContractController extends Controller
 {
     use ReturnTrait, UploadTrait;
 
-    function __construct()
+    protected $repo;
+    function __construct(ContractRepo $repo)
     {
         $this->save_path = "contracts";
+        $this->repo = $repo;
     }
 
     /**
@@ -33,6 +35,7 @@ class ContractController extends Controller
     }
 
     /**
+     * 缓存化的分页获取模式
      * @param $page
      * @param $pageSize
      * @param string $finish finish字段 是否结清
@@ -41,45 +44,21 @@ class ContractController extends Controller
      */
     public function page($page, $pageSize, $finish="", $other="")
     {
-        $begin = ( $page -1 ) * $pageSize;
-        $consModel = Contract::orderBy('id', 'desc')
-            ->with([
-                'company',
-                'ServiceMoney'=>function($query) use ($finish){
-                    if($finish != ""){
-                        $query->where('finish', $finish);
-                    }
-                    $query->with([
-                        'ServiceMoneyDetails',
-                        'checker',
-                    ]);
-                },
-            ])
-            ->get()
-            ->reject(function ($value, $key){
-                return $value->ServiceMoney == null;
-            });
-        $cons = $consModel
-            ->splice($begin, $pageSize)
-            ->map(function ($item){
-                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
-                $item->TM = $item->TM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->TM})");
-                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
-                return $item;
-            })
-            ->toArray();
+        $cons = Cache::get('contracts');
+        if( empty($cons) ){
+            Contract::redis_refresh_data();
+            $cons = Cache::get('contracts');
+        }
+        list($cons,$total) = $this->repo->pageFilter($cons, $finish, $page, $pageSize);
+        list($coors, $types) = Contract::get_cache();
 
-        $total =  $consModel->count();
-        //前期因为合作商都没有超过10个, 所以直接当成utils了, 后期应该做成查询
-        $coors = Coor::all()->toArray();
-        $types = Contract_type::all()->toArray();
         $data = [
             'data' => $cons,
             'total' => $total,
             'coors' => $coors,
             'types' => $types,
         ];
+
         return $this->res(200, '普合信息', $data);
     }
 
@@ -103,6 +82,8 @@ class ContractController extends Controller
         $data = Contract::create($request->except('company'));
         //todo 再造一个空money记录
         $data->ServiceMoney()->create([]);
+        //todo 队列任务: 刷新缓存
+        RefreshContracts::dispatch();
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
 
@@ -135,8 +116,9 @@ class ContractController extends Controller
         }
 
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
-        $re = Contract::find($id)->update($request->except(['company']));
-
+        $re = Contract::find($id)->update($request->except(['company','service_money']));
+        //todo 队列任务: 刷新缓存
+        RefreshContracts::dispatch();
         return $re ? $this->res(2003, "修改合同成功") : $this->res(-2003, "修改合同失败");
     }
 

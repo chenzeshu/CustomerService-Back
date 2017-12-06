@@ -20,6 +20,7 @@ class CreateContractCsTable extends Migration
             $table->string('name');  //合同名称
             $table->string('PM',50);
             $table->timestamp('time');
+            $table->decimal('money', 10,2); //合同金额
             $table->timestamp('beginline')->nullable();
             $table->timestamp('deadline')->nullable();
             $table->text('desc')->nullable();

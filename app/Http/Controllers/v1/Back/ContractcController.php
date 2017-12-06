@@ -2,63 +2,53 @@
 
 namespace App\Http\Controllers\v1\Back;
 
-use App\Http\Controllers\Controller;
+use App\Http\Repositories\ContractcRepo;
 use App\Http\Requests\contractc\ContractcRequest;
 use App\Http\Traits\UploadTrait;
+use App\Jobs\Cache\RefreshContractcs;
 use App\Models\Contractc;
 use App\Models\Money\ChannelMoneyDetail;
-use Chenzeshu\ChenUtils\Traits\PageTrait;
-use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 //信道合同
 class ContractcController extends ApiController
 {
     use UploadTrait;
-
-    function __construct()
+    protected $repo;
+    function __construct(ContractcRepo $repo)
     {
         $this->save_path = "contractcs";
+        $this->repo = $repo;
     }
 
     public function page($page, $pageSize, $finish="", $other="")
     {
-        $begin = ( $page -1 ) * $pageSize;
-        $consModel = Contractc::orderBy('id', 'desc')
-            ->with([
-                'company',
-                'ChannelMoney'=>function($query) use ($finish){
-                    if($finish != ""){
-                        $query->where('finish', $finish);
-                    }
-                    $query->with([
-                        'ChannelMoneyDetails',
-                        'checker',
-                    ]);
-                },
-            ])
-            ->get()
-            ->reject(function ($value, $key){
-                return $value->ChannelMoney == null;
-            });
-         $cons = $consModel
-            ->splice($begin, $pageSize)
-            ->map(function ($item){
-                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
-                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
-                return $item;
-            })
-            ->toArray();
+        $cons = Cache::get('contractcs');
+        if( empty($cons) ){
+            Contractc::redis_refresh_data();
+            $cons = Cache::get('contractcs');
+        }
+        list($cons,$total) = $this->repo->pageFilter($cons, $finish, $page, $pageSize);
 
-        $total = $consModel->count();
         $data = [
             'data' => $cons,
             'total' => $total,
         ];
         return $this->res(200, '信道合同', $data);
     }
+
+//    public function page($page, $pageSize, $finish="", $other="")
+//    {
+//        $begin = ( $page -1 ) * $pageSize;
+//        $cons = Contractc::get_pagination($finish, $begin, $pageSize);
+//        $total = Contractc::get_total($finish);
+//        $data = [
+//            'data' => $cons,
+//            'total' => $total,
+//        ];
+//        return $this->res(200, '信道合同', $data);
+//    }
 
     public function store(ContractcRequest $request)
     {
@@ -68,7 +58,7 @@ class ContractcController extends ApiController
             $request['document'] = $ids;
             unset($request['fileList']);
         }
-
+        RefreshContractcs::dispatch();
         $data = Contractc::create($request->except('company'));
         return $this->res(2002, '新建信道合同成功', $data);
     }
@@ -82,8 +72,8 @@ class ContractcController extends ApiController
             $request['document'] = $this->getFinalIds($request, $doc_id);
             unset($request['fileList']);
         }
-
-        $re = Contractc::findOrFail($id)->update($request->except('company'));
+        RefreshContractcs::dispatch();  //todo 更新缓存
+        $re = Contractc::findOrFail($id)->update($request->except(['company', 'channel_money']));
         return $this->res(2003, '更新信道合同成功', $re);
     }
 
@@ -102,7 +92,7 @@ class ContractcController extends ApiController
                 'service_money_details',
                 'left'
             ]));
-
+        RefreshContractcs::dispatch();
         return $this->res(2006, '成功');
     }
 
@@ -116,7 +106,7 @@ class ContractcController extends ApiController
             ->first()
             ->ChannelMoneyDetails()
             ->create($request->all());
-
+        RefreshContractcs::dispatch();
         return $this->res(2006, '成功');
     }
 
@@ -126,13 +116,14 @@ class ContractcController extends ApiController
     public function delMoneyDetail($money_detail_id)
     {
         ChannelMoneyDetail::destroy($money_detail_id);
-
+        RefreshContractcs::dispatch();
         return $this->res(2006, '成功');
     }
 
     public function destroy($id)
     {
         $re = Contractc::findOrFail($id)->delete();
+        RefreshContractcs::dispatch();
         return $this->res(2004, '删除成功', $re);
     }
 
@@ -148,7 +139,7 @@ class ContractcController extends ApiController
             ->get()
             ->toArray();
 
-        $total = Contractc::where('name', 'like', '%'.$contract_id.'%')
+        $total = Contractc::where('contract_id', 'like', '%'.$contract_id.'%')
             ->count();
 
         $data= [
