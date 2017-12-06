@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Utils\Loginlog;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -26,4 +27,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token', 'created_at', 'updated_at'
     ];
+
+    public function loginLogs()
+    {
+        return $this->hasMany(Loginlog::class);
+    }
 }

@@ -254,5 +254,10 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::resource('/','PlanController');
         });
 
+        //todo 统计
+        Route::group(['prefix'=>'calculate'], function (){
+            Route::get('/basic', 'CalculateController@basic');
+            Route::get('/userInfo', 'CalculateController@userInfo');
+        });
     });
 });
