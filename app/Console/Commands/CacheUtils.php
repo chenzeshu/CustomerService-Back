@@ -12,7 +12,7 @@ class CacheUtils extends Command
      *
      * @var string
      */
-    protected $signature = 'zcache:utils {module}';
+    protected $signature = 'zcache:utils';
 
     /**
      * The console command description.
@@ -38,41 +38,6 @@ class CacheUtils extends Command
      */
     public function handle()
     {
-        switch ($this->argument('module')){
-            case "service_types":
-                Utils::dispatch("service_types");
-                break;
-            case "service_sources":
-                Utils::dispatch("service_sources");
-                break;
-            case "coors":
-                Utils::dispatch("coors");
-                break;
-            case "contract_types":
-                Utils::dispatch("contract_types");
-                break;
-            case "info1":
-                Utils::dispatch("info1");
-                break;
-            case "info2":
-                Utils::dispatch("info2");
-                break;
-            case "info3":
-                Utils::dispatch("info3");
-                break;
-            case "info5":
-                Utils::dispatch("info5");
-                break;
-            case "plans":
-                Utils::dispatch("plans");
-                break;
-            case "pros":
-                Utils::dispatch("pros");
-                break;
-            default:
-                Utils::dispatch();
-                break;
-        }
-
+        Utils::dispatch("all");
     }
 }
