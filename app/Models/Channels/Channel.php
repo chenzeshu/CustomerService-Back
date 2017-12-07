@@ -12,9 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 class Channel extends Model
 {
+
+
     protected $guarded = [
 
     ];
+
+    /** 事件 **/
+    protected $observers;
+
 
     /** 辅助函数们 */
     /**
@@ -22,16 +28,44 @@ class Channel extends Model
      * @return array
      */
     static function get_cache(){
-        $service_sources = Cache::get('service_sources');
-//        $pinlvs = Channel_info4::all()->toArray();
-        $tongxins = Cache::get('tongxins');
-        $jihuas = Cache::get('jihuas');
-        $plans = Cache::get('plans');
-        $zhantypes = Cache::get('zhantypes');
-
-        return [$service_sources, $tongxins, $jihuas, $plans, $zhantypes];
+        $cache = Cache::many(['service_sources', 'tongxins', 'jihuas', 'plans', 'zhantypes']);
+        return $cache;
     }
 
+    /***** 缓存时代 *****/
+    static function redis_refresh_data(){
+        Cache::forget('channels');
+        $channels = Channel::where('status', "!=", '待审核')
+            ->with([
+                'contractc',
+                'channel_applys'=>function($query){
+                        $query->with([
+                            "channel_relations"=>function($re){
+                                $re->with(["company", "device"]);
+                            },
+                            "channel_operative"=>function($op){
+                                $op->with([ "tongxin","jihua","pinlv","plan"]);
+                            },
+                            "channel_real"=>function($real){
+                                $real->with(["tongxin","jihua","pinlv","checker"]);
+                            },
+                        ]);
+                    }
+            ])
+            ->get()
+            ->map(function ($item){
+                //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
+                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
+                $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = {$item->source}");
+                return $item;
+            })
+            ->toArray();
+          Cache::put('channels', $channels, 86400);
+    }
+
+    static function forget_cache(){
+        Cache::forget('channels');
+    }
     /**
      *  分页基本筛选
      */

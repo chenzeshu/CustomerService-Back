@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Back\Channels;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Jobs\Cache\RefreshChannels;
 use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_apply;
 use App\Models\Channels\Channel_operative;
@@ -44,6 +45,7 @@ class ApplyController extends ApiController
             'status'=>'运营调配'
         ]);
         if($re1 && $re2){
+            RefreshChannels::dispatch();
             return $this->res(2003, '审核通过');
         }
     }

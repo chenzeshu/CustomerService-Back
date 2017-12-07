@@ -3,34 +3,14 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\LoginExp\WrongInputExp;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Company\CompanyCollection;
-use App\Models\Channels\Channel_info2;
-use App\Models\Channels\Channel_real;
-use App\Models\Channels\Channel_relation;
-use App\Models\Company;
-use App\Models\Contract;
-use App\Models\Doc;
-use App\Models\Services\Service;
-use App\Models\Utils\Device;
-use App\Models\Utils\Profession;
-use App\Models\Channels\Channel_info3;
-use App\Models\Channels\Channel_info4;
-use App\Models\Channels\Channel_info5;
-use App\Models\Channels\Channel;
 use App\Models\Utils\Plan;
-use App\Models\Utils\Service_source;
 use App\Services\Sms;
 use App\User;
-use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Middleware\BaseMiddleware;
 
 class LoginController extends ApiController
 {
@@ -47,7 +27,10 @@ class LoginController extends ApiController
 
     public function test()
     {
-        Cache::forget('contractcs');
+        //一千万条以内不会造成性能损失, sql是500万条
+        $a = Cache::get('contract_types');
+        echo "\n";
+        var_dump($a);
     }
 
     public function test2()

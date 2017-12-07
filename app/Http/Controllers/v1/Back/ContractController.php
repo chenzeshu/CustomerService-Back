@@ -50,15 +50,13 @@ class ContractController extends Controller
             $cons = Cache::get('contracts');
         }
         list($cons,$total) = $this->repo->pageFilter($cons, $finish, $page, $pageSize);
-        list($coors, $types) = Contract::get_cache();
+        $cache = Contract::get_cache();
 
         $data = [
             'data' => $cons,
             'total' => $total,
-            'coors' => $coors,
-            'types' => $types,
         ];
-
+        $data = array_merge($data, $cache);
         return $this->res(200, '普合信息', $data);
     }
 
@@ -82,8 +80,8 @@ class ContractController extends Controller
         $data = Contract::create($request->except('company'));
         //todo 再造一个空money记录
         $data->ServiceMoney()->create([]);
-        //todo 队列任务: 刷新缓存
-        RefreshContracts::dispatch();
+        //todo 使缓存失效
+        Contract::forget_cache();
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
 
@@ -116,9 +114,9 @@ class ContractController extends Controller
         }
 
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
-        $re = Contract::find($id)->update($request->except(['company','service_money']));
+        $re = Contract::findOrFail($id)->update($request->except(['company','service_money']));
         //todo 队列任务: 刷新缓存
-        RefreshContracts::dispatch();
+        Contract::forget_cache();
         return $re ? $this->res(2003, "修改合同成功") : $this->res(-2003, "修改合同失败");
     }
 
@@ -137,7 +135,7 @@ class ContractController extends Controller
                 'service_money_details',
                 'left'
             ]));
-
+        Contract::forget_cache();
         return $this->res(2006, '成功');
     }
 
@@ -151,7 +149,7 @@ class ContractController extends Controller
             ->first()
             ->ServiceMoneyDetails()
             ->create($request->all());
-
+        Contract::forget_cache();
         return $this->res(2006, '成功');
     }
 
@@ -161,7 +159,7 @@ class ContractController extends Controller
     public function delMoneyDetail($money_detail_id)
     {
         ServiceMoneyDetail::destroy($money_detail_id);
-
+        Contract::forget_cache();
         return $this->res(2006, '成功');
     }
 
@@ -176,6 +174,7 @@ class ContractController extends Controller
         $con = Contract::findOrFail($id);
         $this->deleteFilesForDestroy($con->document);
         $re = $con->delete();
+        Contract::forget_cache();
         if($re){
             return $this->res(2004, "删除合同成功");
         } else {

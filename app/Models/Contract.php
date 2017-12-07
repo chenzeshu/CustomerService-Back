@@ -23,9 +23,8 @@ class Contract extends Model
      * $types 合同类型
      */
     static function get_cache(){
-        $coors = Cache::get('coors');
-        $types = Cache::get('contract_types');
-        return [$coors, $types];
+        $cache = Cache::many(['coors','contract_types']);
+        return $cache;
     }
 
     /***** la-sql *****/
@@ -59,7 +58,7 @@ class Contract extends Model
     //todo 拿到全部缓存  -- 相当于refresh  --但是实际在update下应该做成job
     static function redis_refresh_data(){
         Cache::forget('contracts');
-        $data =  Contract::orderBy('id', 'desc')
+        $data = Contract::orderBy('id', 'desc')
             ->with([
                 'company',
                 'ServiceMoney'=>function($query){
@@ -81,12 +80,14 @@ class Contract extends Model
         Cache::put('contracts', $data, 86400);  //每天无外力下自行更新一次
     }
 
-    //todo 拿到总页码 不用这样, 直接count($cons)即可
-    static function redis_get_total(){
-
+    /**
+     * 使缓存失效
+     */
+    static function forget_cache(){
+        Cache::forget('contracts');
     }
 
-    /***** 不使用缓存时代的分页获取方法********/
+    /***** 不使用缓存的分页获取方法********/
 
     /**
      *  分页数据

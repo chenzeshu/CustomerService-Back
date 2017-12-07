@@ -21,7 +21,7 @@ class ChannelStoreRequest extends FormRequest
         return [
             'contractc_id' => 'required',
             'channel_id' => 'required',
-            "customer_id" => 'required',
+            "employee_id" => 'required',
         ];
     }
 

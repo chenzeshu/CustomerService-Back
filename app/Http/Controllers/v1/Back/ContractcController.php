@@ -38,18 +38,6 @@ class ContractcController extends ApiController
         return $this->res(200, '信道合同', $data);
     }
 
-//    public function page($page, $pageSize, $finish="", $other="")
-//    {
-//        $begin = ( $page -1 ) * $pageSize;
-//        $cons = Contractc::get_pagination($finish, $begin, $pageSize);
-//        $total = Contractc::get_total($finish);
-//        $data = [
-//            'data' => $cons,
-//            'total' => $total,
-//        ];
-//        return $this->res(200, '信道合同', $data);
-//    }
-
     public function store(ContractcRequest $request)
     {
         //todo  文件上传
@@ -58,7 +46,7 @@ class ContractcController extends ApiController
             $request['document'] = $ids;
             unset($request['fileList']);
         }
-        RefreshContractcs::dispatch();
+        Contractc::forget_cache();
         $data = Contractc::create($request->except('company'));
         return $this->res(2002, '新建信道合同成功', $data);
     }
@@ -72,7 +60,7 @@ class ContractcController extends ApiController
             $request['document'] = $this->getFinalIds($request, $doc_id);
             unset($request['fileList']);
         }
-        RefreshContractcs::dispatch();  //todo 更新缓存
+        Contractc::forget_cache();  //todo 失效缓存
         $re = Contractc::findOrFail($id)->update($request->except(['company', 'channel_money']));
         return $this->res(2003, '更新信道合同成功', $re);
     }
@@ -92,7 +80,7 @@ class ContractcController extends ApiController
                 'service_money_details',
                 'left'
             ]));
-        RefreshContractcs::dispatch();
+        Contractc::forget_cache();
         return $this->res(2006, '成功');
     }
 
@@ -106,7 +94,7 @@ class ContractcController extends ApiController
             ->first()
             ->ChannelMoneyDetails()
             ->create($request->all());
-        RefreshContractcs::dispatch();
+        Contractc::forget_cache();
         return $this->res(2006, '成功');
     }
 
@@ -116,14 +104,14 @@ class ContractcController extends ApiController
     public function delMoneyDetail($money_detail_id)
     {
         ChannelMoneyDetail::destroy($money_detail_id);
-        RefreshContractcs::dispatch();
+        Contractc::forget_cache();
         return $this->res(2006, '成功');
     }
 
     public function destroy($id)
     {
         $re = Contractc::findOrFail($id)->delete();
-        RefreshContractcs::dispatch();
+        Contractc::forget_cache();
         return $this->res(2004, '删除成功', $re);
     }
 

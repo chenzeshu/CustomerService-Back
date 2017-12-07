@@ -2,53 +2,37 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Http\Repositories\ChannelRepo;
 use App\Http\Requests\channel\ChannelStoreRequest;
 use App\Models\Channels\Channel;
-use App\Models\Channels\Channel_info2;
-use App\Models\Channels\Channel_info3;
-use App\Models\Channels\Channel_info4;
-use App\Models\Channels\Channel_info5;
-use App\Models\Utils\Plan;
-use App\Models\Utils\Service_source;
-use Chenzeshu\ChenUtils\Traits\ReturnTrait;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class ChannelController extends ApiController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    protected $repo ;
+    function __construct(ChannelRepo $repo)
     {
-        return $this->res(200, 'channels');
+        $this->repo = $repo;
     }
-
-
     /**
      * @param $page
      * $other 为配合前端预留的参数, 目前channelController用不上
      */
+    //todo 缓存分页
     public function page($page, $pageSize, $status = "", $other = "")
     {
-        $begin = ( $page -1 ) * $pageSize;
-        $cons = Channel::get_pagination($status, $begin, $pageSize);
-        $total = Channel::get_total($status);
-        list($service_sources, $tongxins, $jihuas, $plans, $zhantypes) = Channel::get_cache();
-
+        $channels = Cache::get('channels');
+        if(empty($channels)){
+            Channel::redis_refresh_data();
+            $channels = Cache::get('channels');
+        }
+        list($channels, $total) = $this->repo->pageFilter($channels, $status, $page, $pageSize);
+        $cache = Channel::get_cache();
         $data = [
-            'data' => $cons,
+            'data' => $channels,
             'total' => $total,
-            'sources' => $service_sources,
-            'jihuas' => $jihuas,
-            'tongxins' => $tongxins,
-            'plans' => $plans,
-            'zhantypes'=>$zhantypes,
         ];
+        $data = array_merge($data, $cache);
         return $this->res(200, '信道服务单', $data);
     }
 
@@ -62,7 +46,8 @@ class ChannelController extends ApiController
     {
         $data = Channel::create($request->except(['customer','source_info']));
 
-        //fixme
+        //todo 失效缓存
+        Channel::forget_cache();
         //触发新建申请单记录event + 填充关联单位 + 设备
 
         return $this->res(2002, "新建信道服务单成功", ['data'=>$data]);
@@ -91,7 +76,10 @@ class ChannelController extends ApiController
     {
         //fixme 不支持修改信号服务单号, 所以前端只有灰色, 没有修改可能
         $re = Channel::find($id)->update($request->except(['customer','source_info', 'contractc', 'channel_applys']));
+
         if($re){
+            //todo 失效缓存
+            Channel::forget_cache();
             return $this->res(2003, "修改服务单成功");
         } else {
             return $this->res(500, "修改服务单失败");
@@ -111,6 +99,8 @@ class ChannelController extends ApiController
     {
         $re = Channel::find($id)->delete();
         if($re){
+            //todo 失效缓存
+            Channel::forget_cache();
             return $this->res(2004, "删除服务单成功");
         } else {
             return $this->res(500, "删除服务单失败");

@@ -47,6 +47,10 @@ class Contractc extends Model
         Cache::put('contractcs', $data, 86400);  //每天无外力下自行更新一次
     }
 
+    static function forget_cache(){
+        Cache::forget('contractcs');
+    }
+
     /***** la-sql *****/
     /**
      * @param String $finish 合同款项是否结清
