@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\LoginExp\WrongInputExp;
+use App\Models\Channels\Channel_relation;
 use App\Models\Utils\Plan;
 use App\Services\Sms;
 use App\User;
@@ -27,9 +28,10 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $user = User::first();
-        $token = JWTAuth::fromUser($user);
-        return $token;
+//        $user = User::first();
+//        $token = JWTAuth::fromUser($user);
+//        return $token;
+
     }
 
     public function test2(Request $request)

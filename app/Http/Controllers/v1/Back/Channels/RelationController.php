@@ -33,10 +33,11 @@ class RelationController extends ApiController
         $re = Channel_relation::where('channel_apply_id', $request->channel_apply_id)
             ->where('device_id', $request->device_id)
             ->delete();
-        if($re){
+        //$re为删除的数目, 但是此处即使不为0 , 也不能进入if
+//        if($re){
             //todo 刷新cache
             Channel::forget_cache();
             return $this->res(2005,'删除节点成功');
-        }
+//        }
     }
 }
