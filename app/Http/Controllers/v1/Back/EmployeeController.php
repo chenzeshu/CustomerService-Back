@@ -205,8 +205,9 @@ class EmployeeController extends ApiController
      */
     public function searchDevices($company_id)
     {
-        $devices = Company::findOrFail($company_id)->devices()->get();
-        $total = Company::findOrFail($company_id)->devices()->count();
+        $models = Company::findOrFail($company_id)->devices()->where('status',"!=", "损坏");
+        $devices = $models->get();
+        $total = $models->count();
 
         $data = [
             'data' => $devices,

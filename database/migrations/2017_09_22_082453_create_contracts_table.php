@@ -17,6 +17,7 @@ class CreateContractsTable extends Migration
             $table->increments('id');
             $table->integer('company_id');
             $table->string('name'); //合同名称
+            $table->decimal('money', 10, 2)->nullable();
             $table->string('contract_id');
             $table->string('type1');
             $table->enum('type2', ['销售', '客服', '临时'])->default('销售');
@@ -35,7 +36,6 @@ class CreateContractsTable extends Migration
         Schema::create('service_moneys', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('contract_id');  //orm
-            $table->decimal('money', 10, 2)->nullable();
             $table->enum('type', ['分次付款', '不分次'])->default('不分次');
             $table->enum('finish', ['未结清', '结清'])->default('未结清');
             $table->timestamp('t1')->nullable();  //约定总收款时间

@@ -50,6 +50,7 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
     return [
         "contract_id" => 'F'.date('Ymd', time()).rand(0,1000),
         'name'=>$faker->name,
+        "money" => $faker->randomFloat(2,500000, 10000000),
         "type1"=>rand(1,3),
         "type2"=>$faker->randomElement($type2),
         "PM"=>rand(1,100).','.rand(1,100),
@@ -66,7 +67,6 @@ $factory->define(\App\Models\Money\ServiceMoney::class, function (Faker $faker){
     $type = ['不分次', '分次付款'];
     $finish = ['未结清', '结清'];
     return [
-        "money" => $faker->randomFloat(2,500000, 10000000),
         "type" =>  $faker->randomElement($type),
         "finish" =>  $faker->randomElement($finish),
         "num" => rand(1, 4),
@@ -101,7 +101,6 @@ $factory->define(\App\Models\Money\ChannelMoney::class, function (Faker $faker){
     $type = ['不分次', '分次付款'];
     $finish = ['未结清', '结清'];
     return [
-        "money" => $faker->randomFloat(2,500000, 1000000),
         "type" =>  $faker->randomElement($type),
         "finish" =>  $faker->randomElement($finish),
         "num" => rand(1, 4),

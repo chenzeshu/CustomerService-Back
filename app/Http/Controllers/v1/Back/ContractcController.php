@@ -74,10 +74,10 @@ class ContractcController extends ApiController
         Contractc::findOrFail($contractc_id)
             ->ChannelMoney()
             ->update($request->except([
+                'channel_money_details',
                 'checker',
                 'contract_id',
                 'reach',
-                'service_money_details',
                 'left'
             ]));
         Contractc::forget_cache();

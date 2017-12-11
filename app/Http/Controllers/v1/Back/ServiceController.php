@@ -44,7 +44,7 @@ class ServiceController extends ApiController
     public function verify()
     {
         $emp = Service::where('status','=','待审核')
-            ->with(['customer', 'contract', 'source', 'type'])
+            ->with(['customer', 'contract', 'source', 'type', 'refer_man.company'])
             ->get()
             ->each(function ($ser){
                 $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");

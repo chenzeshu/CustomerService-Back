@@ -24,8 +24,8 @@ class CreateDevicesTable extends Migration
             $table->string('sn')->nullable();
             $table->integer('profession_id');
             $table->enum('status', ['停用','重要','一般','自用', '损坏', '专项处理'])->default('一般');
-            $table->string('aerial');
-            $table->string('pa');
+            $table->string('aerial');  //天线 可能是1米, 0.9米, 碳纤维等
+            $table->string('pa');  //要不要改成int??
             $table->string('lnb');  //lnb型号
             $table->timestamp('built_at');
             $table->text('remark')->nullable();

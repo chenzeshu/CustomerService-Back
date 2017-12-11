@@ -27,15 +27,22 @@ class LoginController extends ApiController
 
     public function test()
     {
-        //一千万条以内不会造成性能损失, sql是500万条
-        $a = Cache::get('contract_types');
-        echo "\n";
-        var_dump($a);
+        $user = User::first();
+        $token = JWTAuth::fromUser($user);
+        return $token;
     }
 
-    public function test2()
+    public function test2(Request $request)
     {
-
+        $token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6Ly9jdXMuYXBwL2FwaS92MS90ZXN0IiwiaWF0IjoxNTEyOTc0NTEwLCJleHAiOjE1MTI5NzgxMTAsIm5iZiI6MTUxMjk3NDUxMCwianRpIjoiMmE4QlNPNVZmTUNjQnBqMSJ9.HBXKJ-Hrn4rspySH7FaWwPvlkfOPq_ulpyaJpC8ZXmk";
+        $part = explode(".", $token);
+        $header = $part[0];
+        $payload = $part[1];
+        $signature = $part[2];
+        $_payload = base64_decode($payload);
+        $_payload = json_decode($_payload, true); //返回数组
+        $user_id = $_payload['sub'];
+        return $user_id;
     }
 
     /**

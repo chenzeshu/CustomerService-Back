@@ -32,7 +32,6 @@ class CreateContractCsTable extends Migration
         Schema::create('channel_moneys', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('contractc_id');  //orm
-            $table->decimal('money', 10, 2)->nullable();
             $table->enum('type', ['分次付款', '不分次'])->default('不分次');
             $table->enum('finish', ['未结清', '结清'])->default('未结清');
             $table->timestamp('t1')->nullable();  //约定总收款时间

@@ -91,14 +91,21 @@ class Service extends Model
         return $this->hasManyThrough(Company::class, Contract::class, 'id', 'id', 'contract_id', 'company_id');
     }
 
+    /**
+     * 回访人
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function visits()
     {
         return $this->hasMany(Visit::class);
     }
 
+    /**
+     *  服务单提交人
+     */
     public function refer_man()
     {
-        return $this->hasMany(Employee::class, 'id','refer_man')->select(['id', 'name', 'phone']);
+        return $this->hasMany(Employee::class, 'id','refer_man')->select(['id', 'name', 'phone','company_id']);
     }
 
     /**

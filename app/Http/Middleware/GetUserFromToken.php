@@ -45,8 +45,22 @@ class GetUserFromToken extends BaseMiddleware
         }
 
         $this->events->fire('tymon.jwt.valid', $user);
+        //提取ip与登陆时间
         $loginInfo = User::findOrFail($user['id'])->loginLogs()->orderBy('created_at', 'desc')->offset(1)->first();
         Cache::put('loginInfo', $loginInfo, 3600);
+        //todo 开辟/唤醒 user缓存空间
+//        $token ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImlzcyI6Imh0dHA6Ly9jdXMuYXBwL2FwaS92MS90ZXN0IiwiaWF0IjoxNTEyOTc0NTEwLCJleHAiOjE1MTI5NzgxMTAsIm5iZiI6MTUxMjk3NDUxMCwianRpIjoiMmE4QlNPNVZmTUNjQnBqMSJ9.HBXKJ-Hrn4rspySH7FaWwPvlkfOPq_ulpyaJpC8ZXmk";
+//        $part = explode(".", $token);
+//        $header = $part[0];
+//        $payload = $part[1];
+//        $signature = $part[2];
+//        $_payload = base64_decode($payload);
+//        $_payload = json_decode($_payload, true); //返回数组
+//        $user_id = $_payload['sub'];
+//          $userInfo = [];
+//        Cache::put('user.'.$user_id, $userInfo, 3600)
+
+
         return $next($request);
     }
 }

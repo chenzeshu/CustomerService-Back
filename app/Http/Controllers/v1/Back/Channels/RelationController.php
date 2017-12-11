@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Back\Channels;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_relation;
 use Illuminate\Http\Request;
 
@@ -21,6 +22,8 @@ class RelationController extends ApiController
         }
         $re = Channel_relation::create($request->all());
         if($re){
+            //todo 刷新cache
+            Channel::forget_cache();
             return $this->res(2003,'增加节点成功');
         }
     }
@@ -31,6 +34,8 @@ class RelationController extends ApiController
             ->where('device_id', $request->device_id)
             ->delete();
         if($re){
+            //todo 刷新cache
+            Channel::forget_cache();
             return $this->res(2005,'删除节点成功');
         }
     }
