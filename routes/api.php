@@ -259,5 +259,15 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/basic', 'CalculateController@basic');
             Route::get('/userInfo', 'CalculateController@userInfo');
         });
+
+        //todo 信道值班表
+        Route::group(['prefix'=>'channelduty', 'namespace'=>'Channels'], function (){
+            Route::get('/page/{page}/{pageSize}', 'DutyController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','DutyController@search');  //todo 模糊搜索名字
+//            Route::get('/s/{searchDate}/searchDate/{page}/{pageSize}','DutyController@searchDate');  //todo 搜索日期
+            Route::post('/update/{id}', 'DutyController@update');
+            Route::get('/delete/{id}','DutyController@destroy');
+            Route::resource('/','DutyController');
+        });
     });
 });

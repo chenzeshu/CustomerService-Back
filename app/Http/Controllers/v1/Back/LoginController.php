@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\LoginExp\WrongInputExp;
+use App\Models\Channels\Channel_duty;
 use App\Models\Channels\Channel_relation;
+use App\Models\Employee;
 use App\Models\Utils\Plan;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -28,10 +31,21 @@ class LoginController extends ApiController
 
     public function test()
     {
-//        $user = User::first();
-//        $token = JWTAuth::fromUser($user);
-//        return $token;
+        $page = 1;
+        $pageSize = 10;
+        $name = "k";
+        $begin = ( $page -1 ) * $pageSize;
+        $model = Channel_duty::offset($begin)
+            ->limit($pageSize)
+            ->orderBy('id', 'desc')
+            ->get()
+            ->each(function ($item){
+                $item->checker = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id = {$item->employee_id} limit 1");
+//                $item->checker = $item->checker[0];
+            })
+            ->toArray();
 
+return $model;
     }
 
     public function test2(Request $request)

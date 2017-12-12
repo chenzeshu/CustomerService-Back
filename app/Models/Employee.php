@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Channels\Channel;
+use App\Models\Channels\Channel_duty;
 use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
