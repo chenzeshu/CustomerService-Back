@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\Utils\Profession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Faker\Generator as Faker;
 
 class CompanyController extends ApiController
 {
@@ -51,9 +52,21 @@ class CompanyController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CompanyStoreRequest $request)
+    public function store(CompanyStoreRequest $request, Faker $faker)
     {
         $data = Company::create($request->all());
+        //todo 同时创建一个临时合同
+        $temp = [
+            "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
+            "money" => $faker->randomFloat(2,2000000, 6000000),
+            "PM"=>rand(1,100),
+            'name'=>"临时合同",
+            "time" => $faker->date('Y-m-d H:i:s'),
+            "beginline" =>$faker->date('Y-m-d H:i:s'),
+            "deadline" =>$faker->date('Y-m-d H:i:s'),
+        ];
+        $data->contract_cs()->create($temp);
+
         return $this->res('2002', '添加成功', $data);
     }
 

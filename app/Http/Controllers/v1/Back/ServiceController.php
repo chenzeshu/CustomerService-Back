@@ -59,6 +59,32 @@ class ServiceController extends ApiController
     }
 
     /**
+     * 筛选出待审核的临时合同的服务单 --- 钱正宇
+     */
+    public function verifyTemp()
+    {
+        $model = Service::where('status','=','待审核')
+            ->with(['customer', 'contract'=>function($query){
+                return $query->where('name', '临时合同');
+            }, 'source', 'type', 'refer_man.company'])
+            ->get()
+            ->reject(function ($item){
+                return $item->contract == null;
+            });
+        $emp = $model
+            ->each(function ($ser){
+                $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
+            })
+            ->toArray();
+        $total = $model->count();
+        $data = [
+            'data' => $emp,
+            'total' => $total,
+        ];
+        return $this->res(200, '待审核服务申请', $data);
+    }
+
+    /**
      * 通过未审核服务单
      */
     public function pass($id)

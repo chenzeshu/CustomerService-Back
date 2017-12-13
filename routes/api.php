@@ -80,9 +80,10 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','ServiceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ServiceController@update');
             Route::get('/delete/{id}','ServiceController@destroy');
-            Route::get('/verify', 'ServiceController@verify');  //todo 筛选未审核者
-            Route::get('/pass/{id}', 'ServiceController@pass');  //todo 通过未审核者
-            Route::get('/rej/{id}', 'ServiceController@rej');  //todo 拒绝未审核者
+            Route::get('/verify', 'ServiceController@verify');  //todo 筛选未审核服务单
+            Route::get('/temp/verify', 'ServiceController@verifyTemp');  //todo 筛选临时未审核服务单
+            Route::get('/pass/{id}', 'ServiceController@pass');  //todo 通过未审核服务单
+            Route::get('/rej/{id}', 'ServiceController@rej');  //todo 拒绝未审核服务单
             Route::resource('/','ServiceController');
 
             /** 回访 */
@@ -114,13 +115,14 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo 信道申请
         Route::group(['prefix'=>'apply', 'namespace'=>'Channels'], function(){
-            Route::get('/page/{page}/{pageSize}', 'ApplyController@page');
+            Route::get('/page/{page}/{pageSize}', 'ApplyController@page');  //筛选信道单
             Route::post('/update/{id}', 'ApplyController@update');  //修改 + 审核通过
             Route::post('/operative/{id}', 'ApplyController@updateOperative');  //更新运行调配表
             Route::post('/real/{id}', 'ApplyController@updateReal');  //更新实际表
             Route::get('/rej/{id}','ApplyController@rej');  //拒绝
             Route::resource('/', 'ApplyController');
         });
+        Route::get('applyTemp/page/{page}/{pageSize}', 'Channels\ApplyController@pageTemp');  //todo 筛选走临时合同的信道单
         /***************************************************************************************************
         ***************                          工具类                                     ****************
         ***************************************************************************************************/

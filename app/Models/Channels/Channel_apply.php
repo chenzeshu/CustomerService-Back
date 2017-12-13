@@ -26,11 +26,29 @@ class Channel_apply extends Model
     static function get_pagination($begin, $pageSize){
         return static::basic_search()->offset($begin)
             ->limit($pageSize)
-            ->with(['employee.company' ,'contractc',
+            ->with(['employee.company' ,'contractc'=>function($query){
+                return $query->where('name', "!=", '临时合同');
+            },
                 'channel_applys.channel_relations.company',
                 'channel_applys.channel_relations.device',
                 'plans', 'tongxin','jihua', 'daikuan', 'source'])
             ->get()
+            ->toArray();
+    }
+
+    static function get_temp_pagination($begin, $pageSize){
+        return static::basic_search()->offset($begin)
+            ->limit($pageSize)
+            ->with(['employee.company' ,'contractc'=>function($query){
+                return $query->where('name', "=", '临时合同');
+            },
+                'channel_applys.channel_relations.company',
+                'channel_applys.channel_relations.device',
+                'plans', 'tongxin','jihua', 'daikuan', 'source'])
+            ->get()
+            ->reject(function ($item){
+                return $item->contractc == null;
+            })
             ->toArray();
     }
 

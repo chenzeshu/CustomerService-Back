@@ -11,7 +11,7 @@ class companySeed extends Seeder
      */
     public function run()
     {
-        factory(App\Models\Company::class, config('app.seeding.company'))->create()->each(function ($company){
+        factory(App\Models\Company::class, config('app.seeding.company'))->create()->each(function ($company) {
             //todo 每个单位的人员
             factory(App\Models\Employee::class, 2)->make()->each(function ($employee) use ($company){
                 $company->employees()->save($employee);
@@ -44,8 +44,9 @@ class companySeed extends Seeder
                 });
             });
 
-            //todo 制造2个信道合同 + 2个套餐/合同
+            //todo 制造2个信道合同 + 2个套餐/合同 + 1个临时合同
             factory(\App\Models\Contractc::class, config('app.seeding.contract_c'))->make()->each(function ($contract_c) use ($company){
+
                 $company->contract_cs()->save($contract_c);
 
                 //回款
@@ -81,8 +82,16 @@ class companySeed extends Seeder
                     //套餐/合同
                     $contract_c->channel_plans()->save($plan);
                 });
-            });
 
+                if(!$company->contract_cs()->where('name','临时合同')->first()){
+                    //todo 每个单位创建1个临时合同
+                    $temp = collect($contract_c)->toArray();
+                    $temp['id'] ++;
+                    $temp['name']="临时合同";
+                    $company->contract_cs()->create($temp);
+                };
+
+            });
         });
     }
 }

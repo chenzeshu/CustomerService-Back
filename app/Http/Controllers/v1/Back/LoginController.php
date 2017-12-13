@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\WrongInputExp;
-use App\Models\Channels\Channel_duty;
-use App\Models\Channels\Channel_relation;
-use App\Models\Employee;
-use App\Models\Utils\Plan;
+use App\Exceptions\TestException;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Mockery\Exception;
+use Symfony\Component\Debug\Exception\FatalErrorException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Whoops\Exception\ErrorException;
 
 class LoginController extends ApiController
 {
@@ -31,21 +30,31 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $page = 1;
-        $pageSize = 10;
-        $name = "k";
-        $begin = ( $page -1 ) * $pageSize;
-        $model = Channel_duty::offset($begin)
-            ->limit($pageSize)
-            ->orderBy('id', 'desc')
-            ->get()
-            ->each(function ($item){
-                $item->checker = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id = {$item->employee_id} limit 1");
-//                $item->checker = $item->checker[0];
-            })
-            ->toArray();
+        $email = "someone@example...com";
 
-return $model;
+        try
+        {
+            //check if
+            if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE)
+            {
+
+                //throw exception if email is not valid
+                throw new TestException();
+//                throw new Exception('msg', 404);
+            }
+        }
+        catch (TestException $e)
+        {
+            //display custom message
+            abort(200,'haha', ['authorization'=>123]);
+//            echo $e->render();
+        }
+        catch (ErrorException  $e){
+            echo $e->getMessage();
+        }
+        catch (Exception $e){
+            return response('haha')->header('status', 404);
+        }
     }
 
     public function test2(Request $request)
@@ -100,6 +109,4 @@ return $model;
         //todo 如果通过了中间件, 自然返回ture
         return $this->res(1000, '登陆成功');
     }
-
-
 }

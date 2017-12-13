@@ -31,6 +31,23 @@ class ApplyController extends ApiController
         return $this->res(200, '待审核', $data);
     }
 
+    public function pageTemp($page, $pageSize)
+    {
+        $begin = ($page - 1) * $pageSize;
+        $applies = Channel_apply::get_temp_pagination($begin, $pageSize);
+        $total = count($applies);
+        list($tongxin, $jihua, $daikuan) = Channel_apply::get_cache();
+        $data = [
+            'data' => $applies,
+            'total' => $total,
+            'tongxin'=>$tongxin,
+            'jihua' => $jihua,
+            'daikuan'=>$daikuan
+        ];
+
+        return $this->res(200, '待审核', $data);
+    }
+
     /**
      * 补完申请并通过审核进入"运营调配"
      * @param Request $request
