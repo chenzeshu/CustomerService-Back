@@ -64,10 +64,10 @@ class Service extends Model
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(本次为配合前端提前做的search组件 -> 下次考虑聚合, 不做层级了)
-                $item->man = $item->man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->man})");
-                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->customer})");
-                $item->refer_man = $item->refer_man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->refer_man})");
-                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
+                $item->man = $item->man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ('{$item->man}')");
+                $item->customer = $item->customer == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ('{$item->customer}')");
+                $item->refer_man = $item->refer_man == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ('{$item->refer_man}')");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ('{$item->document}')");
                 return $item;
             })
             ->toArray();

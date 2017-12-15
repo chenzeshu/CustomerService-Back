@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Http\Repositories\CompanyRepo;
 use App\Http\Requests\company\CompanyStoreRequest;
 use App\Models\Company;
-use App\Models\Utils\Profession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Faker\Generator as Faker;
 
 class CompanyController extends ApiController
 {
@@ -17,6 +16,12 @@ class CompanyController extends ApiController
     protected $begin;   //起始位置
     protected $total; //数组总数, 页数的计算交给前端
     protected $data;  //分页详细内容
+    protected $repo;
+    function __construct(CompanyRepo $repo)
+    {
+        $this->repo = $repo;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -52,21 +57,11 @@ class CompanyController extends ApiController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CompanyStoreRequest $request, Faker $faker)
+    public function store(CompanyStoreRequest $request)
     {
         $data = Company::create($request->all());
         //todo 同时创建一个临时合同
-        $temp = [
-            "contract_id" => 'X'.date('Ymd', time()).rand(0,1000),
-            "money" => $faker->randomFloat(2,2000000, 6000000),
-            "PM"=>rand(1,100),
-            'name'=>"临时合同",
-            "time" => $faker->date('Y-m-d H:i:s'),
-            "beginline" =>$faker->date('Y-m-d H:i:s'),
-            "deadline" =>$faker->date('Y-m-d H:i:s'),
-        ];
-        $data->contract_cs()->create($temp);
-
+        $this->repo->createTempContract($data);
         return $this->res('2002', '添加成功', $data);
     }
 

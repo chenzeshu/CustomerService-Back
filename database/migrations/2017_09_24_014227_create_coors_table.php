@@ -16,7 +16,7 @@ class CreateCoorsTable extends Migration
         Schema::create('coors', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('address')->nullable();
+            $table->string('address', 100)->nullable();
             $table->string('phone',30)->nullable();
             $table->timestamps();
         });

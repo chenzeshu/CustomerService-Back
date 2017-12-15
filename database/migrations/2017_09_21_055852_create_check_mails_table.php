@@ -17,7 +17,7 @@ class CreateCheckMailsTable extends Migration
             $table->increments('id');
             $table->integer('employee_id');
             $table->string('code', 32);   //邮件为32位md5验证码, 作为get参数附在url后
-            $table->integer('status')->default(0); //0:未验证, 1:已验证
+            $table->tinyInteger('status')->default(0); //0:未验证, 1:已验证
             $table->timestamps();
         });
     }

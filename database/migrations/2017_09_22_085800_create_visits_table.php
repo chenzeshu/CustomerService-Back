@@ -21,7 +21,7 @@ class CreateVisitsTable extends Migration
             $table->integer('result_visit')->default(4);
             $table->timestamp('time')->nullable();  //回访时间, 若设置已解决, 但未回访, 本时间为空
             $table->string('visitor',50)->nullable();  //fixme 所以这个visitor 不是让管理员选的, 而是默认填写管理员的id
-            $table->text('remark')->nullable();
+            $table->string('remark', 200)->nullable();  //200子以内
             $table->timestamps();
         });
     }

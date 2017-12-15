@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Channels\Channel;
 use App\Models\Money\ServiceMoney;
 use App\Models\Money\ServiceMoneyDetail;
+use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use App\Models\Utils\Contract_type;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +24,7 @@ class Contract extends Model
      * $types 合同类型
      */
     static function get_cache(){
-        $cache = Cache::many(['coors','contract_types']);
+        $cache = Cache::many(['coors','contract_types', 'contract_plans']);
         return $cache;
     }
 
@@ -67,13 +68,14 @@ class Contract extends Model
                         'checker',
                     ]);
                 },
+                'Contract_plans.planUtil'
             ])
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
-                $item->TM = $item->TM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->TM})");
-                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
+                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ('{$item->PM}')");
+                $item->TM = $item->TM == null ? null : DB::select("select `id`, `name` from employees where id in ('{$item->TM}')");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ('{$item->document}')");
                 return $item;
             })
             ->toArray();
@@ -144,5 +146,23 @@ class Contract extends Model
         'id',
         'id'
             );
+    }
+
+    /**
+     * 一合同对多套餐, 留着配合多对多补全with方法
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function Contract_plans()
+    {
+        return $this->hasMany(Contract_plan::class);
+    }
+
+    /**
+     * 多对多, 便于利用 laravel内置attach 和 detach
+     * 但由于bug不能使用 with ,只有配合上方的`Contract_plans()`了
+     */
+    public function con_plans()
+    {
+        return $this->belongsToMany(Contract_plan::class, 'contract_plans', 'contract_id', 'plan_id');
     }
 }

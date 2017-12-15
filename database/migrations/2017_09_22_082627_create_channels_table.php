@@ -20,7 +20,7 @@ class CreateChannelsTable extends Migration
             $table->integer('employee_id');
             $table->enum('status',['待审核', '运营调配', '已完成', '拒绝'])->default('待审核');
             $table->enum('type',['内部用星','外部用星'])->default('外部用星');
-            $table->string('source')->nullable();
+            $table->tinyInteger('source')->nullable();  //外键, 来源表的id
             $table->timestamps();
         });
     }

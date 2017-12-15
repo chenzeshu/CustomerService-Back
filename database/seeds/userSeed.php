@@ -17,21 +17,24 @@ class userSeed extends Seeder
                 'email'=>'1193297950@qq.com',
                 'password' => bcrypt('666666'),
                 'phone'=>'18502557106',
-                'status'=>'online'
+                'status'=>'online',
+                'scope' => 16,
             ],
             [
                 'name' => '孙雷',
                 'email'=>'sun@qq.com',
                 'password' => bcrypt('666666'),
                 'phone'=>'15951667068',
-                'status'=>'online'
+                'status'=>'online',
+                'scope' => 8
             ],
             [
                 'name' => '宋小冬',
                 'email'=>'song@qq.com',
                 'password' => bcrypt('666666'),
                 'phone'=>'13611502169',
-                'status'=>'online'
+                'status'=>'online',
+                'scope' => 8
             ]
         ]);
     }

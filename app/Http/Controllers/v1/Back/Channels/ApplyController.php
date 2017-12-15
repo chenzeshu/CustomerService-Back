@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\v1\Back\Channels;
 
+use App\Exceptions\BaseException;
+use App\Exceptions\ScopeExp\ScopeExp;
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Helpers\JWTHelper;
+use App\Http\Helpers\Scope;
 use App\Jobs\Cache\RefreshChannels;
 use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_apply;
 use App\Models\Channels\Channel_operative;
 use App\Models\Channels\Channel_real;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 //信道申请表
 class ApplyController extends ApiController
@@ -31,21 +34,38 @@ class ApplyController extends ApiController
         return $this->res(200, '待审核', $data);
     }
 
-    public function pageTemp($page, $pageSize)
+    /**
+     * 筛选临时信道合同的服务单, 要求检查权限 >=16
+     */
+    public function pageTemp($page, $pageSize, Request $request)
     {
-        $begin = ($page - 1) * $pageSize;
-        $applies = Channel_apply::get_temp_pagination($begin, $pageSize);
-        $total = count($applies);
-        list($tongxin, $jihua, $daikuan) = Channel_apply::get_cache();
-        $data = [
-            'data' => $applies,
-            'total' => $total,
-            'tongxin'=>$tongxin,
-            'jihua' => $jihua,
-            'daikuan'=>$daikuan
-        ];
+        try{
+            $user_scope = JWTHelper::getUserScope($request);
+            if( $user_scope < Scope::TEMP_CONTRACT_SERVICE_MANAGER ){
+                throw new ScopeExp();
+            }
+            $begin = ($page - 1) * $pageSize;
+            $applies = Channel_apply::get_temp_pagination($begin, $pageSize);
+            $total = count($applies);
+            list($tongxin, $jihua, $daikuan) = Channel_apply::get_cache();
+            $data = [
+                'data' => $applies,
+                'total' => $total,
+                'tongxin'=>$tongxin,
+                'jihua' => $jihua,
+                'daikuan'=>$daikuan
+            ];
+            return $this->res(200, '待审核', $data);
 
-        return $this->res(200, '待审核', $data);
+        }catch (BaseException $e){
+            $data = [
+                'code' => $e->code,  //-4001
+                'message' => $e->msg
+            ];
+            return $this->res(401, $e->msg, $data);
+        }
+
+
     }
 
     /**

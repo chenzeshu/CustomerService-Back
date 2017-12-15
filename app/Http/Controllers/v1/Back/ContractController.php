@@ -9,9 +9,11 @@ use App\Http\Traits\UploadTrait;
 use App\Jobs\Cache\RefreshContracts;
 use App\Models\Contract;
 use App\Models\Money\ServiceMoneyDetail;
+use App\Models\Services\Contract_plan;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ContractController extends Controller
 {
@@ -45,6 +47,7 @@ class ContractController extends Controller
     public function page($page, $pageSize, $finish="", $other="")
     {
         $cons = Cache::get('contracts');
+
         if( empty($cons) ){
             Contract::redis_refresh_data();
             $cons = Cache::get('contracts');
@@ -114,7 +117,7 @@ class ContractController extends Controller
         }
 
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
-        $re = Contract::findOrFail($id)->update($request->except(['company','service_money']));
+        $re = Contract::findOrFail($id)->update($request->except(['company','service_money','contract_plans', 'documents']));
         //todo 队列任务: 刷新缓存
         Contract::forget_cache();
         return $re ? $this->res(2003, "修改合同成功") : $this->res(-2003, "修改合同失败");
@@ -164,7 +167,7 @@ class ContractController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 删除合同
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -172,8 +175,14 @@ class ContractController extends Controller
     public function destroy($id)
     {
         $con = Contract::findOrFail($id);
-        $this->deleteFilesForDestroy($con->document);
-        $re = $con->delete();
+        $this->deleteFilesForDestroy($con->document);  //删除文件及mysql记录
+//        $con->con_plans()->detach();    //删除本合同的所有套餐记录
+        //todo 删除本合同的(1)回款表总览信息, (2)回款细节, (3)关联套餐信息
+        $re = DB::delete("DELETE c, s1, s2, c3 FROM contracts as c
+          INNER JOIN service_moneys as s1 ON s1.contract_id = c.id
+          INNER JOIN service_money_details as s2 ON s1.id = s2.service_money_id
+          INNER JOIN contract_plans as c3 ON c.id = c3.contract_id
+          WHERE c.id = '$id'");  //要加引号, 否则不会使用索引
         Contract::forget_cache();
         if($re){
             return $this->res(2004, "删除合同成功");
@@ -205,5 +214,19 @@ class ContractController extends Controller
         return $this->res(200, '搜索结果', $data);
     }
 
+    //todo 为合同新增一个套餐
+    public function addPlan($contract_id, Request $request)
+    {
+        Contract::findOrFail($contract_id)->Contract_plans()->create($request->all());
+        Contract::forget_cache();
+        return $this->res(2004, '新增成功');
+    }
 
+    //todo 删除合同的一个套餐
+    public function deletePlan($id)
+    {
+        Contract_plan::destroy($id);
+        Contract::forget_cache();
+        return $this->res(2006, '删除成功');
+    }
 }

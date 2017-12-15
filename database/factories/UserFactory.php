@@ -44,7 +44,7 @@ $factory->define(\App\Models\Employee::class, function (Faker $faker) {
         'status' => $faker->randomElement($arr)
     ];
 });
-
+//服务合同
 $factory->define(\App\Models\Contract::class, function (Faker $faker){
     $type2 = ['销售', '客服', '临时'];
     return [
@@ -61,7 +61,15 @@ $factory->define(\App\Models\Contract::class, function (Faker $faker){
         "document" => rand(1,100).','.rand(1,100),
     ];
 });
-
+//服务合同挂钩套餐
+$factory->define(\App\Models\Services\Contract_plan::class, function (Faker $faker){
+   return [
+       'plan_id' => rand(1,10),
+       'total' => rand(5, 10),  //总次数
+       'use' => rand(1,5), //使用次数
+       'desc'=>$faker->text(30),
+   ];
+});
 //服务合同到款一览
 $factory->define(\App\Models\Money\ServiceMoney::class, function (Faker $faker){
     $type = ['不分次', '分次付款'];
@@ -135,6 +143,7 @@ $factory->define(\App\Models\Channels\Channel_detail::class, function (Faker $fa
     ];
 });
 
+//服务单
 $factory->define(\App\Models\Services\Service::class, function (Faker $faker){
     $status = ['待审核','拒绝', '待派单', '已派单', '已完成', '申请完成', '申述中'];
     $charge = ['收费', "不收费"];
@@ -259,3 +268,16 @@ $factory->define(\App\Models\Doc::class, function (Faker $faker){
    ];
 });
 
+
+/*******************************测试*********************/
+$factory->define(\App\Models\Test\People::class, function (Faker $faker){
+    return [
+        "name" => $faker->name,
+    ];
+});
+
+$factory->define(\App\Models\Test\Role::class, function (Faker $faker){
+    return [
+        "name" => $faker->name,
+    ];
+});

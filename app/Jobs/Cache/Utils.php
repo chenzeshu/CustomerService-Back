@@ -6,6 +6,7 @@ use App\Models\Channels\Channel_info1;
 use App\Models\Channels\Channel_info3;
 use App\Models\Channels\Channel_info5;
 use App\Models\Channels\Channel_info2;
+use App\Models\Services\Contract_planutil;
 use App\Models\Utils\Contract_type;
 use App\Models\Utils\Coor;
 use App\Models\Utils\Plan;
@@ -74,6 +75,9 @@ class Utils implements ShouldQueue
             case "pros":
                 $this->pros();
                 break;
+            case "contract_plans":
+                //普通合同套餐
+                $this->contract_plans();
             default:
                 //前期因为合作商都没有超过10个, 所以做成全部检索+select, 后期如果超过50个, 做成search组件
                 $this->service_types();
@@ -86,6 +90,7 @@ class Utils implements ShouldQueue
                 $this->info5();
                 $this->plans();
                 $this->pros();
+                $this->contract_plans();
                 break;
         }
         $this->job->delete();
@@ -139,5 +144,10 @@ class Utils implements ShouldQueue
     private function pros(){
         $pros = Profession::all()->toArray();   //行业表
         Cache::put('pros', $pros , $this->expiresAt);
+    }
+
+    private function contract_plans(){
+        $contract_plans = Contract_planutil::all()->toArray();
+        Cache::put('contract_plans', $contract_plans , $this->expiresAt);
     }
 }

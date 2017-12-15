@@ -71,6 +71,8 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/updateMoney/{contract_id}', 'ContractController@updateMoney');  //回款详情更新/创建
             Route::post('/createMoneyDetail/{contract_id}', 'ContractController@createMoneyDetail');  //历次回款记录--创建
             Route::get('/delMoneyDetail/{money_detail_id}', 'ContractController@delMoneyDetail');       //历次回款记录--删除
+            Route::post('/addPlan/{contract_id}', 'ContractController@addPlan');       //todo 新增套餐
+            Route::get('/deletePlan/{id}', 'ContractController@deletePlan');       //todo 删除套餐
             Route::resource('/','ContractController');
         });
 
@@ -270,6 +272,15 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/update/{id}', 'DutyController@update');
             Route::get('/delete/{id}','DutyController@destroy');
             Route::resource('/','DutyController');
+        });
+
+        //todo 普通服务套餐列表
+        Route::group(['prefix'=>'contract_plans', 'namespace'=>'Contracts'], function (){
+            Route::get('/page/{page}/{pageSize}', 'ContractPlanController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','ContractPlanController@search');  //todo 模糊搜索
+            Route::post('/update/{id}', 'ContractPlanController@update');
+            Route::get('/delete/{id}','ContractPlanController@destroy');
+            Route::resource('/','ContractPlanController');
         });
     });
 });

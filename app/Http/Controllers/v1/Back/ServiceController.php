@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Exceptions\BaseException;
+use App\Exceptions\ScopeExp\ScopeExp;
+use App\Http\Helpers\JWTHelper;
+use App\Http\Helpers\Scope;
 use App\Http\Requests\Service\ServiceStoreRequest;
 use App\Http\Traits\UploadTrait;
 use App\Models\Services\Service;
@@ -61,27 +65,39 @@ class ServiceController extends ApiController
     /**
      * 筛选出待审核的临时合同的服务单 --- 钱正宇
      */
-    public function verifyTemp()
+    public function verifyTemp(Request $request)
     {
-        $model = Service::where('status','=','待审核')
-            ->with(['customer', 'contract'=>function($query){
-                return $query->where('name', '临时合同');
-            }, 'source', 'type', 'refer_man.company'])
-            ->get()
-            ->reject(function ($item){
-                return $item->contract == null;
-            });
-        $emp = $model
-            ->each(function ($ser){
-                $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
-            })
-            ->toArray();
-        $total = $model->count();
-        $data = [
-            'data' => $emp,
-            'total' => $total,
-        ];
-        return $this->res(200, '待审核服务申请', $data);
+        try{
+            $user_scope = JWTHelper::getUserScope($request);
+            if( $user_scope < Scope::TEMP_CONTRACT_SERVICE_MANAGER ){
+                throw new ScopeExp();
+            }
+            $model = Service::where('status','=','待审核')
+                ->with(['customer', 'contract'=>function($query){
+                    return $query->where('name', '临时合同');
+                }, 'source', 'type', 'refer_man.company'])
+                ->get()
+                ->reject(function ($item){
+                    return $item->contract == null;
+                });
+            $emp = $model
+                ->each(function ($ser){
+                    $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
+                })
+                ->toArray();
+            $total = $model->count();
+            $data = [
+                'data' => $emp,
+                'total' => $total,
+            ];
+            return $this->res(200, '待审核服务申请', $data);
+        }catch (BaseException $e){
+            $data = [
+                'code' => $e->code,  //-4001
+                'message' => $e->msg
+            ];
+            return $this->res(401, $e->msg, $data);
+        }
     }
 
     /**

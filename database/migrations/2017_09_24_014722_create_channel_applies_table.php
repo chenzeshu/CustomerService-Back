@@ -22,7 +22,7 @@ class CreateChannelAppliesTable extends Migration
             $table->integer('id4')->nullable();  //带宽
             $table->timestamp('t1')->nullable();  //开始时间 必填
             $table->timestamp('t2')->nullable();  //结束时间 必填
-            $table->text('remark')->nullable();
+            $table->string('remark', 450)->nullable();  //150个汉字以内
             $table->timestamps();
         });
     }

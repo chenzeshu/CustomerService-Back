@@ -17,7 +17,7 @@ class CreateCheckPhonesTable extends Migration
             $table->increments('id');
             $table->integer('employee_id');
             $table->string('code', 6);   //手机为6验证码
-            $table->integer('status')->default(0); //0:未验证, 1:已验证
+            $table->tinyInteger('status')->default(0); //0:未验证, 1:已验证
             $table->timestamps();
         });
     }

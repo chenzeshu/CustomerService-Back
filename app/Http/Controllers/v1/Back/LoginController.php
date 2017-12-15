@@ -2,22 +2,20 @@
 
 namespace App\Http\Controllers\v1\Back;
 
-use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\WrongInputExp;
-use App\Exceptions\TestException;
+use App\Models\Contract;
+use App\Models\Money\ServiceMoney;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Mockery\Exception;
-use Symfony\Component\Debug\Exception\FatalErrorException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Whoops\Exception\ErrorException;
 
 class LoginController extends ApiController
 {
-    use  TestTrait;
+    use TestTrait;
 
     protected $sms;
     protected $auth;
@@ -30,31 +28,11 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $email = "someone@example...com";
-
-        try
-        {
-            //check if
-            if(filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE)
-            {
-
-                //throw exception if email is not valid
-                throw new TestException();
-//                throw new Exception('msg', 404);
-            }
-        }
-        catch (TestException $e)
-        {
-            //display custom message
-            abort(200,'haha', ['authorization'=>123]);
-//            echo $e->render();
-        }
-        catch (ErrorException  $e){
-            echo $e->getMessage();
-        }
-        catch (Exception $e){
-            return response('haha')->header('status', 404);
-        }
+        $re = DB::delete('DELETE  c , s1, s2 FROM contracts as c
+          INNER JOIN service_moneys as s1 ON s1.contract_id = c.id
+          INNER JOIN service_money_details as s2 ON s1.id = s2.service_money_id
+          WHERE c.id = 5');
+        return $re;
     }
 
     public function test2(Request $request)

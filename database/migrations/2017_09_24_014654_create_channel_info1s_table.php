@@ -15,32 +15,32 @@ class CreateChannelInfo1sTable extends Migration
     {
         Schema::create('channel_info1s', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name', 30);
             $table->timestamps();
         });
         Schema::create('channel_info2s', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name', 30);
             $table->timestamps();
         });
         Schema::create('channel_info3s', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name', 30);
             $table->timestamps();
         });
         Schema::create('channel_info4s', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name', 30);
             $table->timestamps();
         });
         Schema::create('channel_info5s', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name', 30);
             $table->timestamps();
         });
         Schema::create('channel_info6s', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name', 30);
             $table->timestamps();
         });
     }

@@ -15,7 +15,7 @@ class CreateServiceSourcesTable extends Migration
     {
         Schema::create('service_sources', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name', 30);  //最多10个汉字
             $table->timestamps();
         });
     }

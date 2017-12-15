@@ -16,8 +16,8 @@ class CreateEmployeeVisitsTable extends Migration
         //回访表
         Schema::create('employee_visits', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('employee_id')->nullable(); //如果是员工回访
-            $table->string('user_id')->nullable();  //如果是管理员回访
+            $table->integer('employee_id')->nullable(); //如果是员工回访
+            $table->integer('user_id')->nullable();  //如果是管理员回访
             $table->timestamps();
         });
     }

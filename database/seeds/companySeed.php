@@ -33,6 +33,10 @@ class companySeed extends Seeder
                         $money->ServiceMoneyDetails()->save($detail);
                     });
                 });
+                //服务单挂钩套餐
+                factory(\App\Models\Services\Contract_plan::class, rand(1,5))->make()->each(function ($plan) use ($contract){
+                   $contract->Contract_plans()->save($plan);
+                });
 
                 //普通服务单
                 factory(\App\Models\Services\Service::class, config('app.seeding.service'))->make()->each(function ($service) use ($contract){
