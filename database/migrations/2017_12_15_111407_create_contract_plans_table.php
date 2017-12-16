@@ -22,6 +22,9 @@ class CreateContractPlansTable extends Migration
             $table->string('desc', 300)->nullable();  //描述性文字, 100字以内
             $table->string('remark', 450)->nullable(); //备注, 150字以内
             $table->timestamps();
+            //索引
+            $table->index('contract_id');
+            $table->index('plan_id');
         });
     }
 

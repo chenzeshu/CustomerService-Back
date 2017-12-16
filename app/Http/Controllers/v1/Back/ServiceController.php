@@ -4,10 +4,15 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\BaseException;
 use App\Exceptions\ScopeExp\ScopeExp;
+use App\Exceptions\Services\NeedPositiveNumberException;
+use App\Exceptions\Services\TimePassedException;
+use App\Exceptions\Services\TooMuchUseException;
 use App\Http\Helpers\JWTHelper;
 use App\Http\Helpers\Scope;
 use App\Http\Requests\Service\ServiceStoreRequest;
 use App\Http\Traits\UploadTrait;
+use App\Models\Contract;
+use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +38,7 @@ class ServiceController extends ApiController
         $services = Service::get_pagination($status, $charge_flag, $begin, $pageSize);
         $total = Service::get_total($status, $charge_flag);
         list($service_types, $service_sources) = Service::get_cache();
+
         $data = [
             'data' => $services,
             'total' => $total,
@@ -127,9 +133,40 @@ class ServiceController extends ApiController
      */
     public function store(ServiceStoreRequest $request)
     {
-        //todo 前端右侧可以做一个派单
+        try{
+            //todo 拿到合同的截止日期, 如果过期, 抛出服务过期异常, 相当于也做了时间套餐的校验
+            $con = Contract::findOrFail($request->contract_id);
+            if($con->time3 < date('y-m-d', time())){
+                throw new TimePassedException();
+            }
+            //todo  通过前端传来的type字段, 知道服务中间表的id, 从而知道服务的total和use以及服务类型planUtil的细节
+            $model = Contract_plan::with('planUtil')->findOrFail($request->type);
 
-        //todo  文件上传
+            //拿到了这个服务单的所有细节
+            if($model->toArray()['plan_util']['type2'] == "普通"){ //普通的要比较次数
+                if($model->use >= $model->total){
+                    throw new TooMuchUseException();
+                }
+            }
+            //fixme 对于预算10000 ,但是超支的 这里就不做校验了
+            $plan_num = $request->has('plan_num') ? $request->plan_num : 1;
+            if($plan_num < 0){
+                throw new NeedPositiveNumberException();
+            }
+            $total_use = $model->use + $plan_num;
+            $model->update(['use'=> $total_use ]);  //套餐使用表的总量修改
+        }
+        catch (TimePassedException $e){
+            return $this->res($e->code, $e->msg);
+        }
+        catch (TooMuchUseException $e){
+            return $this->res($e->code, $e->msg);
+        }
+        catch (NeedPositiveNumberException $e){
+            return $this->res($e->code, $e->msg);
+        }
+
+        //todo  临时文件移入永久文件夹
         if($request->has('fileList')){
             $ids = $this->moveAndSaveFiles($request->fileList);
             $request['document'] = $ids;
@@ -172,7 +209,12 @@ class ServiceController extends ApiController
      */
     public function update(ServiceStoreRequest $request, $id)
     {
-        $update = Service::find($id);
+        $update = Service::findOrFail($id);
+
+        //修改时, 要校验跟之前的套餐是否相同, 如果不同, 之前的减一, 之后的加一
+        //更好的方法是, update就不给修改, 应该删掉重发, 删掉自动触发监听, 对套餐中间表进行修改
+        //否则更改服务单的代价太大了
+
         //todo 文件
         if($request->has('fileList')){
             //todo 检查过滤新旧文件
@@ -188,6 +230,7 @@ class ServiceController extends ApiController
         if($request->status == "已派单" && $update->status != "已派单"){   //变成已派单后, 更新响应起始时间
             $request->time3 = date('Y-m-d H:i:s', time());
         }
+
         //todo 修改
         $re = $update->update($request->except(['contract','company', 'visits']));
         if($re){
@@ -206,6 +249,10 @@ class ServiceController extends ApiController
     public function destroy($id)
     {
         $re = Service::find($id)->delete();
+        //fixme 没有删除文件啊
+
+
+
         if($re){
             return $this->res(2004, "删除服务单成功");
         } else {

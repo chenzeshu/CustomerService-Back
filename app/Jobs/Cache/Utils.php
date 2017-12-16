@@ -97,7 +97,7 @@ class Utils implements ShouldQueue
     }
 
     private function service_types(){
-        $service_types = Service_type::all()->toArray();  //服务单类型
+        $service_types = Contract_planutil::all()->toArray();  //服务单类型  ==> 12.16改成普通运维套餐表(原表暂时保留)
         Cache::put('service_types', $service_types , $this->expiresAt);
     }
 

@@ -214,6 +214,13 @@ class ContractController extends Controller
         return $this->res(200, '搜索结果', $data);
     }
 
+    //todo 检索合同下的套餐( 因为一个合同可能有多个同类型套餐, 所以服务单展示的是中间表的desc,)
+    public function getContractPlans($contract_id)
+    {
+        $data = Contract::with('Contract_plans.planUtil')->findOrFail($contract_id)->toArray()['contract_plans'];
+        return $this->res(200, '套餐信息', $data);
+    }
+
     //todo 为合同新增一个套餐
     public function addPlan($contract_id, Request $request)
     {

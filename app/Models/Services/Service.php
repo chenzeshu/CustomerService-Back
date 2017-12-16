@@ -60,7 +60,14 @@ class Service extends Model
             ->orderBy('updated_at', 'desc')
             ->offset($begin)
             ->limit($pageSize)
-            ->with(['contract.company','visits.employees','refer_man'])
+            ->with([
+                'contract'=>function($query){
+                    return $query->with([
+                       'company', 'planUtils'
+                    ]);
+                },
+                'visits.employees',
+                'refer_man'])
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(本次为配合前端提前做的search组件 -> 下次考虑聚合, 不做层级了)
@@ -130,5 +137,17 @@ class Service extends Model
     public function type()
     {
         return $this->hasMany(Service_type::class, 'id', 'type');
+    }
+
+    /**
+     * 服务对应的合同的套餐的使用情况
+     * 只检索id, plan_id, total和use字段
+     */
+    public function contract_plans()
+    {
+        return $this->hasMany(Contract_plan::class,
+            'contract_id',
+            'contract_id')
+            ->select('plan_id','total', 'use', 'id');
     }
 }

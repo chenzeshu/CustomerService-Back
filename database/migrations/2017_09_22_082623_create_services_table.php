@@ -30,8 +30,8 @@ class CreateServicesTable extends Migration
             $table->enum('charge_flag',['到款', '未到款'])->default('未到款');
             $table->decimal('charge',10,2)->nullable();
             $table->decimal('time4',10,2)->nullable(); //到款时间
-            $table->timestamp('time1')->nullable();
-            $table->timestamp('time2')->nullable();
+            $table->timestamp('time1')->nullable();  //签订/生效时间
+            $table->timestamp('time2')->nullable(); //验收日期
             $table->tinyInteger('day_sum')->nullable();  //占用工时
             $table->string('desc1',600)->nullable(); //问题描述  200字以内, 目前不希望放图url
             $table->string('desc2',600)->nullable(); //处理描述 200字以内
@@ -39,6 +39,7 @@ class CreateServicesTable extends Migration
             $table->string('document',600)->nullable();    //大约最多能放12个文件吧
             $table->string('allege', 600)->nullable(); //申述内容    200字以内
             $table->integer('visit')->nullable(); //外键---访问表
+            $table->float('plan_num', 8,2)->default(1);   //必须填写,  单次套餐用量, 这是为了防止服务单被删除后, 套餐使用总量找不到减少的参考物, 从而错乱
             $table->timestamps();
             //索引
             $table->index('contract_id');

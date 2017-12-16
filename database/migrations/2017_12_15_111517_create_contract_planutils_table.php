@@ -18,6 +18,7 @@ class CreateContractPlanutilsTable extends Migration
             $table->string('name');  //套餐名
             $table->string('unit');  //套餐单位
             $table->enum('type',['无计划', '有计划'])->default('无计划');
+            $table->enum('type2',['普通','财务','其他'])->default('普通');  //普通为次数套餐, 时间为时间套餐, 便于ServiceController校验
             $table->string('desc', 256)->nullable();  //85字套餐说明
             $table->timestamps();
         });

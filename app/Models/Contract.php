@@ -6,6 +6,7 @@ use App\Models\Channels\Channel;
 use App\Models\Money\ServiceMoney;
 use App\Models\Money\ServiceMoneyDetail;
 use App\Models\Services\Contract_plan;
+use App\Models\Services\Contract_planutil;
 use App\Models\Services\Service;
 use App\Models\Utils\Contract_type;
 use Illuminate\Database\Eloquent\Model;
@@ -164,5 +165,15 @@ class Contract extends Model
     public function con_plans()
     {
         return $this->belongsToMany(Contract_plan::class, 'contract_plans', 'contract_id', 'plan_id');
+    }
+
+    public function planUtils()
+    {
+        return $this->hasManyThrough(Contract_planutil::class,
+            Contract_plan::class,
+            'contract_id',       //中间表内连接起源表的键
+            'id',             //终点表内连接中间表的键
+            'id',               //起源表内连接中间表的键
+            'plan_id');  //中间表内连接终点表的键
     }
 }

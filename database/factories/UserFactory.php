@@ -57,6 +57,7 @@ $factory->define(\App\Models\Contract::class, function () use ($faker){
         "TM"=>rand(1,100).','.rand(1,100),
         "time1" => $faker->date('Y-m-d H:i:s'),
         "time2" =>$faker->date('Y-m-d H:i:s'),
+        "time3" =>$faker->date('Y-m-d H:i:s'),
         "coor" => rand(1,10),
         "document" => rand(1,100).','.rand(1,100),
     ];
