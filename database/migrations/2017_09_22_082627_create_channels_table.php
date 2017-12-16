@@ -21,6 +21,8 @@ class CreateChannelsTable extends Migration
             $table->enum('status',['待审核', '运营调配', '已完成', '拒绝'])->default('待审核');
             $table->enum('type',['内部用星','外部用星'])->default('外部用星');
             $table->tinyInteger('source')->nullable();  //外键, 来源表的id
+            $table->index('contractc_id'); //合同编号作为索引之一
+            $table->index('employee_id'); //申请人索引
             $table->timestamps();
         });
     }

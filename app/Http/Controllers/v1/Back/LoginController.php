@@ -28,10 +28,21 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $re = DB::delete('DELETE  c , s1, s2 FROM contracts as c
-          INNER JOIN service_moneys as s1 ON s1.contract_id = c.id
-          INNER JOIN service_money_details as s2 ON s1.id = s2.service_money_id
-          WHERE c.id = 5');
+        $re = DB::select("select c1.channel_id, c1.contractc_id, c1.created_at, c1.updated_at, c1.employee_id, c1.id, c1.source, c1.status, c1.type,
+        c2.id, c2.id1, c2.id2,c2.id3,c2.id4, c2.remark, c2.t1, c2.t2, c2.updated_at,
+        c3.PM, c3.beginline, c3.company_id, c3.created_at, c3.updated_at, c3.deadline, c3.desc, c3.document, c3.id, c3.money, c3.name, c3.time,
+        c4.id, c4.name, c4.phone, c5.id, c5.name,
+        c21.id, c21.channel_apply_id, c21.id1, c21.id2, c21.id3, c21.id4, 
+        c22.channel_apply_id, c22.checker_id, c22.created_at, c22.id, c22.id1, c22.id2, c22.id3, c22.id4, c22.remark, c22.t1, c22.t2, c22.updated_at,
+        c23.channel_apply_id, c23.company_id, c23.created_at, c23.device_id, c23.id, c23.id5, c23.updated_at
+        FROM channels as c1
+        LEFT JOIN channel_applies as c2 on c2.channel_id = c1.id
+        LEFT JOIN contractcs as c3 on c3.id = c1.contractc_id
+        LEFT JOIN employees as c4 on c4.id in (c1.employee_id)
+        LEFT JOIN service_sources as c5 on c5.id = c1.source
+        LEFT JOIN channel_operatives as c21 on c21.channel_apply_id = c2.id
+        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
+        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
         return $re;
     }
 

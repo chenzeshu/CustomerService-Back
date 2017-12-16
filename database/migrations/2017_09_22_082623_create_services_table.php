@@ -40,6 +40,15 @@ class CreateServicesTable extends Migration
             $table->string('allege', 600)->nullable(); //申述内容    200字以内
             $table->integer('visit')->nullable(); //外键---访问表
             $table->timestamps();
+            //索引
+            $table->index('contract_id');
+            $table->index('document');
+            $table->index('visit');
+            $table->index('refer_man');
+            $table->index('man');
+            $table->index('customer');
+//            $table->index('source'); 不做, 因为关联表太小了
+//            $table->index('type');    不做, 因为关联表太小
         });
 
 

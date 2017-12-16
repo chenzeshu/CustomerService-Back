@@ -25,6 +25,7 @@ class CreateContractCsTable extends Migration
             $table->timestamp('deadline')->nullable();
             $table->string('desc',450)->nullable(); //150个汉字以内
             $table->text('document' ,600)->nullable();  //大约存6个文件
+            $table->index('company_id');  //父级索引
             $table->timestamps();
         });
 

@@ -24,6 +24,11 @@ class CreateChannelOperativesTable extends Migration
             $table->timestamp('t1')->nullable();  //开始时间 必填
             $table->timestamp('t2')->nullable();  //结束时间 必填
             $table->string('remark', 450)->nullable();  //150个汉字以内
+            $table->index('channel_apply_id');  //父级索引
+            $table->index('id1');  //子级索引
+            $table->index('id2');  //子级索引
+            $table->index('id3');  //子级索引
+            $table->index('id4');  //子级索引
             $table->timestamps();
         });
     }

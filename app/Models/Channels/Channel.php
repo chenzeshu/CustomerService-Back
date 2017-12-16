@@ -55,7 +55,7 @@ class Channel extends Model
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ('{$item->employee_id}')");
+                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name`, `phone` from employees where id in ({$item->employee_id})");
                 $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = '{$item->source}'");
                 return $item;
             })
@@ -108,7 +108,7 @@ class Channel extends Model
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ('{$item->employee_id}')");
+                $item->customer = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
                 $item->source_info = $item->source == null ? null : DB::select("select `id`, `name` from service_sources where id = '{$item->source}'");
                 return $item;
             })

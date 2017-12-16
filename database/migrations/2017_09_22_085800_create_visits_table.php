@@ -23,6 +23,8 @@ class CreateVisitsTable extends Migration
             $table->string('visitor',50)->nullable();  //fixme 所以这个visitor 不是让管理员选的, 而是默认填写管理员的id
             $table->string('remark', 200)->nullable();  //200子以内
             $table->timestamps();
+            //索引
+            $table->index('service_id');
         });
     }
 

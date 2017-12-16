@@ -24,6 +24,10 @@ class CreateChannelAppliesTable extends Migration
             $table->timestamp('t2')->nullable();  //结束时间 必填
             $table->string('remark', 450)->nullable();  //150个汉字以内
             $table->timestamps();
+            $table->index('id1');  //子级索引
+            $table->index('id2');  //子级索引
+            $table->index('id3');  //子级索引
+            $table->index('id4');  //子级索引
         });
     }
 

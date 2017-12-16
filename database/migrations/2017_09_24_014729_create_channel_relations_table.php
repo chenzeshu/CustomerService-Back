@@ -19,6 +19,10 @@ class CreateChannelRelationsTable extends Migration
             $table->integer('company_id');
             $table->integer('device_id');       //关联设备表的设备id
             $table->integer('id5');
+            $table->index('channel_apply_id');  //父级索引
+            $table->index('device_id');  //子级索引
+            $table->index('id5');  //子级索引
+            $table->index('company_id');  //子级索引
             $table->timestamps();
         });
     }

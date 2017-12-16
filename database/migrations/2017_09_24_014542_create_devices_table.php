@@ -30,6 +30,9 @@ class CreateDevicesTable extends Migration
             $table->timestamp('built_at');
             $table->string('remark', 300)->nullable(); //100个汉字以内
             $table->timestamps();
+
+            $table->index('company_id');
+//            $table->index('profession_id');
         });
     }
 

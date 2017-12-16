@@ -73,9 +73,9 @@ class Contract extends Model
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
-                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ('{$item->PM}')");
-                $item->TM = $item->TM == null ? null : DB::select("select `id`, `name` from employees where id in ('{$item->TM}')");
-                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ('{$item->document}')");
+                $item->PM = $item->PM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->PM})");
+                $item->TM = $item->TM == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->TM})");
+                $item->document = $item->document == null ? null : DB::select("select * from docs where id in ({$item->document})");
                 return $item;
             })
             ->toArray();
