@@ -46,8 +46,8 @@ class LoginController extends ApiController
 //        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
 //        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
         $contract_id = 97;
-        $model = Contract_plan::with('planUtil')->findOrFail(35);
-        return $model->use;
+        $model = Contract_plan::find(1)->decrement('use',2);
+        return 'success';
 
     }
 

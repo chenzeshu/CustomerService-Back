@@ -47,7 +47,6 @@ class ChannelController extends ApiController
         $data = Channel::create($request->except(['customer','source_info']));
 
         //todo 失效缓存
-        Channel::forget_cache();
         //触发新建申请单记录event + 填充关联单位 + 设备
 
         return $this->res(2002, "新建信道服务单成功", ['data'=>$data]);
@@ -79,7 +78,6 @@ class ChannelController extends ApiController
 
         if($re){
             //todo 失效缓存
-            Channel::forget_cache();
             return $this->res(2003, "修改服务单成功");
         } else {
             return $this->res(500, "修改服务单失败");
@@ -99,8 +97,6 @@ class ChannelController extends ApiController
     {
         $re = Channel::find($id)->delete();
         if($re){
-            //todo 失效缓存
-            Channel::forget_cache();
             return $this->res(2004, "删除服务单成功");
         } else {
             return $this->res(500, "删除服务单失败");

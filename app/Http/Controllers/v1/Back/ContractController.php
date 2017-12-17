@@ -81,10 +81,6 @@ class ContractController extends Controller
         }
 
         $data = Contract::create($request->except('company'));
-        //todo 再造一个空money记录
-        $data->ServiceMoney()->create([]);
-        //todo 使缓存失效
-        Contract::forget_cache();
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
 
@@ -115,55 +111,9 @@ class ContractController extends Controller
             $request['document'] = $this->getFinalIds($request, $doc_id);
             unset($request['fileList']);
         }
-
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
         $re = Contract::findOrFail($id)->update($request->except(['company','service_money','contract_plans', 'documents']));
-        //todo 队列任务: 刷新缓存
-        Contract::forget_cache();
         return $re ? $this->res(2003, "修改合同成功") : $this->res(-2003, "修改合同失败");
-    }
-
-    /**
-     * 更新合同详情
-     * @param $contract_id
-     */
-    public function updateMoney($contract_id, Request $request)
-    {
-        Contract::findOrFail($contract_id)
-            ->ServiceMoney()
-            ->update($request->except([
-                'checker',
-                'contract_id',
-                'reach',
-                'service_money_details',
-                'left'
-            ]));
-        Contract::forget_cache();
-        return $this->res(2006, '成功');
-    }
-
-    /**
-     * 新建历次回款记录
-     */
-    public function createMoneyDetail($contract_id, Request $request)
-    {
-        Contract::findOrFail($contract_id)
-            ->ServiceMoney()
-            ->first()
-            ->ServiceMoneyDetails()
-            ->create($request->all());
-        Contract::forget_cache();
-        return $this->res(2006, '成功');
-    }
-
-    /**
-     * 历次回款记录的删除
-     */
-    public function delMoneyDetail($money_detail_id)
-    {
-        ServiceMoneyDetail::destroy($money_detail_id);
-        Contract::forget_cache();
-        return $this->res(2006, '成功');
     }
 
     /**
@@ -176,15 +126,14 @@ class ContractController extends Controller
     {
         $con = Contract::findOrFail($id);
         $this->deleteFilesForDestroy($con->document);  //删除文件及mysql记录
-//        $con->con_plans()->detach();    //删除本合同的所有套餐记录
         //todo 删除本合同的(1)回款表总览信息, (2)回款细节, (3)关联套餐信息
-        $re = DB::delete("DELETE c, s1, s2, c3 FROM contracts as c
+        DB::delete("DELETE s1, s2, c3 FROM contracts as c
           INNER JOIN service_moneys as s1 ON s1.contract_id = c.id
           INNER JOIN service_money_details as s2 ON s1.id = s2.service_money_id
           INNER JOIN contract_plans as c3 ON c.id = c3.contract_id
-          WHERE c.id = '$id'");  //要加引号, 否则不会使用索引
-        Contract::forget_cache();
-        if($re){
+          WHERE c.id = '$id'");
+        $re = $con->delete();  //不并入sql是为了触发模型事件
+        if($re || $re == 0){
             return $this->res(2004, "删除合同成功");
         } else {
             return $this->res(500, "删除合同失败");
@@ -214,6 +163,46 @@ class ContractController extends Controller
         return $this->res(200, '搜索结果', $data);
     }
 
+    /**
+     * 更新合同详情
+     * @param $contract_id
+     */
+    public function updateMoney($contract_id, Request $request)
+    {
+        Contract::findOrFail($contract_id)
+            ->ServiceMoney()
+            ->update($request->except([
+                'checker',
+                'contract_id',
+                'reach',
+                'service_money_details',
+                'left'
+            ]));
+        return $this->res(2006, '成功');
+    }
+
+    /**
+     * 新建历次回款记录
+     */
+    public function createMoneyDetail($contract_id, Request $request)
+    {
+        Contract::findOrFail($contract_id)
+            ->ServiceMoney()
+            ->first()
+            ->ServiceMoneyDetails()
+            ->create($request->all());
+        return $this->res(2006, '成功');
+    }
+
+    /**
+     * 历次回款记录的删除
+     */
+    public function delMoneyDetail($money_detail_id)
+    {
+        ServiceMoneyDetail::destroy($money_detail_id);
+        return $this->res(2006, '成功');
+    }
+
     //todo 检索合同下的套餐( 因为一个合同可能有多个同类型套餐, 所以服务单展示的是中间表的desc,)
     public function getContractPlans($contract_id)
     {
@@ -225,7 +214,6 @@ class ContractController extends Controller
     public function addPlan($contract_id, Request $request)
     {
         Contract::findOrFail($contract_id)->Contract_plans()->create($request->all());
-        Contract::forget_cache();
         return $this->res(2004, '新增成功');
     }
 
@@ -233,7 +221,9 @@ class ContractController extends Controller
     public function deletePlan($id)
     {
         Contract_plan::destroy($id);
-        Contract::forget_cache();
+        //fixme 隐患: 删了一个套餐后, 合同使用这个套餐的的服务单如何处理?
+        //fixme  这里只能硬性要求了: 合同录入者必须严谨
+        //fixme  或者给套餐一个新的标签:废弃(类似软删除)(和使用完/过期不通, 是废除)
         return $this->res(2006, '删除成功');
     }
 }

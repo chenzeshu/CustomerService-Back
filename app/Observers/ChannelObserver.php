@@ -6,7 +6,7 @@
  * Time: 9:12
  */
 
-namespace App\Observer;
+namespace App\Observers;
 
 
 use App\Models\Channels\Channel;
@@ -16,9 +16,9 @@ class ChannelObserver
     /**
      * 监听创建/更新
      */
-    public function saved(Channel $channel)
+    public function saved()
     {
-        Channel::redis_refresh_data();
+        Channel::forget_cache();
     }
 
     /**
@@ -26,6 +26,6 @@ class ChannelObserver
      */
     public function deleted()
     {
-        Channel::redis_refresh_data();
+        Channel::forget_cache();
     }
 }

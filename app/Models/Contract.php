@@ -15,16 +15,14 @@ use Illuminate\Support\Facades\DB;
 
 class Contract extends Model
 {
-    protected $guarded = [
-
-    ];
+    protected $guarded = [];
 
     /**
      * 拿到utils缓存
      * $coors 合作商
      * $types 合同类型
      */
-    static function get_cache(){
+    public static function get_cache(){
         $cache = Cache::many(['coors','contract_types', 'contract_plans']);
         return $cache;
     }
@@ -34,7 +32,7 @@ class Contract extends Model
      * @param String $finish 合同款项是否结清
      * @return $consModel 基本的[集合], 方便分页和总数的获取
      */
-    static function basic_search($finish)
+    public static function basic_search($finish)
     {
         $consModel = Contract::orderBy('id', 'desc')
             ->with([
@@ -58,7 +56,7 @@ class Contract extends Model
 
     /***** 缓存低并发时代 隐患: 高并发时会脏读*****/
     //todo 拿到全部缓存  -- 相当于refresh  --但是实际在update下应该做成job
-    static function redis_refresh_data(){
+    public static function redis_refresh_data(){
         Cache::forget('contracts');
         $data = Contract::orderBy('id', 'desc')
             ->with([
@@ -86,7 +84,7 @@ class Contract extends Model
     /**
      * 使缓存失效
      */
-    static function forget_cache(){
+    public static function forget_cache(){
         Cache::forget('contracts');
     }
 
@@ -96,7 +94,7 @@ class Contract extends Model
      *  分页数据
      * @param String $finish 合同款项是否结清
      */
-    static function get_pagination($finish, $begin, $pageSize){
+    public static function get_pagination($finish, $begin, $pageSize){
         return static::basic_search($finish)
             ->splice($begin, $pageSize)
             ->map(function ($item){
@@ -112,7 +110,7 @@ class Contract extends Model
     /**
      * @param String $finish 合同款项是否结清
      */
-    static function get_total($finish){
+    public static function get_total($finish){
         return static::basic_search($finish)->count();
     }
 

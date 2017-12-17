@@ -148,13 +148,18 @@ class ServiceController extends ApiController
                     throw new TooMuchUseException();
                 }
             }
-            //fixme 对于预算10000 ,但是超支的 这里就不做校验了
-            $plan_num = $request->has('plan_num') ? $request->plan_num : 1;
-            if($plan_num < 0){
-                throw new NeedPositiveNumberException();
-            }
-            $total_use = $model->use + $plan_num;
-            $model->update(['use'=> $total_use ]);  //套餐使用表的总量修改
+            //todo 做对套餐的影响
+                //fixme 对于预算10000 ,但是超支的 这里就不做校验了
+                $plan_num = $request->has('plan_num') ? $request->plan_num : 1;
+                //todo 去除恶意负数
+                if($plan_num < 0){
+                    throw new NeedPositiveNumberException();
+                }
+                //todo 审核是否拒绝, 如果直接建立了一个拒绝的单子, 那么不需要加一
+                if($request->status == "拒绝"){
+                    $plan_num = 0;
+                }
+                $model->increment('use',$plan_num);  //使用量增加
         }
         catch (TimePassedException $e){
             return $this->res($e->code, $e->msg);
@@ -165,7 +170,6 @@ class ServiceController extends ApiController
         catch (NeedPositiveNumberException $e){
             return $this->res($e->code, $e->msg);
         }
-
         //todo  临时文件移入永久文件夹
         if($request->has('fileList')){
             $ids = $this->moveAndSaveFiles($request->fileList);
@@ -212,8 +216,15 @@ class ServiceController extends ApiController
         $update = Service::findOrFail($id);
 
         //修改时, 要校验跟之前的套餐是否相同, 如果不同, 之前的减一, 之后的加一
-        //更好的方法是, update就不给修改, 应该删掉重发, 删掉自动触发监听, 对套餐中间表进行修改
-        //否则更改服务单的代价太大了
+        //更好的方法是, update就不给修改套餐, 应该删掉重发, 删掉自动触发监听, 对套餐中间表进行修改
+        //否则更改服务单的代价太大了, 无论是待审核->待派单, 还是什么都会有影响, 太细了, 不适合这个版本
+
+        //todo 审核是否拒绝, 如果由其他状态变为拒绝, 减1;  拒绝变为其他状态, 加1;
+        if($request->status == "拒绝" && $update->status !="拒绝"){
+            $update->contract_plans()->decrement('use', $update->plan_num);
+        }else if ($request->status != "拒绝" && $update->status == "拒绝"){
+            $update->contract_plans()->increment('use', $update->plan_num);
+        }
 
         //todo 文件
         if($request->has('fileList')){
@@ -248,11 +259,14 @@ class ServiceController extends ApiController
      */
     public function destroy($id)
     {
-        $re = Service::find($id)->delete();
-        //fixme 没有删除文件啊
-
-
-
+        $model = Service::find($id);
+        //todo 1. 删除文件
+        $this->deleteFilesForDestroy($model->document);  //删除文件及mysql记录
+        //todo 2. 删除对套餐记录的"贡献"
+        $use = $model->plan_num;
+        $model->contract_plans()->decrement('use', $use);
+        //todo 3. 删除服务单本身
+        $re = $model->delete();
         if($re){
             return $this->res(2004, "删除服务单成功");
         } else {

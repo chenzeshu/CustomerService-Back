@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Channels\Channel;
+use App\Models\Contract;
+use App\Observers\ChannelObserver;
+use App\Observers\ContractObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +17,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-//        Channel::observe(ChannelObserver::class);
+        Contract::observe(ContractObserver::class);
+        Channel::observe(ChannelObserver::class);
     }
 
     /**
