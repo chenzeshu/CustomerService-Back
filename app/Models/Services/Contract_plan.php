@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Contract_plan extends Model
 {
     use ContractUpdated;
-    static $recordEvents = ['created', 'updated', 'deleted'];
+    static $recordEvents = ['created', 'updated', 'deleted', 'saved'];
 
     protected $guarded = [];
     protected $hidden = [

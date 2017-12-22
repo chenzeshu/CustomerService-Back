@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Channels\Channel;
+use App\Models\Channels\Channel_apply;
 use App\Models\Contract;
+use App\Observers\ApplyObserver;
 use App\Observers\ChannelObserver;
 use App\Observers\ContractObserver;
 use Illuminate\Support\ServiceProvider;
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Contract::observe(ContractObserver::class);
         Channel::observe(ChannelObserver::class);
+        Channel_apply::observe(ApplyObserver::class);
     }
 
     /**

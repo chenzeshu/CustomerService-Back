@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Exceptions\Channels\OutOfTimeException;
+use App\Http\Helpers\Params;
 use App\Http\Repositories\ChannelRepo;
 use App\Http\Requests\channel\ChannelStoreRequest;
 use App\Models\Channels\Channel;
+use App\Models\Channels\Contractc_plan;
 use Illuminate\Support\Facades\Cache;
 
 class ChannelController extends ApiController
@@ -44,12 +47,17 @@ class ChannelController extends ApiController
      */
     public function store(ChannelStoreRequest $request)
     {
-        $data = Channel::create($request->except(['customer','source_info']));
+        try{
+            //todo 检查套餐余量
+            $this->repo->checkPlan($request);
+            //todo 通过校验后, 正式创建
+            $channelModel = Channel::create($request->except(['id2','id3', 't1', 't2', 'id1']));
+            $channelModel->channel_applys()->create($request->only(['id1', 'id2','id3', 't1', 't2',]));
+            return $this->res(2002, "新建信道服务单成功", ['data'=>$channelModel]);
 
-        //todo 失效缓存
-        //触发新建申请单记录event + 填充关联单位 + 设备
-
-        return $this->res(2002, "新建信道服务单成功", ['data'=>$data]);
+        }catch (OutOfTimeException $e){
+            return $this->res($e->code, $e->msg);
+        }
     }
 
     /**
@@ -76,6 +84,10 @@ class ChannelController extends ApiController
         //fixme 不支持修改信号服务单号, 所以前端只有灰色, 没有修改可能
         $re = Channel::find($id)->update($request->except(['customer','source_info', 'contractc', 'channel_applys']));
 
+        //todo 假如将已完成改为拒绝, 则如何处置?
+        //todo 假如将拒绝改为已完成, 则如何处置? 目前不更改记录
+
+
         if($re){
             //todo 失效缓存
             return $this->res(2003, "修改服务单成功");
@@ -95,6 +107,10 @@ class ChannelController extends ApiController
      */
     public function destroy($id)
     {
+        //todo 单纯地删除信道数据, 其他的将成为冗余
+        //todo 尤其是已完成服务单的删除, 删除服务单不会造成损失
+        //todo  或者说, 是以修代改, 最多是改成"拒绝"
+
         $re = Channel::find($id)->delete();
         if($re){
             return $this->res(2004, "删除服务单成功");
@@ -102,4 +118,6 @@ class ChannelController extends ApiController
             return $this->res(500, "删除服务单失败");
         }
     }
+
+
 }

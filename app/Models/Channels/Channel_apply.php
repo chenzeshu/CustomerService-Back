@@ -29,9 +29,15 @@ class Channel_apply extends Model
             ->with(['employee.company' ,'contractc'=>function($query){
                 return $query->where('name', "!=", '临时合同');
             },
-                'channel_applys.channel_relations.company',
-                'channel_applys.channel_relations.device',
-                'plans', 'tongxin','jihua', 'daikuan', 'source'])
+                'channel_applys' => function($query){
+                    return $query->with([
+                        'channel_relations.company',
+                        'channel_relations.device',
+                        'contractc_plan'
+                    ]);
+                },
+                'tongxin','jihua', 'daikuan', 'source'])
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->toArray();
     }
@@ -42,9 +48,15 @@ class Channel_apply extends Model
             ->with(['employee.company' ,'contractc'=>function($query){
                 return $query->where('name', "=", '临时合同');
             },
-                'channel_applys.channel_relations.company',
-                'channel_applys.channel_relations.device',
-                'plans', 'tongxin','jihua', 'daikuan', 'source'])
+                'channel_applys' => function($query){
+                    return $query->with([
+                        'channel_relations.company',
+                        'channel_relations.device',
+                        'contractc_plan'
+                    ]);
+                },
+                'tongxin','jihua', 'daikuan', 'source'])
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->reject(function ($item){
                 return $item->contractc == null;
@@ -80,5 +92,13 @@ class Channel_apply extends Model
     public function channel_real()
     {
         return $this->hasOne(Channel_real::class);
+    }
+
+    /**
+     * 得到自己的套餐详情
+     */
+    public function contractc_plan()
+    {
+        return $this->hasOne(Contractc_plan::class, 'id', 'id1');
     }
 }

@@ -13,14 +13,14 @@ class CreateChannelPlansTable extends Migration
      */
     public function up()
     {
-        Schema::create('channel_plans', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('contractc_id');
-            $table->integer('plan');  //系统信道套餐表的id
-            $table->integer('full_time');  //本套餐总购买时间  单位:分钟
-            $table->enum('flag', ['用完', '正常'])->default('正常');
-            $table->timestamps();
-        });
+//        Schema::create('channel_plans', function (Blueprint $table) {
+//            $table->increments('id');
+//            $table->integer('contractc_id');
+//            $table->integer('plan');  //系统信道套餐表的id
+//            $table->integer('full_time');  //本套餐总购买时间  单位:分钟
+//            $table->enum('flag', ['用完', '正常'])->default('正常');
+//            $table->timestamps();
+//        });
     }
 
     /**
@@ -30,6 +30,6 @@ class CreateChannelPlansTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('channel_plans');
+//        Schema::dropIfExists('channel_plans');
     }
 }

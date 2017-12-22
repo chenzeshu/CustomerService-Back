@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\LoginExp\WrongInputExp;
+use App\Http\Helpers\Params;
+use App\Models\Channels\Channel_apply;
+use App\Models\Channels\Contractc_plan;
+use App\Models\Company;
 use App\Models\Contract;
-use App\Models\Money\ServiceMoney;
-use App\Models\Services\Contract_plan;
-use App\Models\Services\Service;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
+use Faker\Factory;
+use Faker\ORM\Propel\Populator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -45,8 +47,10 @@ class LoginController extends ApiController
 //        LEFT JOIN channel_operatives as c21 on c21.channel_apply_id = c2.id
 //        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
 //        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
-        $contract_id = 97;
-        $model = Contract_plan::find(1)->decrement('use',2);
+        $planModel = Contractc_plan::findOrFail(6);
+        $curTime = ceil((strtotime("2017-12-2 00:00:00") - strtotime("2017-12-1 00:00:00")) / Params::ChannelTime);
+        $check = $planModel->total  - $planModel->use  - $curTime;
+        return $check;
         return 'success';
 
     }

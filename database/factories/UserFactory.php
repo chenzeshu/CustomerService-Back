@@ -71,6 +71,7 @@ $factory->define(\App\Models\Services\Contract_plan::class, function () use ($fa
        'desc'=>$faker->text(30),
    ];
 });
+
 //服务合同到款一览
 $factory->define(\App\Models\Money\ServiceMoney::class, function () use ($faker){
     $type = ['不分次', '分次付款'];
@@ -135,6 +136,16 @@ $factory->define(\App\Models\Channels\Channel_plan::class, function () use ($fak
         'full_time' =>ceil($faker->numberBetween(0, 1500)/15)*15,
         'flag' => $faker->randomElement($status),
    ];
+});
+
+//信道合同挂钩套餐详情
+$factory->define(\App\Models\Channels\Contractc_plan::class, function () use ($faker){
+    return [
+        'plan_id' => rand(1,8),
+        'total' => rand(5, 10),  //总共买了多少个15分钟
+        'use' => rand(1,5), // 使用了多少个15分钟
+        'alias'=>$faker->text(6),
+    ];
 });
 
 //用户套餐使用记录

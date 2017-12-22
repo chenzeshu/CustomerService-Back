@@ -82,9 +82,9 @@ class companySeed extends Seeder
                     });
                 });
 
-                factory(\App\Models\Channels\Channel_plan::class, config('app.seeding.plan'))->make()->each(function ($plan) use ($contract_c){
+                factory(\App\Models\Channels\Contractc_plan::class, config('app.seeding.plan'))->make()->each(function ($plan) use ($contract_c){
                     //套餐/合同
-                    $contract_c->channel_plans()->save($plan);
+                    $contract_c->contractc_plans()->save($plan);
                 });
 
                 if(!$company->contract_cs()->where('name','临时合同')->first()){

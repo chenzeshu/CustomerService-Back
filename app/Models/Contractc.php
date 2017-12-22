@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_plan;
+use App\Models\Channels\Contractc_plan;
 use App\Models\Money\ChannelMoney;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -126,5 +127,13 @@ class Contractc extends Model
     public function ChannelMoney()
     {
         return $this->hasOne(ChannelMoney::class);
+    }
+
+    /**
+     * 得到名下套餐的使用情况
+     */
+    public function contractc_plans()
+    {
+        return $this->hasMany(Contractc_plan::class);
     }
 }

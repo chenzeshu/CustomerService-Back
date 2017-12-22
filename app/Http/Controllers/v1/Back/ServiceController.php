@@ -9,6 +9,7 @@ use App\Exceptions\Services\TimePassedException;
 use App\Exceptions\Services\TooMuchUseException;
 use App\Http\Helpers\JWTHelper;
 use App\Http\Helpers\Scope;
+use App\Http\Repositories\ServiceRepo;
 use App\Http\Requests\Service\ServiceStoreRequest;
 use App\Http\Traits\UploadTrait;
 use App\Models\Contract;
@@ -20,10 +21,11 @@ use Illuminate\Support\Facades\DB;
 class ServiceController extends ApiController
 {
     use UploadTrait;
-
-    function __construct()
+    protected $repo;
+    function __construct(ServiceRepo $repo)
     {
         $this->save_path = "services";
+        $this->repo = $repo;
     }
 
     /**
@@ -159,7 +161,7 @@ class ServiceController extends ApiController
                 if($request->status == "拒绝"){
                     $plan_num = 0;
                 }
-                $model->increment('use',$plan_num);  //使用量增加
+                $model->update(['use'=> $plan_num]);  //使用量增加
         }
         catch (TimePassedException $e){
             return $this->res($e->code, $e->msg);
@@ -214,16 +216,16 @@ class ServiceController extends ApiController
     public function update(ServiceStoreRequest $request, $id)
     {
         $update = Service::findOrFail($id);
-
         //修改时, 要校验跟之前的套餐是否相同, 如果不同, 之前的减一, 之后的加一
         //更好的方法是, update就不给修改套餐, 应该删掉重发, 删掉自动触发监听, 对套餐中间表进行修改
         //否则更改服务单的代价太大了, 无论是待审核->待派单, 还是什么都会有影响, 太细了, 不适合这个版本
 
         //todo 审核是否拒绝, 如果由其他状态变为拒绝, 减1;  拒绝变为其他状态, 加1;
         if($request->status == "拒绝" && $update->status !="拒绝"){
-            $update->contract_plans()->decrement('use', $update->plan_num);
+            //todo 不使用increment是为了更精确地触发模型事件(而不是一更新服务单就去触发, 粒度细化为plan)
+            $this->repo->myDecrement($update, 'use', $request->plan_num);
         }else if ($request->status != "拒绝" && $update->status == "拒绝"){
-            $update->contract_plans()->increment('use', $update->plan_num);
+            $this->repo->myIncrement($update, 'use', $request->plan_num);
         }
 
         //todo 文件
@@ -263,8 +265,9 @@ class ServiceController extends ApiController
         //todo 1. 删除文件
         $this->deleteFilesForDestroy($model->document);  //删除文件及mysql记录
         //todo 2. 删除对套餐记录的"贡献"
-        $use = $model->plan_num;
-        $model->contract_plans()->decrement('use', $use);
+        if($model->status != '拒绝'){     //todo 如果是"拒绝'的状态, 就不减
+            $this->repo->myDecrement($model, 'use', $model->plan_num);
+        }
         //todo 3. 删除服务单本身
         $re = $model->delete();
         if($re){

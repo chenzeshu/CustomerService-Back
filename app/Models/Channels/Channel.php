@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 class Channel extends Model
 {
 
-
     protected $guarded = [
 
     ];
@@ -28,7 +27,7 @@ class Channel extends Model
      * @return array
      */
     static function get_cache(){
-        $cache = Cache::many(['service_sources', 'tongxins', 'jihuas', 'plans', 'zhantypes']);
+        $cache = Cache::many(['service_sources', 'tongxins', 'jihuas', 'zhantypes']);
         return $cache;
     }
 
@@ -37,7 +36,7 @@ class Channel extends Model
         Cache::forget('channels');
         $channels = Channel::where('status', "!=", '待审核')
             ->with([
-                'contractc',
+                'contractc.contractc_plans',
                 'channel_applys'=>function($query){
                         $query->with([
                             "channel_relations"=>function($re){
@@ -50,8 +49,9 @@ class Channel extends Model
                                 $real->with(["tongxin","jihua","pinlv","checker"]);
                             },
                         ]);
-                    }
+                    },
             ])
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)
@@ -105,6 +105,7 @@ class Channel extends Model
                     ]);
                 }
             ])
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($item){
                 //todo 拿到人员, 文件(由于是多选, 所以二者只能单独写)

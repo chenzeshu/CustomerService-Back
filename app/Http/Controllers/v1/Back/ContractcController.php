@@ -137,4 +137,13 @@ class ContractcController extends ApiController
 
         return $this->res(200, '搜索结果', $data);
     }
+
+    /**
+     * 得到合同名下信道套餐
+     */
+    public function getContractcPlans($contractc_id)
+    {
+        $data = Contractc::findOrFail($contractc_id)->contractc_plans()->get();
+        return $this->res(200, '套餐列表', $data);
+    }
 }
