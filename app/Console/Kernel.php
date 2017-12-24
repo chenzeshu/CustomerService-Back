@@ -27,6 +27,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        //todo 每天定时更新Zcache:utils
+        //todo 每年1月1日 0:00:00 定时将Id_records表清零
     }
 
     /**
