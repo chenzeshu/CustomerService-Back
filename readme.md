@@ -1,4 +1,4 @@
-# 客服平台二期-后端
+# 客服平台二期-后端-版本2:聊天版本
 
 ## simple introduction
 1. 采用`laravel`开发
