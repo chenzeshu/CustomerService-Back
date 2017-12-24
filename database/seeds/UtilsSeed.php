@@ -63,5 +63,9 @@ class UtilsSeed extends Seeder
              ['name'=>'升级改造', 'unit'=>'次', 'type'=>'无计划', 'type2'=>'普通'],
              ['name'=>'采购设备', 'unit'=>'元(人民币)', 'type'=>'无计划', 'type2'=>'财务'],
         ]);
+
+        DB::table('id_records')->insert([
+            ['record'=>'1'], ['record'=>'1'], ['record'=>'1'], ['record'=>'1'], ['record'=>'1'],
+        ]);
     }
 }

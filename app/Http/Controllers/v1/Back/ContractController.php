@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Repositories\ContractRepo;
 use App\Http\Requests\contract\ContractStoreRequest;
 use App\Http\Traits\UploadTrait;
+use App\Id_record;
 use App\Jobs\Cache\RefreshContracts;
 use App\Models\Contract;
 use App\Models\Money\ServiceMoneyDetail;
@@ -72,6 +73,15 @@ class ContractController extends Controller
     public function store(ContractStoreRequest $request)
     {
         //contract_id规则写在前端
+        if($request->type2 == "销售"){
+            $record = Id_record::find(1)->record;
+            $len = 3 - strlen($record);
+            $request['contract_id'] ="中网销字".date('Y', time()).zerofill($len).$record;
+        }else{
+            $record = Id_record::find(2)->record;
+            $len = 3 - strlen($record);
+            $request['contract_id'] = "中网客字".date('Y', time()).zerofill($len).$record;
+        }
 
         //如果从company入口进入, 前端记录并并入了company_id
         if($request->has('fileList')){

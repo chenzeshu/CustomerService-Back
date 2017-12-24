@@ -25,7 +25,6 @@ class ContractStoreRequest extends FormRequest
     {
         return [
             'company_id' => 'required',
-            'contract_id' => 'required',
             "type1" => 'required',
             "type2" => 'required',
             "PM" => 'required',
@@ -37,7 +36,6 @@ class ContractStoreRequest extends FormRequest
     {
         return [
           "company_id.required" => '必须提交单位编号',
-          "contract_id.required" => '必须提交合同编号',
           "type1.required" => '必须提交合同类型',
           "type2.required" => '必须提交签订类型',
           "PM.required" => '必须选择项目经理',

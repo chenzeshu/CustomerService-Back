@@ -46,7 +46,7 @@ $factory->define(\App\Models\Employee::class, function () use ($faker) {
 });
 //服务合同
 $factory->define(\App\Models\Contract::class, function () use ($faker){
-    $type2 = ['销售', '客服', '临时'];
+    $type2 = ['销售', '客服'];
     return [
         "contract_id" => 'F'.date('Ymd', time()).rand(0,1000),
         'name'=>$faker->domainName,

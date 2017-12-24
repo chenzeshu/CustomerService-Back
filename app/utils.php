@@ -115,3 +115,15 @@ function myGetMulDiff($old, $new){
     $diff = array_trim($diff);
     return $diff;
 }
+
+/**
+ * 补0
+ * @param $number 补几位
+ */
+function zerofill($number){
+    $zeros = "";
+    for (;$number>0;$number--){
+        $zeros .= "0";
+    }
+    return $zeros;
+}

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\LoginExp\WrongInputExp;
 use App\Http\Helpers\Params;
+use App\Id_record;
 use App\Models\Channels\Channel_apply;
 use App\Models\Channels\Contractc_plan;
 use App\Models\Company;
 use App\Models\Contract;
+use App\Models\Contractc;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
@@ -47,12 +49,6 @@ class LoginController extends ApiController
 //        LEFT JOIN channel_operatives as c21 on c21.channel_apply_id = c2.id
 //        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
 //        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
-        $planModel = Contractc_plan::findOrFail(6);
-        $curTime = ceil((strtotime("2017-12-2 00:00:00") - strtotime("2017-12-1 00:00:00")) / Params::ChannelTime);
-        $check = $planModel->total  - $planModel->use  - $curTime;
-        return $check;
-        return 'success';
-
     }
 
     public function test2(Request $request)

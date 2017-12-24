@@ -20,7 +20,6 @@ class ContractcRequest extends FormRequest
     {
         return [
             'company_id' => 'required',
-            'contract_id' => 'required',
             "PM" => 'required',
             "time" => 'required',
             "beginline" => 'required',
@@ -33,7 +32,6 @@ class ContractcRequest extends FormRequest
     {
         return [
             "company_id.required" => '必须提交单位编号',
-            "contract_id.required" => '必须提交合同编号',
             "PM.required" => '必须选择项目经理',
             "time.required" => '必须选择签订日期',
             "beginline.required" => '必须提交生效日期',

@@ -12,6 +12,7 @@ use App\Http\Helpers\Scope;
 use App\Http\Repositories\ServiceRepo;
 use App\Http\Requests\Service\ServiceStoreRequest;
 use App\Http\Traits\UploadTrait;
+use App\Id_record;
 use App\Models\Contract;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
@@ -162,6 +163,27 @@ class ServiceController extends ApiController
                     $plan_num = 0;
                 }
                 $model->update(['use'=> $plan_num]);  //使用量增加
+
+            //todo 自动生成服务单编号
+            $record = Id_record::find(4)->record;
+            $len = 3 - strlen($record);
+            $request['service_id'] = date('Y', time()).zerofill($len).$record;
+
+            //todo  临时文件移入永久文件夹
+            if($request->has('fileList')){
+                $ids = $this->moveAndSaveFiles($request->fileList);
+                $request['document'] = $ids;
+                unset($request['fileList']);
+            }
+
+            //todo 检查响应时间
+            if($request->status == "待审核" || $request->status == "已派单"){
+                $request['time3'] = date('Y-m-d H:i:s', time());
+            }
+
+            //todo 存储
+            $data = Service::create($request->all());
+            return $this->res(2002, "新建信道服务单成功", $data);
         }
         catch (TimePassedException $e){
             return $this->res($e->code, $e->msg);
@@ -172,21 +194,6 @@ class ServiceController extends ApiController
         catch (NeedPositiveNumberException $e){
             return $this->res($e->code, $e->msg);
         }
-        //todo  临时文件移入永久文件夹
-        if($request->has('fileList')){
-            $ids = $this->moveAndSaveFiles($request->fileList);
-            $request['document'] = $ids;
-            unset($request['fileList']);
-        }
-
-        //todo 检查响应时间
-        if($request->status == "待审核" || $request->status == "已派单"){
-            $request['time3'] = date('Y-m-d H:i:s', time());
-        }
-
-        //todo 存储
-        $data = Service::create($request->all());
-        return $this->res(2002, "新建信道服务单成功", $data);
     }
 
     //todo 派单时的方法及触发短信/邮件/内部通知

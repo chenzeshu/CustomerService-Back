@@ -20,7 +20,6 @@ class ChannelStoreRequest extends FormRequest
     {
         return [
             'contractc_id' => 'required',
-            'channel_id' => 'required',
             "employee_id" => 'required',
         ];
     }
@@ -29,7 +28,6 @@ class ChannelStoreRequest extends FormRequest
     {
         return [
             "contractc_id.required" => '必须提交所属合同编号',
-            "channel_id.required" => '必须提交信道服务单编号',
             "employee_id.required" => '必须提交客户申请人',
         ];
     }

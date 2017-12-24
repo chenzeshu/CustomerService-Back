@@ -6,6 +6,7 @@ use App\Exceptions\Channels\OutOfTimeException;
 use App\Http\Helpers\Params;
 use App\Http\Repositories\ChannelRepo;
 use App\Http\Requests\channel\ChannelStoreRequest;
+use App\Id_record;
 use App\Models\Channels\Channel;
 use App\Models\Channels\Contractc_plan;
 use Illuminate\Support\Facades\Cache;
@@ -50,8 +51,13 @@ class ChannelController extends ApiController
         try{
             //todo 检查套餐余量
             $this->repo->checkPlan($request);
+            //todo 信道服务单号
+            $record = Id_record::find(5)->record;
+            $len = 3 - strlen($record);
+            $request['channel_id'] = date('Y', time()).zerofill($len).$record;
+
             //todo 通过校验后, 正式创建
-            $channelModel = Channel::create($request->except(['id2','id3', 't1', 't2', 'id1']));
+            $channelModel = Channel::create($request->except(['id2','id3', 't1', 't2', 'id1','customer']));
             $channelModel->channel_applys()->create($request->only(['id1', 'id2','id3', 't1', 't2',]));
             return $this->res(2002, "新建信道服务单成功", ['data'=>$channelModel]);
 
@@ -81,7 +87,6 @@ class ChannelController extends ApiController
      */
     public function update(ChannelStoreRequest $request, $id)
     {
-        //fixme 不支持修改信号服务单号, 所以前端只有灰色, 没有修改可能
         $re = Channel::find($id)->update($request->except(['customer','source_info', 'contractc', 'channel_applys']));
 
         //todo 假如将已完成改为拒绝, 则如何处置?

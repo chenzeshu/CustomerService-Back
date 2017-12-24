@@ -159,7 +159,6 @@ class ApplyController extends ApiController
                     $request->only(['checker_id','id1','id2','id3','id4', 'remark','t1', 't2'])
                 );
             }
-
             Channel::forget_cache();
             return $this->res(2003, '审核通过');
 

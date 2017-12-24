@@ -20,7 +20,7 @@ class CreateContractsTable extends Migration
             $table->decimal('money', 10, 2)->nullable();
             $table->string('contract_id');
             $table->string('type1');
-            $table->enum('type2', ['销售', '客服', '临时'])->default('销售');
+            $table->enum('type2', ['销售', '客服'])->default('销售');
             $table->string('PM',50);
             $table->string('TM',50)->nullable();
             $table->timestamp('time1');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\Back;
 use App\Http\Repositories\ContractcRepo;
 use App\Http\Requests\contractc\ContractcRequest;
 use App\Http\Traits\UploadTrait;
+use App\Id_record;
 use App\Jobs\Cache\RefreshContractcs;
 use App\Models\Contractc;
 use App\Models\Money\ChannelMoneyDetail;
@@ -40,13 +41,17 @@ class ContractcController extends ApiController
 
     public function store(ContractcRequest $request)
     {
+        //todo 合同编号
+        $record = Id_record::find(3)->record;
+        $len = 3 - strlen($record);
+        $request['contract_id'] ="中网信字".date('Y', time()).zerofill($len).$record;
+
         //todo  文件上传
         if($request->has('fileList')){
             $ids = $this->moveAndSaveFiles($request->fileList);
             $request['document'] = $ids;
             unset($request['fileList']);
         }
-        Contractc::forget_cache();
         $data = Contractc::create($request->except('company'));
         return $this->res(2002, '新建信道合同成功', $data);
     }
@@ -60,13 +65,33 @@ class ContractcController extends ApiController
             $request['document'] = $this->getFinalIds($request, $doc_id);
             unset($request['fileList']);
         }
-        Contractc::forget_cache();  //todo 失效缓存
         $re = Contractc::findOrFail($id)->update($request->except(['company', 'channel_money']));
         return $this->res(2003, '更新信道合同成功', $re);
     }
 
     /**
-     * 更新合同详情
+     * 删除信道合同
+     * @param $id
+     */
+    public function destroy($id)
+    {
+        $model = Contractc::findOrFail($id);
+        //todo 删除文件
+        $this->deleteFilesForDestroy($model->document);
+        //todo 删除回款总览&回款详情
+        $model->ChannelMoney()
+            ->each(function ($c){
+                $c->ChannelMoneyDetails()->get()->each(function ($m){
+                    $m->delete();
+                });
+                $c->delete();
+            });
+        $model->delete();
+        return $this->res(2004, '删除成功');
+    }
+
+    /**
+     * 更新合同回款详情
      * @param $contract_id
      */
     public function updateMoney($contractc_id, Request $request)
@@ -106,13 +131,6 @@ class ContractcController extends ApiController
         ChannelMoneyDetail::destroy($money_detail_id);
         Contractc::forget_cache();
         return $this->res(2006, '成功');
-    }
-
-    public function destroy($id)
-    {
-        $re = Contractc::findOrFail($id)->delete();
-        Contractc::forget_cache();
-        return $this->res(2004, '删除成功', $re);
     }
 
     //要求关键字模糊查询

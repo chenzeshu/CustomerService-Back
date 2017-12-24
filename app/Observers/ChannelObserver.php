@@ -9,6 +9,7 @@
 namespace App\Observers;
 
 
+use App\Id_record;
 use App\Models\Channels\Channel;
 
 class ChannelObserver
@@ -19,6 +20,11 @@ class ChannelObserver
     public function saved()
     {
         Channel::forget_cache();
+    }
+
+    public function created()
+    {
+        Id_record::find(5)->increment('record');
     }
 
     /**

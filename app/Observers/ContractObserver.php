@@ -10,6 +10,7 @@ namespace App\Observers;
 
 
 use App\Http\Controllers\v1\Back\ServiceController;
+use App\Id_record;
 use App\Models\Contract;
 
 class ContractObserver
@@ -29,6 +30,11 @@ class ContractObserver
     public function created(Contract $contract)
     {
         $contract->ServiceMoney()->create([]);
+        if($contract->type2 == "销售"){
+            Id_record::find(1)->increment('record');
+        }else{
+            Id_record::find(2)->increment('record');
+        }
     }
 
     public function deleting(Contract $contract)
