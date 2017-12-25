@@ -10,6 +10,7 @@ use App\Models\Channels\Contractc_plan;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Contractc;
+use App\Models\Employee;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
@@ -49,6 +50,7 @@ class LoginController extends ApiController
 //        LEFT JOIN channel_operatives as c21 on c21.channel_apply_id = c2.id
 //        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
 //        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
+        return 123;
     }
 
     public function test2(Request $request)
@@ -102,5 +104,17 @@ class LoginController extends ApiController
     {
         //todo 如果通过了中间件, 自然返回ture
         return $this->res(1000, '登陆成功');
+    }
+
+    public function findUser(Request $request)
+    {
+        $user = Employee::where('openid', $request->openid)->first();
+        if(empty($user)){
+            //返回jwt_token, 并让前端跳转到三大申请页面(派单, 信道, 保修)
+            $this->res(6000, '已经是用户, 开始跳转');
+        }else{
+            //跳转到注册页面
+            $this->res(6001, '请注册');
+        }
     }
 }
