@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Exceptions\BaseException;
 use App\Exceptions\Channels\OutOfTimeException;
+use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
 use App\Http\Helpers\JWTHelper;
 use App\Models\Employee;
@@ -45,12 +47,6 @@ class LoginController extends ApiController
 //        LEFT JOIN channel_operatives as c21 on c21.channel_apply_id = c2.id
 //        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
 //        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
-//        $customClaims = ['scope' => 15];
-//        $user = User::where('phone', 18502557106)->first();
-//        $token = JWTAuth::fromUser($user, $customClaims);
-//        return $token;
-//           return $this->res(401, $exception->msg, $data);
-//       }
     }
 
     public function test2(Request $request)
@@ -78,9 +74,10 @@ class LoginController extends ApiController
             $phone = $request->phone;
             $pass = $request->password;
             $user = User::where('phone', $phone)->first();
-
             if($user && Hash::check($pass, $user->password)) {
-
+                if($user['status'] == 'offline'){
+                    throw new OfflineException();
+                }
                 $jwt_token = JWTAuth::fromUser($user, ['scope' => $user['scope']]);//不使用JWTAuth::attemp,  为了记录登陆信息
                 //todo 记录登陆时间
                 $ip = $_SERVER['REMOTE_ADDR'];
@@ -99,7 +96,7 @@ class LoginController extends ApiController
                 throw new WrongInputExp();
             }
             //fixme 三次填写错误出现验证码, 后面再做
-        }catch (WrongInputExp $e){
+        }catch (BaseException $e){
             return $this->error($e);
         }
 
