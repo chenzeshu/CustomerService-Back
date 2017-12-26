@@ -101,11 +101,7 @@ class ServiceController extends ApiController
             ];
             return $this->res(200, '待审核服务申请', $data);
         }catch (BaseException $e){
-            $data = [
-                'code' => $e->code,  //-4001
-                'message' => $e->msg
-            ];
-            return $this->res(401, $e->msg, $data);
+            return $this->error($e);
         }
     }
 

@@ -29,6 +29,11 @@ class JWTHelper
         return $payload;
     }
 
+    /**
+     * fixme 应该把scope放进jwt, 避免调阅数据库
+     * @param Request $request
+     * @return mixed
+     */
     public static function getUser(Request $request)
     {
         $payload = self::getPayload($request);
@@ -45,7 +50,7 @@ class JWTHelper
 
     public static function getUserScope(Request $request)
     {
-        $user = self::getUser($request);
-        return $user->scope;
+        $payload = self::getPayload($request);
+        return $payload['scope'];
     }
 }

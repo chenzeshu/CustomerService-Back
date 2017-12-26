@@ -68,11 +68,7 @@ class ApplyController extends ApiController
             return $this->res(200, '待审核', $data);
 
         }catch (BaseException $e){
-            $data = [
-                'code' => $e->code,  //-4001
-                'message' => $e->msg
-            ];
-            return $this->res(401, $e->msg, $data);
+            return $this->error( $e);
         }
 
 
@@ -134,7 +130,7 @@ class ApplyController extends ApiController
             return $this->res(2003, '审核通过');
 
         } catch (OutOfTimeException $e){
-            return $this->res($e->code, $e->msg);
+            return $this->error($e);
         }
 
     }
@@ -163,7 +159,7 @@ class ApplyController extends ApiController
             return $this->res(2003, '审核通过');
 
         } catch (OutOfTimeException $e) {
-            return $this->res($e->code, $e->msg);
+            return $this->error($e);
         }
     }
 }

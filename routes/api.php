@@ -11,6 +11,11 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');
 
+
+/** ===================== ========== 微信小程序 =========== =========================*/
+    Route::post('/findUser', 'LoginController@findUser'); //验证是否注册过
+    Route::get('/getjwt',  'LoginController@getJWT');
+
 /** ===================== ========== FileUpload =========== =========================*/
     //todo 公用上传/临时删除file
     Route::post('upload', 'ContractController@uploadFileToTemp');

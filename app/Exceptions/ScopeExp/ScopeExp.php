@@ -18,5 +18,5 @@ class ScopeExp extends BaseException
     // 自定义的错误码
     public $code = -4001; //通用类型错误号10000
 
-    public $httpCode = 401;
+    public $httpCode = 404;
 }

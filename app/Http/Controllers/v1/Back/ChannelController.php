@@ -62,7 +62,7 @@ class ChannelController extends ApiController
             return $this->res(2002, "新建信道服务单成功", ['data'=>$channelModel]);
 
         }catch (OutOfTimeException $e){
-            return $this->res($e->code, $e->msg);
+            return $this->error($e);
         }
     }
 

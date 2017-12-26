@@ -43,8 +43,10 @@ class RefreshToken extends BaseMiddleware
         // send the refreshed token back to the client
         $response->headers->set('Authorization', 'Bearer '.$newToken);
         $response->headers->set('username', urlencode($user->name));
-        $loginInfo = User::findOrFail($user['id'])->loginLogs()->orderBy('created_at', 'desc')->offset(1)->first();
-        Cache::put('loginInfo', $loginInfo, 3600);
+        if(empty(Cache::get('loginInfo'))){
+            $loginInfo = User::findOrFail($user['id'])->loginLogs()->orderBy('created_at', 'desc')->offset(1)->first();
+            Cache::put('loginInfo', $loginInfo, 3600);
+        }
         return $response;
     }
 }
