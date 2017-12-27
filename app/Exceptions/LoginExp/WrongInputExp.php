@@ -8,7 +8,6 @@
 
 namespace App\Exceptions\LoginExp;
 
-
 use App\Exceptions\BaseException;
 
 class WrongInputExp extends BaseException

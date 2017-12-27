@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Facades\JWTFactory;
 
 class LoginController extends ApiController
 {
@@ -23,11 +24,17 @@ class LoginController extends ApiController
 
     protected $sms;
     protected $auth;
+    protected $name = [];
 
     function __construct(Sms $sms, \Tymon\JWTAuth\JWTAuth $auth)
     {
         $this->sms = $sms;
         $this->auth = $auth;
+    }
+
+    public function myeach($foos, $foosCallback)
+    {
+        $this->name[$foos] = $foosCallback->bindTo($this, __CLASS__);
     }
 
     public function test()
@@ -47,6 +54,13 @@ class LoginController extends ApiController
 //        LEFT JOIN channel_operatives as c21 on c21.channel_apply_id = c2.id
 //        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
 //        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
+//        $user = User::where('phone', 18502557106)->first();
+//        $jwt_token = JWTAuth::fromUser($user, ['scope' => $user['scope']]);//不使用JWTAuth::attemp,  为了记录登陆信息
+//        return $jwt_token;
+//        $token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9";
+//        $token = hash_hmac("sha256", $token, "secret");
+
+//        $openid = $this->getOpenid($request->code);
     }
 
     public function test2(Request $request)
@@ -111,16 +125,9 @@ class LoginController extends ApiController
 
     public function findUser(Request $request)
     {
-        $jscode = $request->code;
-        $appid = env('WX_APP_ID');
-        $secret = env('WX_APP_SECRET');
-
-        $url = sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-            $appid, $secret, $jscode);
-        $sessionArr = $this->curl_get($url);
-        $sessionArr = json_decode($sessionArr, true);
-        $openid = $sessionArr['openid'];
-        if($emp = Employee::where('openid', $openid)->first()){
+        $openid = $this->getOpenid($request->code);
+        $emp = Employee::where('openid', $openid)->first();
+        if($emp){
             $token = JWTAuth::fromUser($emp);
             return $this->res(6000, '已经通过, 同意跳转', $token);
         }else {
@@ -140,4 +147,6 @@ class LoginController extends ApiController
         $payload = json_decode($payload, true);
         return $payload;
     }
+
+
 }

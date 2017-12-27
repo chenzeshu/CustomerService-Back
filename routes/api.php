@@ -15,6 +15,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 /** ===================== ========== 微信小程序 =========== =========================*/
     Route::post('/findUser', 'LoginController@findUser'); //验证是否注册过
     Route::get('/getjwt',  'LoginController@getJWT');
+    Route::post('/emp_watings','EmpWaitingController@store');  //微信小程序申请注册
+    Route::get('/emp_watings/sendMsg/{phoneNumber}','EmpWaitingController@sendMsg');  //微信小程序申请注册 => 生成验证码并发送
+    Route::get('/emp_watings/checkCode/{code}','EmpWaitingController@checkCode');  //微信小程序申请注册 => 短信验证
 
 /** ===================== ========== FileUpload =========== =========================*/
     //todo 公用上传/临时删除file
@@ -65,6 +68,15 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/pass/{id}', 'EmployeeController@pass');  //todo 通过未审核者
             Route::get('/rej/{id}', 'EmployeeController@rej');  //todo 拒绝未审核者
             Route::resource('/','EmployeeController');
+        });
+
+        //todo emp_wating
+        Route::group(['prefix'=>'emp_watings'], function(){
+            Route::get('/page/{page}/{pageSize}', 'EmpWaitingController@page');
+            Route::get('/s/{name}/{page}/{pageSize}','EmpWaitingController@search');  //todo 模糊搜索人员
+            Route::post('/update/{id}', 'EmpWaitingController@update');
+            Route::get('/delete/{id}','EmpWaitingController@destroy');
+//            Route::post('/','EmployeeController@store');  //申请注册, 被提到jwt外面去了
         });
 
         //todo contracts

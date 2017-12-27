@@ -26,7 +26,7 @@ class Cors
                 header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization, X-Hub-Signature');
                 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, PATCH, DELETE');
 //                header('Access-Control-Allow-Methods: head, get, post, put, delete, patch ');
-                header('Access-Control-Expose-Headers: Authorization, username');
+                header('Access-Control-Expose-Headers: Authorization, username, jwtToken');
             }
         }
         return $next($request);
