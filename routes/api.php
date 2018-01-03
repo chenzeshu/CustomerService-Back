@@ -15,9 +15,11 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 /** ===================== ========== 微信小程序 =========== =========================*/
     Route::post('/findUser', 'LoginController@findUser'); //验证是否注册过
     Route::get('/getjwt',  'LoginController@getJWT');
-    Route::post('/emp_watings','EmpWaitingController@store');  //微信小程序申请注册
-    Route::get('/emp_watings/sendMsg/{phoneNumber}','EmpWaitingController@sendMsg');  //微信小程序申请注册 => 生成验证码并发送
-    Route::get('/emp_watings/checkCode/{code}','EmpWaitingController@checkCode');  //微信小程序申请注册 => 短信验证
+    Route::post('/emp_waitings','EmpWaitingController@store');  //微信小程序申请注册
+    Route::get('/emp_waitings/delete/{id}','EmpWaitingController@delete');  //微信小程序申请注册 => 删除之前被拒绝的申请信息
+    Route::get('/emp_waitings/sendMsg/{phoneNumber}','EmpWaitingController@sendMsg');  //微信小程序申请注册 => 生成验证码并发送
+    Route::get('/emp_waitings/checkCode/{code}','EmpWaitingController@checkCode');  //微信小程序申请注册 => 短信验证
+    Route::get('/emp_waitings/search/{openid}','EmpWaitingController@search');  //微信小程序申请注册 => 查询注册进度
 
 /** ===================== ========== FileUpload =========== =========================*/
     //todo 公用上传/临时删除file
@@ -65,8 +67,8 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
             Route::get('/verify', 'EmployeeController@verify');  //todo 筛选未审核者
-            Route::get('/pass/{id}', 'EmployeeController@pass');  //todo 通过未审核者
-            Route::get('/rej/{id}', 'EmployeeController@rej');  //todo 拒绝未审核者
+            Route::post('/pass/{id}', 'EmployeeController@pass');  //todo 通过未审核者
+            Route::post('/rej/{id}', 'EmployeeController@rej');  //todo 拒绝未审核者
             Route::resource('/','EmployeeController');
         });
 

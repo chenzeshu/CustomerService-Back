@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\BaseException;
-use App\Exceptions\Channels\OutOfTimeException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
-use App\Http\Helpers\JWTHelper;
+use App\Models\Check\Check_phone;
 use App\Models\Employee;
+use App\Models\Employee_errno;
+use App\Models\Employee_waiting;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Facades\JWTFactory;
 
 class LoginController extends ApiController
 {
@@ -60,7 +60,30 @@ class LoginController extends ApiController
 //        $token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9";
 //        $token = hash_hmac("sha256", $token, "secret");
 
-//        $openid = $this->getOpenid($request->code);
+//        DB::update('update check_phones set status = 0 where id = 1');
+//        return ;
+//        $phoneNumber = "18502557106";
+//        $code = "31".rand(1000,9999);
+//        Check_phone::create([
+//            'phone' => $phoneNumber,
+//            'code' => $code,
+//            'expire_at' => date('Y-m-d h:i:s', time()+300)
+//        ]);
+        Employee_errno::create(
+            [
+                'employee_waiting_id' => 1,
+                'reason' => 321321
+            ],
+            [
+                'employee_waiting_id' => 1,
+                'reason' => 321321
+            ],
+            [
+                'employee_waiting_id' => 1,
+                'reason' => 321321
+            ]
+        );
+
     }
 
     public function test2(Request $request)
@@ -82,7 +105,6 @@ class LoginController extends ApiController
      */
     public function login(Request $request)
     {
-
         try{
             //fixme 未做$requestCheck
             $phone = $request->phone;
@@ -98,7 +120,7 @@ class LoginController extends ApiController
                 User::findOrFail($user['id'])->loginLogs()->create(["ip"=> $ip]);
                 return $this->res(1000, $user->name . '已登陆成功', ['token' => $jwt_token]);
 
-                //todo 短信服务, 已测试成功, 暂注释
+                //todo 短信服务
                 if($res = $this->sms->sendSms( config('sms.signature'),config('sms.AdminLogin.login'), $user->phone, [
                     'customer'=>$user->name])){
                     return $this->res(1000, $user->name.'已登陆成功', ['token'=>$jwt_token]);
@@ -123,14 +145,26 @@ class LoginController extends ApiController
         return $this->res(1000, '登陆成功');
     }
 
+    /**
+     * 控制在2读以内
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function findUser(Request $request)
     {
         $openid = $this->getOpenid($request->code);
         $emp = Employee::where('openid', $openid)->first();
         if($emp){
-            $token = JWTAuth::fromUser($emp);
+            $token = JWTAuth::fromUser($emp, ['com'=>$emp['company_id']]);
             return $this->res(6000, '已经通过, 同意跳转', $token);
         }else {
+            if($data = Employee_waiting::with('errnos')->where('openid', $openid)->first()){
+                if($data['status'] == '未通过'){
+                    return $this->res(6002, '等待审核', $data);
+                }else{
+                    return $this->res(6003, '拒绝', $data);
+                }
+            }
             return $this->res(6001, '请注册');
         }
     }

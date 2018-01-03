@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Exceptions\BaseException;
+use App\Exceptions\LoginExp\RegMailException;
+use App\Http\Repositories\MailRepository;
 use App\Models\Check\Check_phone;
-use App\Models\Employee_wating;
+use App\Models\Employee_waiting;
 use App\Services\Sms;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Illuminate\Database\QueryException;
@@ -16,11 +18,18 @@ class EmpWaitingController extends ApiController
 {
     use CurlFuncs;
 
+    protected $mail;
+
+    function __construct(MailRepository $mail)
+    {
+        $this->mail = $mail;
+    }
+
     public function page($page, $pageSize)
     {
         $begin =( $page - 1 ) * $pageSize;
-        $emp = Employee_wating::offset($begin)->limit($pageSize)->get();
-        $count = Employee_wating::count();
+        $emp = Employee_waiting::offset($begin)->limit($pageSize)->get();
+        $count = Employee_waiting::count();
         $data = [
             'data' => $emp,
             'count' => $count
@@ -37,10 +46,18 @@ class EmpWaitingController extends ApiController
 
             $request['openid'] = $openid;
 
-            Employee_wating::create($request->except(['jscode']));
-            return $this->res(2003, '申请成功, 请等待回复!');
+            $check = $this->checkCode($request->phone, $request->phoneCode);
+            if($check) {
+                $data = Employee_waiting::create($request->except(['jscode', 'phoneCode']));
+                $data['status'] = '未通过';
+                return $this->res(2003, '申请成功, 请等待回复!', $data);
+            }else{
+                throw new RegMailException();
+            }
         }catch (QueryException $e){
             return $this->res(-2003, '您已经提交过申请, 请耐心等待');
+        }catch (RegMailException $e){
+            return $this->error($e);
         }
 
     }
@@ -55,28 +72,59 @@ class EmpWaitingController extends ApiController
 
     public function delete($id)
     {
-        Employee_wating::destroy($id);
+        Employee_waiting::destroy($id);
 
         return $this->res(2005, '删除成功!');
     }
 
+    /**
+     * 存储验证码并以短信发送给用户
+     * @param $phoneNumber
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function sendMsg($phoneNumber)
     {
         $code = $this->makeCode();
         Check_phone::create([
-            'phoneNumber' => $phoneNumber,
-            'code' => $code
+            'phone' => $phoneNumber,
+            'code' => $code,
+            'expire_at' => date('Y-m-d H:i:s', time()+300)
         ]);
-
-//        (new Sms())->sendSms($signName, $templateCode, $phoneNumbers, $templateParam = null, $outId = null)
-
-        return $this->res(2003, "发送成功");
+        $re = $this->mail->sendCode($phoneNumber, $code);
+        if($re){//$re true / false
+            return $this->res(2003, "发送成功");
+        }else{
+            return $this->res(-2003, "发送失败");
+        }
     }
 
-    public function checkCode($code)
+    //查询进度
+    public function search($openid)
     {
-        $data = DB::select("select phone, code, created_at, expire");
 
+    }
+
+    /**
+     * 注册校验手机与验证码
+     * @param string $phone
+     * @param string $code
+     * @return boolean $check
+     */
+    private function checkCode($phone, $code)
+    {
+        $data = DB::select("select id, code, created_at, expire_at from check_phones where status = 0 and phone = $phone");
+        $check = false;
+        foreach ($data as $d){
+            if($d->code == $code && time() < strtotime($d->expire_at) ){
+                $check = true;
+                break;
+            }
+        }
+        //验证成功, 才将所有code都过期, 否则如果其输错了验证码, 就会导致前面全部作废
+        if($check == true && count($data) > 1){
+            DB::update("update check_phones set status = 1 where status = 0 and phone = $phone");
+        }
+        return $check;
     }
 
     /**

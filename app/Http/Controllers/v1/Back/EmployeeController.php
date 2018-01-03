@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Http\Repositories\MailRepository;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Contractc;
 use App\Models\Employee;
+use App\Models\Employee_waiting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends ApiController
 {
+    protected $mail;
+    function __construct(MailRepository $mail)
+    {
+        $this->mail = $mail;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,8 +49,8 @@ class EmployeeController extends ApiController
      */
     public function verify()
     {
-        $emp = Employee::where('status','=','offline')->with('company')->get()->toArray();
-        $total = Employee::where('status','=','offline')->count();
+        $emp = Employee_waiting::where('status','未通过')->get()->toArray();
+        $total = Employee_waiting::where('status','未通过')->count();
         $data = [
             'data' => $emp,
             'total' => $total,
@@ -51,32 +59,50 @@ class EmployeeController extends ApiController
     }
 
     /**
-     * 通过未审核者(将offline或"离职"者直接转变成"online")
+     * 通过未审核者
      */
-    public function pass($id)
+    public function pass($id, Request $request)
     {
-        $re = Employee::findOrFail($id)->update([
-           'status'=>'online'
-        ]);
+        //转移
+        $data = collect($request->all())->forget('id')->toArray();
+        Employee::create($data);
+        //删除waiting表中数据
+        Employee_waiting::destroy($id);
 
-        //todo 应该同时发送微信小程序消息+一条短信给被通过的用户
+        //todo 应该同时发送微信小程序消息
+        //todo 一条短信给被通过的用户
+        $re = $this->mail->sendRegMsg($data['phone'], $data['name']);
         //...
-        return $this->res(200, '审核通过, 用户将收到通知');
+        if($re){
+            return $this->res(200, '审核通过, 用户将收到通知');
+        }else{
+            return $this->res(-200, "发送短信失败");
+        }
+
     }
 
     /**
      * 拒绝未审核者(将offline或"离职"者直接转变成"online")
      */
-    public function rej($id)
+    public function rej($id, Request $request)
     {
-        $re = Employee::findOrFail($id)->update([
-            'status'=>'拒绝'
+        $model = Employee_waiting::findOrFail($id);
+        $model->update([
+            'status' => '拒绝'
         ]);
-
+        foreach ($request->reason as $reason){
+            $model->errnos()->create([
+                'employee_waiting_id' => $id,
+                'reason' => $reason
+            ]);
+        }
         //todo 应该同时发送微信小程序消息+一条短信给被拒绝的用户
-        //fixme    万一是恶意注册???
-        //...
-        return $this->res(200, '已拒绝, 用户将收到通知');
+        $re = $this->mail->sendRegFailMsg($model->phone, $model->name);
+        if($re){
+            return $this->res(200, '已拒绝, 用户将收到通知');
+        }else{
+            return $this->res(-200, "发送短信失败");
+        }
     }
 
     /**

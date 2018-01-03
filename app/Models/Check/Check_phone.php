@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Check_phone extends Model
 {
-    //
+    protected $guarded = [];
 }
