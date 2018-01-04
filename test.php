@@ -1,4 +1,4 @@
 <?php
-$ids = "1,2,3,4,";
-$ids = substr($ids, 0, -1);
+$ids = "12";
+$ids = strlen($ids);
 echo $ids;

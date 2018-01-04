@@ -30,8 +30,8 @@ class CreateServicesTable extends Migration
             $table->enum('charge_flag',['到款', '未到款'])->default('未到款');
             $table->decimal('charge',10,2)->nullable();
             $table->decimal('time4',10,2)->nullable(); //到款时间
-            $table->timestamp('time1')->nullable();  //签订/生效时间
-            $table->timestamp('time2')->nullable(); //验收日期
+            $table->timestamp('time1')->nullable();  //派单时间
+            $table->timestamp('time2')->nullable(); //解决时间
             $table->tinyInteger('day_sum')->nullable();  //占用工时
             $table->string('desc1',600)->nullable(); //问题描述  200字以内, 目前不希望放图url
             $table->string('desc2',600)->nullable(); //处理描述 200字以内

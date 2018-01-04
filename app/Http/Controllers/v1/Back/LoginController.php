@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Dao\ServiceDAO;
 use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
@@ -9,6 +10,7 @@ use App\Models\Check\Check_phone;
 use App\Models\Employee;
 use App\Models\Employee_errno;
 use App\Models\Employee_waiting;
+use App\Models\Services\Service;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
@@ -69,21 +71,62 @@ class LoginController extends ApiController
 //            'code' => $code,
 //            'expire_at' => date('Y-m-d h:i:s', time()+300)
 //        ]);
-        Employee_errno::create(
-            [
-                'employee_waiting_id' => 1,
-                'reason' => 321321
-            ],
-            [
-                'employee_waiting_id' => 1,
-                'reason' => 321321
-            ],
-            [
-                'employee_waiting_id' => 1,
-                'reason' => 321321
-            ]
-        );
 
+
+//        $data = DB::select("SELECT s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man,
+//        c.name, c2.name as customer, c3.name as type
+//        FROM services as s
+//        LEFT JOIN employees as c on c.id in (s.man)
+//        LEFT JOIN employees as c2 on c2.id = s.customer
+//        LEFT JOIN service_types as c3 on c3.id = s.type
+//        where find_in_set('$emp_id', s.man )
+//        ORDER BY s.time1 desc
+//        LIMIT 0,5");
+//        if(count($data) > 1){
+//            collect($data)->map(function ($d){
+//                if(strpos($d->man, ',')){
+//                    $arr = DB::select("select name from employees where id in (".$d->man.")");
+//                    $d->name = collect($arr)->implode('name', ",");
+//                }
+//            });
+//        }
+//        else{
+//            if(strpos($data[0]->man, ',')){
+//                $arr = DB::select("select name from employees where id in (".$data[0]->man.")");
+//                $data[0]->name = collect($arr)->implode('name', ",");
+//            }
+//        }
+
+        $emp_id = 27;
+        $page = 1;
+        $pageSize = 5;
+        $data = ServiceDAO::getService($page, $pageSize, $emp_id);
+        return $data;
+        $begin = ($page - 1) * $pageSize;
+        $data = DB::select("SELECT s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, 
+        c.name, c2.name as customer, c3.name as type
+        FROM services as s 
+        LEFT JOIN employees as c on c.id in (s.man) 
+        LEFT JOIN employees as c2 on c2.id = s.customer
+        LEFT JOIN service_types as c3 on c3.id = s.type
+        where find_in_set('$emp_id', s.man) 
+        ORDER BY s.time1 desc
+        LIMIT $begin, $pageSize");
+        if(count($data) > 1){
+            collect($data)->map(function ($d){
+                if(strpos($d->man, ',')){
+                    $arr = DB::select("select name from employees where id in (".$d->man.")");
+                    $d->name = collect($arr)->implode('name', ",");
+                }
+            });
+        }
+        else{
+            if(strpos($data[0]->man, ',')){
+                $arr = DB::select("select name from employees where id in (".$data[0]->man.")");
+                $data[0]->name = collect($arr)->implode('name', ",");
+            }
+        }
+        return $data;
     }
 
     public function test2(Request $request)

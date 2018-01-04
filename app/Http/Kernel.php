@@ -3,7 +3,9 @@
 namespace App\Http;
 
 use App\Http\Middleware\Cors;
+use App\Http\Middleware\getEmpFromToken;
 use App\Http\Middleware\GetUserFromToken;
+use App\Http\Middleware\RefreshEmpToken;
 use App\Http\Middleware\RefreshToken;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -65,5 +67,7 @@ class Kernel extends HttpKernel
 //        'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
         'jwt.auth' => GetUserFromToken::class,
         'jwt.refresh' => RefreshToken::class,
+        'jwt.empAuth' => getEmpFromToken::class,
+        'jwt.refreshEmp' => RefreshEmpToken::class,
     ];
 }

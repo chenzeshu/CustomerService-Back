@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_duty;
 use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 
 class Employee extends Model
 {
@@ -25,5 +26,17 @@ class Employee extends Model
     public function channels()
     {
         return $this->hasMany(Channel::class);
+    }
+
+    public static function authenticate($token)
+    {
+        $part = explode(".", $token);
+        $payload = $part[1];
+        $_payload = base64_decode($payload);
+        $_payload = json_decode($_payload, true); //返回数组
+        if(time() > $_payload['exp']){
+            throw new TokenExpiredException();
+        }
+        Employee::findOrFail($_payload['sub']);
     }
 }
