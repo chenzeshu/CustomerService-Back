@@ -26,9 +26,9 @@ return [
 
     'seeding' => [
         'company' => 50,
-        'contract' => 2,
+        'contract' => 4,
         'contract_c' => 2,
-        'service' => 2,
+        'service' => 8,
         'channel' => 2,
         'plan' => 2,
         'device' => 3,

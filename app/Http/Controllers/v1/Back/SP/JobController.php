@@ -4,9 +4,7 @@ namespace App\Http\Controllers\v1\Back\SP;
 
 
 use App\Dao\ServiceDAO;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\v1\Back\ApiController;
-use Illuminate\Support\Facades\DB;
 
 class JobController extends ApiController
 {

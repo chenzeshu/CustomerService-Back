@@ -8,6 +8,7 @@
 
 namespace App\Dao;
 
+use App\Models\Employee;
 use Illuminate\Support\Facades\DB;
 
 class ServiceDAO
@@ -21,7 +22,7 @@ class ServiceDAO
     public static function getService($page, $pageSize, $emp_id)
     {
         $begin = ($page - 1) * $pageSize;
-        $data = DB::select("SELECT s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, 
+        $data = DB::select("SELECT s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
         c.name, c2.name as customer, c3.name as type
         FROM services as s 
         LEFT JOIN employees as c on c.id in (s.man) 
@@ -34,9 +35,13 @@ class ServiceDAO
         $len = count($data);
         if($len >= 1){
             collect($data)->map(function ($d){
+                $company = Employee::with('company')->where('id', $d->customer_id)->get();
+                $d->company = collect($company[0]['company'])->except(['created_at', 'updated_at', 'profession']);
                 if(strpos($d->man, ',')){
                     $arr = DB::select("select name from employees where id in (".$d->man.")");
+
                     $d->name = collect($arr)->implode('name', ",");
+
                 }
             });
         }
