@@ -6,8 +6,14 @@ use App\Dao\ServiceDAO;
 use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
+use App\Http\Resources\SP\serviceCompanyCollection;
+use App\Http\Resources\SP\serviceCompanyResource;
+use App\Http\Resources\SP\serviceShowResource;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
+use App\Models\Services\Service;
+use App\Models\Utils\Service_type;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
@@ -59,69 +65,19 @@ class LoginController extends ApiController
 //        $token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9";
 //        $token = hash_hmac("sha256", $token, "secret");
 
-//        DB::update('update check_phones set status = 0 where id = 1');
-//        return ;
-//        $phoneNumber = "18502557106";
-//        $code = "31".rand(1000,9999);
-//        Check_phone::create([
-//            'phone' => $phoneNumber,
-//            'code' => $code,
-//            'expire_at' => date('Y-m-d h:i:s', time()+300)
-//        ]);
+//        $company = Company::with('employees')->findOrFail(1);
+//        $data = $company->contracts()->get()->toArray();
+//        return new serviceCompanyResource($company);
 
-
-//        $data = DB::select("SELECT s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man,
-//        c.name, c2.name as customer, c3.name as type
-//        FROM services as s
-//        LEFT JOIN employees as c on c.id in (s.man)
-//        LEFT JOIN employees as c2 on c2.id = s.customer
-//        LEFT JOIN service_types as c3 on c3.id = s.type
-//        where find_in_set('$emp_id', s.man )
-//        ORDER BY s.time1 desc
-//        LIMIT 0,5");
-//        if(count($data) > 1){
-//            collect($data)->map(function ($d){
-//                if(strpos($d->man, ',')){
-//                    $arr = DB::select("select name from employees where id in (".$d->man.")");
-//                    $d->name = collect($arr)->implode('name', ",");
-//                }
-//            });
-//        }
-//        else{
-//            if(strpos($data[0]->man, ',')){
-//                $arr = DB::select("select name from employees where id in (".$data[0]->man.")");
-//                $data[0]->name = collect($arr)->implode('name', ",");
-//            }
-//        }
-        $emp_id = 27;
-        $page = 1;
-        $pageSize = 100;
-        $begin = ($page - 1) * $pageSize;
-        $data = DB::select("SELECT s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
-        c.name, c2.name as customer, c3.name as type
-        FROM services as s 
-        LEFT JOIN employees as c on c.id in (s.man) 
-        LEFT JOIN employees as c2 on c2.id = s.customer
-        LEFT JOIN service_types as c3 on c3.id = s.type
-        where find_in_set('$emp_id', s.man) 
-        ORDER BY s.time1 desc
-        LIMIT $begin, $pageSize");
-
-        $len = count($data);
-        if($len >= 1){
-            collect($data)->map(function ($d){
-                $company = Employee::with('company')->where('id', $d->customer_id)->get();
-                $d->company = collect($company[0]['company'])->except(['created_at', 'updated_at', 'profession']);
-                if(strpos($d->man, ',')){
-                    $arr = DB::select("select name from employees where id in (".$d->man.")");
-
-                    $d->name = collect($arr)->implode('name', ",");
-
-                }
-            });
+        $company = Company::with('employees')->findOrFail(1);
+        $data = $company->contracts()->get()->toArray();
+        if(empty($data)){  //empty这个函数读起来有歧义, 其实是空返回true
+            return $this->res(7004, '查无结果');
         }
-
-        return $data;
+        $data = [
+            $data, new serviceCompanyResource($company)
+        ];
+        return $this->res(7003, '合同列表', $data);
     }
 
     public function test2(Request $request)

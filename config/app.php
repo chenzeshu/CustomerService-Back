@@ -26,7 +26,7 @@ return [
 
     'seeding' => [
         'company' => 50,
-        'contract' => 4,
+        'contract' => 2,
         'contract_c' => 2,
         'service' => 8,
         'channel' => 2,
@@ -61,7 +61,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-
+        Laravoole\LaravooleServiceProvider::class,
         /*
          * Package Service Providers...
          */

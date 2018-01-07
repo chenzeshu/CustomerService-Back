@@ -18,6 +18,7 @@ class Cors
         // 设置允许访问的域地址
         $domains = ['http://localhost:8080', 'https://space-net.cn', 'https://www.space-net.cn'];
         // 判断请求头中是否包含ORIGIN字段
+
         if(isset($request->server()['HTTP_ORIGIN'])){
             $origin = $request->server()['HTTP_ORIGIN'];
             if (in_array($origin, $domains)) {

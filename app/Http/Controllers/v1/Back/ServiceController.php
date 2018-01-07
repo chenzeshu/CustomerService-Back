@@ -58,6 +58,7 @@ class ServiceController extends ApiController
     {
         $emp = Service::where('status','=','待审核')
             ->with(['customer', 'contract', 'source', 'type', 'refer_man.company'])
+            ->orderBy('created_at', 'desc')
             ->get()
             ->each(function ($ser){
                 $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");

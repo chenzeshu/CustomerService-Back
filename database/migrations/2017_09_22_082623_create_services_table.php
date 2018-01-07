@@ -22,7 +22,7 @@ class CreateServicesTable extends Migration
             $table->timestamp('time3')->nullable();  //响应时间, 记录出现"待审核", "已派单"的时间
             //员工拥有访问申请完成的api的权限, 访问此权限时, 会向管理员发送三位一体通知  所以还要封装一下邮件的类
             $table->integer('source')->nullable();
-            $table->integer('type')->nullable();
+            $table->integer('type')->nullable();  //类型 --- service_types 不是 套餐
             $table->string('refer_man')->nullable(); //fixme 提交人
             $table->string('man',50)->nullable();
             $table->string('customer',50);

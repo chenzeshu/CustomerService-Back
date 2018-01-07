@@ -22,7 +22,7 @@ class ServiceDAO
     public static function getService($page, $pageSize, $emp_id)
     {
         $begin = ($page - 1) * $pageSize;
-        $data = DB::select("SELECT s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
+        $data = DB::select("SELECT s.id, s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
         c.name, c2.name as customer, c3.name as type
         FROM services as s 
         LEFT JOIN employees as c on c.id in (s.man) 

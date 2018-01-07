@@ -21,15 +21,22 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::get('/emp_waitings/checkCode/{code}','EmpWaitingController@checkCode');  //微信小程序申请注册 => 短信验证
     Route::get('/emp_waitings/search/{openid}','EmpWaitingController@search');  //微信小程序申请注册 => 查询注册进度
 
-    Route::group(['middleware'=>['jwt.empAuth', 'jwt.refreshEmp']], function (){
+    Route::group(['middleware'=>['jwt.empAuth', 'jwt.refreshEmp'], 'namespace'=>'SP'], function (){
+        Route::get('/searchCompany/{keyword}','CommonController@searchCompany');  //查询单位
+        Route::get('/searchContract/{company_id}','CommonController@searchContract');  //查询合同
+        Route::get('/searchServiceType','CommonController@searchServiceType');  //查询合同
+
         //todo 小程序派单模块
-        Route::group(['prefix'=>'paidan', 'namespace'=>'SP'], function (){
+        Route::group(['prefix'=>'paidan'], function (){
             Route::get('/page/{page}/{pageSize}/{emp_id}', 'JobController@showServiceList'); //检索与自己有关的服务单
-            Route::get('/s/{name}/{page}/{pageSize}','JobController@search');  //todo 模糊搜索
-            Route::post('/update/{id}', 'JobController@update');
-            Route::get('/delete/{id}','JobController@destroy');
-            Route::resource('/','JobController');
+            Route::get('/s/{name}/{page}/{pageSize}','JobController@search');  //todo 模糊搜索\
+            Route::get('/{service_id}','JobController@showServiceDetail');
         });
+
+        Route::group(['prefix'=>'repair'], function (){
+            Route::post('/apply','repairController@apply');
+        });
+
     });
 
 /** ===================== ========== FileUpload =========== =========================*/

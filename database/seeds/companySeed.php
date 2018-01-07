@@ -46,13 +46,20 @@ class companySeed extends Seeder
                       $service->visits()->save($visit);
                    });
                 });
+
+                if(!$company->contracts()->where('name','临时合同')->first()){
+                    //todo 每个单位创建1个临时信道合同
+                    $temp = collect($contract)->toArray();
+                    $temp['id'] ++;
+                    $temp['name']="临时合同";
+                    $company->contracts()->create($temp);
+                };
             });
 
             //todo 制造2个信道合同 + 2个套餐/合同 + 1个临时合同
             factory(\App\Models\Contractc::class, config('app.seeding.contract_c'))->make()->each(function ($contract_c) use ($company){
 
                 $company->contract_cs()->save($contract_c);
-
                 //回款
                 factory(\App\Models\Money\ChannelMoney::class, 1)->make()->each(function ($money) use ($contract_c){
                     $contract_c->ChannelMoney()->save($money);
@@ -65,6 +72,7 @@ class companySeed extends Seeder
 
                 //信道服务单
                 factory(App\Models\Channels\Channel::class, config('app.seeding.channel'))->make()->each(function ($channel) use ($contract_c){
+
                     $contract_c->channels()->save($channel);
                     //信道申请单
                     factory(\App\Models\Channels\Channel_apply::class, 1)->make()->each(function ($apply) use ($channel){
@@ -88,7 +96,7 @@ class companySeed extends Seeder
                 });
 
                 if(!$company->contract_cs()->where('name','临时合同')->first()){
-                    //todo 每个单位创建1个临时合同
+                    //todo 每个单位创建1个临时信道合同
                     $temp = collect($contract_c)->toArray();
                     $temp['id'] ++;
                     $temp['name']="临时合同";
