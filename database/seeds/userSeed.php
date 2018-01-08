@@ -29,13 +29,21 @@ class userSeed extends Seeder
                 'scope' => 8
             ],
             [
-                'name' => '宋小冬',
-                'email'=>'song@qq.com',
-                'password' => bcrypt('666666'),
-                'phone'=>'13611502169',
-                'status'=>'online',
-                'scope' => 8
-            ]
+               'name' => '宋小冬',
+               'email'=>'song@qq.com',
+               'password' => bcrypt('666666'),
+               'phone'=>'13611502169',
+               'status'=>'online',
+               'scope' => 8
+           ],
+           [
+               'name' => '温海婷',
+               'email'=>'1786452378@qq.com',
+               'password' => bcrypt('666666'),
+               'phone'=>'18867722650',
+               'status'=>'online',
+               'scope' => 16
+           ],
         ]);
     }
 }

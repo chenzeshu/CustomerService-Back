@@ -8,7 +8,9 @@
 
 namespace App\Dao;
 
+use App\Id_record;
 use App\Models\Employee;
+use App\Models\Services\Service;
 use Illuminate\Support\Facades\DB;
 
 class ServiceDAO
@@ -47,5 +49,54 @@ class ServiceDAO
         }
 
         return $data;
+    }
+
+
+    /**
+     * 员工报修
+     * @param $service_id  服务单的编号
+     * @param $request
+     * @return mixed
+     */
+    public static function empCreate($request)
+    {
+        $service_id = self::generateId();
+        return Service::create([
+            'contract_id' => $request->contract_id,
+            'service_id' => $service_id,
+            'type' => $request->type_id,
+            'customer'=> $request->cus_id,
+            'refer_man' => $request->zhongId,
+            'source'=>4
+        ]);
+    }
+
+    /**
+     * 客户报修(则申请人与客户为同一个人)
+     * @param $service_id  服务单的编号
+     * @param $request
+     * @return mixed
+     */
+    public static function cusCreate($request)
+    {
+        $service_id = self::generateId();
+        return Service::create([
+            'contract_id' => $request->contract_id,
+            'service_id' => $service_id,
+            'type' => $request->type_id,
+            'customer'=> $request->cus_id,
+            'refer_man' => $request->cus_id,
+            'source'=>4
+        ]);
+    }
+
+    /**
+     * 生成service单号
+     */
+    private static function generateId(){
+        //todo 自动生成服务单编号
+        $record = Id_record::find(4)->record;
+        $len = 3 - strlen($record);
+        return  date('Y', time()).zerofill($len).$record;
     }
 }

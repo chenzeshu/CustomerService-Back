@@ -148,8 +148,10 @@ class EmployeeController extends ApiController
         return $this->res(200, '搜索结果', $data);
     }
 
+
     /**
      * 模糊搜索外部员工
+     * 18.1.8废弃
      */
     public function searchOutEmps($empName)
     {
@@ -169,13 +171,14 @@ class EmployeeController extends ApiController
     }
 
     /**
-     * 模糊搜索内部员工
+     * 模糊搜索内部员工==>逻辑变动, 改为搜索全部员工
      */
     public function searchInnerEmps($empName)
     {
         $emps = DB::table('employees')
-            ->where('company_id', 1)
+//            ->where('company_id', 1)
             ->where('name','like', "%".$empName."%")
+            ->where('status', 'online')  //在职
             ->limit(10)
             ->get(['id', 'name']);
         $total = Employee::where('name', 'like', '%'.$empName.'%')

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\v1\back\SP;
 
+use App\Dao\ServiceDAO;
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Id_record;
 use App\Models\Services\Service;
 use Illuminate\Http\Request;
@@ -20,23 +22,11 @@ class repairController extends ApiController
         if($request->has('zhongId')){
             //中网员工报修
             $service_id = $this->generateId();
-            $re = Service::create([
-                'contract_id' => $request->contract_id,
-                'service_id' => $service_id,
-                'type' => $request->type_id,
-                'customer'=> $request->cus_id,
-                'refer_man' => $request->zhongId
-            ]);
+            $re = ServiceDAO::empCreate($service_id, $request);
         }else{
             //客户报修
             $service_id = $this->generateId();
-            $re = Service::create([
-                'contract_id' => $request->contract_id,
-                'service_id' => $service_id,
-                'type' => $request->type_id,
-                'customer'=> $request->cus_id,
-                'refer_man' => $request->cus_id
-            ]);
+            $re = ServiceDAO::cusCreate($service_id, $request);
         }
         if($re){
             //todo 向管理员发送一条短信
@@ -44,13 +34,21 @@ class repairController extends ApiController
         return $this->res(7004, '报修成功');
     }
 
-    /**
-     * 生成service单号
-     */
-    private function generateId(){
-        //todo 自动生成服务单编号
-        $record = Id_record::find(4)->record;
-        $len = 3 - strlen($record);
-        return  date('Y', time()).zerofill($len).$record;
+    public function getProcess($page, $pageSize, $emp_id, $status)
+    {
+        $begin = ($page - 1) * $pageSize;
+        $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
+            ->where('status', $status)
+            ->where('refer_man', $emp_id)
+            ->offset($begin)
+            ->limit($pageSize)
+            ->get();
+        if( $data->count() == 0){
+            return $this->res(-7003, '暂无数据');
+        }else{
+            return $this->res(7003, '报修进展列表', new ServiceProcessCollection($data));
+        }
+
     }
+
 }

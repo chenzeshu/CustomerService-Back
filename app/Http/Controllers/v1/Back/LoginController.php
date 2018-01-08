@@ -8,6 +8,7 @@ use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
+use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Http\Resources\SP\serviceShowResource;
 use App\Models\Company;
 use App\Models\Employee;
@@ -68,16 +69,12 @@ class LoginController extends ApiController
 //        $company = Company::with('employees')->findOrFail(1);
 //        $data = $company->contracts()->get()->toArray();
 //        return new serviceCompanyResource($company);
+        $emp_id = 1;
+        $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
+            ->where('refer_man', $emp_id)
+            ->get();
 
-        $company = Company::with('employees')->findOrFail(1);
-        $data = $company->contracts()->get()->toArray();
-        if(empty($data)){  //empty这个函数读起来有歧义, 其实是空返回true
-            return $this->res(7004, '查无结果');
-        }
-        $data = [
-            $data, new serviceCompanyResource($company)
-        ];
-        return $this->res(7003, '合同列表', $data);
+        return new ServiceProcessCollection($data);
     }
 
     public function test2(Request $request)

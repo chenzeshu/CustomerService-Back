@@ -22,9 +22,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::get('/emp_waitings/search/{openid}','EmpWaitingController@search');  //微信小程序申请注册 => 查询注册进度
 
     Route::group(['middleware'=>['jwt.empAuth', 'jwt.refreshEmp'], 'namespace'=>'SP'], function (){
-        Route::get('/searchCompany/{keyword}','CommonController@searchCompany');  //查询单位
-        Route::get('/searchContract/{company_id}','CommonController@searchContract');  //查询合同
-        Route::get('/searchServiceType','CommonController@searchServiceType');  //查询合同
+        Route::get('/searchCompany/{keyword}','commonController@searchCompany');  //查询单位
+        Route::get('/searchContract/{company_id}','commonController@searchContract');  //查询合同
+        Route::get('/searchServiceType','c:ommonController@searchServiceType');  //查询合同
 
         //todo 小程序派单模块
         Route::group(['prefix'=>'paidan'], function (){
@@ -35,6 +35,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         Route::group(['prefix'=>'repair'], function (){
             Route::post('/apply','repairController@apply');
+            Route::get('/getProcess/{page}/{pageSize}/{emp_id}/{status}','repairController@getProcess');
         });
 
     });
