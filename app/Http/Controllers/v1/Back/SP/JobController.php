@@ -10,7 +10,7 @@ use App\Models\Employee;
 use App\Models\Services\Service;
 use App\Models\Utils\Service_type;
 use Illuminate\Http\Request;
-
+//派单
 class JobController extends ApiController
 {
     /**
@@ -35,8 +35,6 @@ class JobController extends ApiController
         $data->pm = collect(explode(",", $data->contract['PM']))->map(function($pm){
             return Employee::findOrFail($pm);
         });
-        $data->type = Service_type::findOrFail($data->type)->name;
-
         return new serviceShowResource($data);
     }
 

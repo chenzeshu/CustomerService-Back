@@ -21,12 +21,10 @@ class repairController extends ApiController
         //合同过期过滤已在 CommonController制作
         if($request->has('zhongId')){
             //中网员工报修
-            $service_id = $this->generateId();
-            $re = ServiceDAO::empCreate($service_id, $request);
+            $re = ServiceDAO::empCreate($request);
         }else{
             //客户报修
-            $service_id = $this->generateId();
-            $re = ServiceDAO::cusCreate($service_id, $request);
+            $re = ServiceDAO::cusCreate($request);
         }
         if($re){
             //todo 向管理员发送一条短信
@@ -38,7 +36,7 @@ class repairController extends ApiController
     {
         $begin = ($page - 1) * $pageSize;
         $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
-            ->where('status', $status)
+//            ->where('status', $status)
             ->where('refer_man', $emp_id)
             ->offset($begin)
             ->limit($pageSize)

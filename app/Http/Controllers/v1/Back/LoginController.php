@@ -69,12 +69,20 @@ class LoginController extends ApiController
 //        $company = Company::with('employees')->findOrFail(1);
 //        $data = $company->contracts()->get()->toArray();
 //        return new serviceCompanyResource($company);
-        $emp_id = 1;
+        $emp_id = 5;
+        $page = 1; $pageSize = 4;
+        $begin = ($page - 1) * $pageSize;
         $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
+//            ->where('status', $status)
             ->where('refer_man', $emp_id)
+            ->offset($begin)
+            ->limit($pageSize)
             ->get();
-
-        return new ServiceProcessCollection($data);
+        if( $data->count() == 0){
+            return $this->res(-7003, '暂无数据');
+        }else{
+            return $this->res(7003, '报修进展列表', new ServiceProcessCollection($data));
+        }
     }
 
     public function test2(Request $request)

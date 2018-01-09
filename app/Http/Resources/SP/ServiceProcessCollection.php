@@ -15,10 +15,12 @@ class ServiceProcessCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-
         return $this->collection->map(function($col){
             $col->pm = collect(explode(",", $col->contract['PM']))->map(function($pm){
                 return Employee::findOrFail($pm);
+            });
+            $col->man = collect(explode(",", $col->man))->map(function($man){
+                return Employee::findOrFail($man);
             });
             $col->customerTemp = $col->getRelations()['customer'][0];
             return new ServiceShowResourceForError($col);
