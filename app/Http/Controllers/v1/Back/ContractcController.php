@@ -42,7 +42,8 @@ class ContractcController extends ApiController
     public function store(ContractcRequest $request)
     {
         //todo 合同编号
-        $record = Id_record::find(3)->record;
+        $recordModel = Id_record::find(3);
+        $record = $recordModel->record;
         $len = 3 - strlen($record);
         $request['contract_id'] ="中网信字".date('Y', time()).zerofill($len).$record;
 
@@ -53,6 +54,7 @@ class ContractcController extends ApiController
             unset($request['fileList']);
         }
         $data = Contractc::create($request->except('company'));
+        $recordModel->increment('record');
         return $this->res(2002, '新建信道合同成功', $data);
     }
 

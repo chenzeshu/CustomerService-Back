@@ -52,13 +52,15 @@ class ChannelController extends ApiController
             //todo 检查套餐余量
             $this->repo->checkPlan($request);
             //todo 信道服务单号
-            $record = Id_record::find(5)->record;
+            $recordModel = Id_record::find(5);
+            $record = $recordModel->record;
             $len = 3 - strlen($record);
             $request['channel_id'] = date('Y', time()).zerofill($len).$record;
 
             //todo 通过校验后, 正式创建
             $channelModel = Channel::create($request->except(['id2','id3', 't1', 't2', 'id1','customer']));
             $channelModel->channel_applys()->create($request->only(['id1', 'id2','id3', 't1', 't2',]));
+            $recordModel->increment('record');
             return $this->res(2002, "新建信道服务单成功", ['data'=>$channelModel]);
 
         }catch (OutOfTimeException $e){

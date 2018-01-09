@@ -74,11 +74,13 @@ class ContractController extends Controller
     {
         //contract_id规则写在前端
         if($request->type2 == "销售"){
-            $record = Id_record::find(1)->record;
+            $recordModel = Id_record::find(1);
+            $record = $recordModel->record;
             $len = 3 - strlen($record);
             $request['contract_id'] ="中网销字".date('Y', time()).zerofill($len).$record;
         }else{
-            $record = Id_record::find(2)->record;
+            $recordModel = Id_record::find(2);
+            $record = $recordModel->record;
             $len = 3 - strlen($record);
             $request['contract_id'] = "中网客字".date('Y', time()).zerofill($len).$record;
         }
@@ -91,6 +93,7 @@ class ContractController extends Controller
         }
 
         $data = Contract::create($request->except('company'));
+        $recordModel->increment('record');
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
     }
 

@@ -162,7 +162,8 @@ class ServiceController extends ApiController
                 $model->update(['use'=> $plan_num]);  //使用量增加
 
             //todo 自动生成服务单编号
-            $record = Id_record::find(4)->record;
+            $recordModel = Id_record::find(4);  //模型的自加放在服务单生成成功时
+            $record = $recordModel->record;
             $len = 3 - strlen($record);
             $request['service_id'] = date('Y', time()).zerofill($len).$record;
 
@@ -180,7 +181,13 @@ class ServiceController extends ApiController
 
             //todo 存储
             $data = Service::create($request->all());
-            return $this->res(2002, "新建信道服务单成功", $data);
+            if($data){
+                //todo 服务单生成成功, 此时可以放心record加1
+                $recordModel->increment('record');
+                return $this->res(2002, "新建信道服务单成功", $data);
+
+            }
+
         }
         catch (TimePassedException $e){
             return $this->res($e->code, $e->msg);
@@ -192,24 +199,6 @@ class ServiceController extends ApiController
             return $this->res($e->code, $e->msg);
         }
     }
-
-    //todo 派单时的方法及触发短信/邮件/内部通知
-    public function waitingWork()
-    {
-        
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -280,6 +269,22 @@ class ServiceController extends ApiController
             return $this->res(500, "删除服务单失败");
         }
     }
+    //todo 派单时的方法及触发短信/邮件/内部通知
+    public function waitingWork()
+    {
+        
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
 
     /**
      * 回访
@@ -289,7 +294,12 @@ class ServiceController extends ApiController
      */
     public function visit(Request $request, $id)
     {
-        $re = Service::findOrFail($id)->visits()->updateOrCreate($request->except(['employees', 'status','id']));
+        $model = Service::findOrFail($id)->visits();
+        if($model->where('service_id', $id)->first()){
+            $re = $model->where('service_id', $id)->update($request->except(['employees', 'status','id']));
+        }else{
+            $re = $model->create($request->except(['employees', 'status','id']));
+        }
         if($re){
             return $this->res(2005, "填写回访成功");
         } else {

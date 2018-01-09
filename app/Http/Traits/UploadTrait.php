@@ -121,7 +121,11 @@ trait UploadTrait
         $origin_ids = explode(",", $doc_id['document']);
         $final_ids = collect($origin_ids)->diff($remove_ids)->merge($add_ids)->toArray();
 
-        return implode(",", $final_ids);
+        $final_ids = implode(",", $final_ids);
+        if(strpos($final_ids, ',') == 0){
+            $final_ids = ltrim($final_ids, ",");
+        }
+        return $final_ids;
     }
 
     /**

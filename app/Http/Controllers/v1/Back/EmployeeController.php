@@ -171,7 +171,7 @@ class EmployeeController extends ApiController
     }
 
     /**
-     * 模糊搜索内部员工==>逻辑变动, 改为搜索全部员工
+     * 模糊搜索内部员工==>逻辑变动, 改为搜索全部emp
      */
     public function searchInnerEmps($empName)
     {
