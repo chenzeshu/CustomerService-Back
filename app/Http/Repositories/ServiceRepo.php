@@ -9,6 +9,8 @@
 namespace App\Http\Repositories;
 
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 class ServiceRepo
 {
     /**
@@ -19,8 +21,8 @@ class ServiceRepo
      */
     public function myIncrement($parentModel, $column, $num)
     {
-        $model = $parentModel->contract_plans()->findOrFail($parentModel->type);
-        $model->update([$column => $model->use + $num]);
+            $model = $parentModel->contract_plans()->findOrFail($parentModel->type);
+            $model->update([$column => $model->use + $num]);
     }
 
     /**
@@ -31,7 +33,13 @@ class ServiceRepo
      */
     public function myDecrement($parentModel, $column, $num)
     {
-        $model = $parentModel->contract_plans()->findOrFail($parentModel->type);
-        $model->update([$column=> $model->use - $num]);
+        try {
+            $model = $parentModel->contract_plans()->findOrFail($parentModel->type);
+            $model->update([$column => $model->use - $num]);
+        } catch (ModelNotFoundException $e) {
+            //假如服务单是刚创建, 没有人工去选套餐就要删除的话, 就会找不到contract_plans
+            //那么就直接跳过
+            return;
+        }
     }
 }

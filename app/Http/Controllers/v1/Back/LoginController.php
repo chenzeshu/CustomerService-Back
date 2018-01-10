@@ -13,6 +13,7 @@ use App\Http\Resources\SP\serviceShowResource;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
+use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use App\Models\Utils\Service_type;
 use App\Services\Sms;
@@ -43,33 +44,11 @@ class LoginController extends ApiController
         $this->name[$foos] = $foosCallback->bindTo($this, __CLASS__);
     }
 
-    public function test()
+    public function test(Request $request)
     {
-//        $re = DB::select("select c1.channel_id, c1.contractc_id, c1.created_at, c1.updated_at, c1.employee_id, c1.id, c1.source, c1.status, c1.type,
-//        c2.id, c2.id1, c2.id2,c2.id3,c2.id4, c2.remark, c2.t1, c2.t2, c2.updated_at,
-//        c3.PM, c3.beginline, c3.company_id, c3.created_at, c3.updated_at, c3.deadline, c3.desc, c3.document, c3.id, c3.money, c3.name, c3.time,
-//        c4.id, c4.name, c4.phone, c5.id, c5.name,
-//        c21.id, c21.channel_apply_id, c21.id1, c21.id2, c21.id3, c21.id4,
-//        c22.channel_apply_id, c22.checker_id, c22.created_at, c22.id, c22.id1, c22.id2, c22.id3, c22.id4, c22.remark, c22.t1, c22.t2, c22.updated_at,
-//        c23.channel_apply_id, c23.company_id, c23.created_at, c23.device_id, c23.id, c23.id5, c23.updated_at
-//        FROM channels as c1
-//        LEFT JOIN channel_applies as c2 on c2.channel_id = c1.id
-//        LEFT JOIN contractcs as c3 on c3.id = c1.contractc_id
-//        LEFT JOIN employees as c4 on c4.id in (c1.employee_id)
-//        LEFT JOIN service_sources as c5 on c5.id = c1.source
-//        LEFT JOIN channel_operatives as c21 on c21.channel_apply_id = c2.id
-//        LEFT JOIN channel_reals as c22 on c22.channel_apply_id = c2.id
-//        LEFT JOIN channel_relations as c23 on c23.channel_apply_id = c2.id");
-//        $user = User::where('phone', 18502557106)->first();
-//        $jwt_token = JWTAuth::fromUser($user, ['scope' => $user['scope']]);//不使用JWTAuth::attemp,  为了记录登陆信息
-//        return $jwt_token;
-//        $token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9";
-//        $token = hash_hmac("sha256", $token, "secret");
-
-//        $company = Company::with('employees')->findOrFail(1);
-//        $data = $company->contracts()->get()->toArray();
-//        return new serviceCompanyResource($company);
-        Service::with('visits.employees')->find(1);
+        $data = Contract_plan::findOrFail(10);
+        $data->update(['use' => $data->use + 1]);
+        return $data;
     }
 
     public function test2(Request $request)
