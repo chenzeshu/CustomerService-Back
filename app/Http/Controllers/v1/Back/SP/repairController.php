@@ -32,6 +32,13 @@ class repairController extends ApiController
         return $this->res(7004, '报修成功');
     }
 
+    /**
+     * @param $page 当前页数
+     * @param $pageSize 每页数据量
+     * @param $emp_id 员工id
+     * @param $status 服务单状态
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getProcess($page, $pageSize, $emp_id, $status)
     {
         $begin = ($page - 1) * $pageSize;

@@ -11,6 +11,7 @@ namespace App\Dao;
 use App\Id_record;
 use App\Models\Employee;
 use App\Models\Services\Service;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ServiceDAO
@@ -98,5 +99,22 @@ class ServiceDAO
         $record = Id_record::find(4)->record;
         $len = 3 - strlen($record);
         return  date('Y', time()).zerofill($len).$record;
+    }
+
+    /**
+     * 得到服务单状态(二维数组{id:xx, status:xx})
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    public static function getServiceStatus(){
+        $status = Cache::get('service_status');
+        if(empty($status)){
+            $status = config('app.status');
+            $type = [];
+            foreach ($status as $k=>$s){
+                $type[] = ['id' =>++$k, 'status'=>$s];
+            }
+            Cache::put('service_status', $type, 86400);
+        }
+        return $status;
     }
 }

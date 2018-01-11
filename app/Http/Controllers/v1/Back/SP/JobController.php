@@ -21,34 +21,17 @@ class JobController extends ApiController
     public function showServiceList($page, $pageSize, $emp_id, $status = "已派单")
     {
         $data = ServiceDAO::getService($page, $pageSize, $emp_id, $status);
+        $type = ServiceDAO::getServiceStatus();
         if(empty($data)){
-            return $this->res(7000, '暂无服务');
+            return $this->res(7000, '暂无服务', ['status' => $type]);
         }
-        $type = $this->getServiceStatus();
         $data = [
             'data' => $data,
             'status' => $type
         ];
-
         return $this->res(7001, '服务信息', $data);
     }
 
-    /**
-     * 得到服务单状态(二维数组{id:xx, status:xx})
-     * @return \Illuminate\Config\Repository|mixed
-     */
-    private function getServiceStatus(){
-        $status = Cache::get('service_status');
-        if(empty($status)){
-            $status = config('app.status');
-            $type = [];
-            foreach ($status as $k=>$s){
-                $type[] = ['id' =>++$k, 'status'=>$s];
-            }
-            Cache::put('service_status', $type, 86400);
-        }
-        return $status;
-    }
 
     /**
      * 显示服务单详情
