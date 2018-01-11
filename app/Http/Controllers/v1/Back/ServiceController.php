@@ -18,6 +18,7 @@ use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ServiceController extends ApiController
 {
@@ -54,9 +55,9 @@ class ServiceController extends ApiController
     /**
      * 筛选出待审核的服务单
      */
-    public function verify()
+    public function verify($status = "待审核")
     {
-        $emp = Service::where('status','=','待审核')
+        $emp = Service::where('status','=',$status)
             ->with(['customer', 'contract', 'source', 'type', 'refer_man.company'])
             ->orderBy('created_at', 'desc')
             ->get()
@@ -307,4 +308,44 @@ class ServiceController extends ApiController
         }
     }
 
+    /**
+     * 等小程序的API可以在PC上调试时再传图了
+     * 管理员同意员工的服务单  申请完成 => 已完成
+     * @int $service_id 服务单id
+     */
+    public function passFinish($service_id)
+    {
+        $service = Service::findOrFail($service_id);
+        $admin = JWTHelper::getUser();
+        //todo 通知员工通过
+        $man = explode(",", $service->man);
+        foreach ($man as $m){
+            //todo 队列通知
+        }
+        //todo 通知用户正式确认已完成
+        $cus = $service->customer;
+            //todo 队列通知
+
+        $service->update(['status' => '已完成']);
+        Log::info('管理员'.$admin->name.'通过服务单id'. $service_id .'的完成申请');
+        return $this->res(7006, '通过申请');
+    }
+
+    /**
+     * 管理员拒绝员工的服务单  申请完成 => 不变
+     * @int $service_id 服务单id
+     */
+    public function rejectFinish($service_id)
+    {
+        $admin = JWTHelper::getUser();
+        Log::info('管理员'.$admin->name.'拒绝了服务单id'. $service_id .'的完成申请');
+        //todo 通知员工被拒绝
+        $service = Service::findOrFail($service_id);
+        $man = explode(",", $service->man);
+        foreach ($man as $m){
+            //todo 队列通知
+        }
+
+        return $this->res(-7006, '拒绝申请');
+    }
 }

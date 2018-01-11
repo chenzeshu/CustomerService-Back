@@ -29,7 +29,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         //todo 小程序派单模块
         Route::group(['prefix'=>'paidan'], function (){
             Route::get('/page/{page}/{pageSize}/{emp_id}/{status}', 'JobController@showServiceList'); //检索与自己有关的服务单
-            Route::post('/askFinish/{serviceid}', 'JobController@askFinish'); //检索与自己有关的服务单
+            Route::get('/askFinish/{serviceid}', 'JobController@askFinish'); //检索与自己有关的服务单
             Route::get('/s/{name}/{page}/{pageSize}','JobController@search');  //todo 模糊搜索\
             Route::get('/{service_id}','JobController@showServiceDetail');
         });
@@ -122,10 +122,12 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','ServiceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ServiceController@update');
             Route::get('/delete/{id}','ServiceController@destroy');
-            Route::get('/verify', 'ServiceController@verify');  //todo 筛选未审核服务单
+            Route::get('/verify/{status}', 'ServiceController@verify');  //todo 筛选未审核服务单
             Route::get('/temp/verify', 'ServiceController@verifyTemp');  //todo 筛选临时未审核服务单
             Route::get('/pass/{id}', 'ServiceController@pass');  //todo 通过未审核服务单
             Route::get('/rej/{id}', 'ServiceController@rej');  //todo 拒绝未审核服务单
+            Route::get('/passFinish/{service_id}', 'ServiceController@passFinish');  //todo 通过服务单完成申请
+            Route::get('/rejectFinish/{service_id}', 'ServiceController@rejectFinish');  //todo 拒绝服务单完成申请
             Route::resource('/','ServiceController');
 
             /** 回访 */

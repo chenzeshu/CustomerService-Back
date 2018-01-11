@@ -50,16 +50,13 @@ class JobController extends ApiController
     /**
      *  员工申请完成服务单
      */
-    public function askFinish($service_id, Request $request)
+    public function askFinish($service_id)
     {
-        Log::info("service_id is $service_id\r\n");
-        Log::info("是否含有文件:".$request->hasFile('wxFiles')."\r\n");
-        Log::info("POST:" .$request."\r\n");
-        /*
         $re = Service::findOrFail($service_id)->update(['status'=>'申请完成']);
+        Log::info("\r\n服务单请求申请:".date('Y-m-d H:i:s', time()));
+        //todo 向管理员发送通知 + 后台展示
+
+
         if($re) return $this->res(7002, '申请成功');
-        */
     }
-
-
 }
