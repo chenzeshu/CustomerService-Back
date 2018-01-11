@@ -29,6 +29,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         //todo 小程序派单模块
         Route::group(['prefix'=>'paidan'], function (){
             Route::get('/page/{page}/{pageSize}/{emp_id}/{status}', 'JobController@showServiceList'); //检索与自己有关的服务单
+            Route::post('/askFinish/{serviceid}', 'JobController@askFinish'); //检索与自己有关的服务单
             Route::get('/s/{name}/{page}/{pageSize}','JobController@search');  //todo 模糊搜索\
             Route::get('/{service_id}','JobController@showServiceDetail');
         });

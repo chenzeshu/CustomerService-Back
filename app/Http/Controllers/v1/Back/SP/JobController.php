@@ -11,6 +11,7 @@ use App\Models\Services\Service;
 use App\Models\Utils\Service_type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 //派单
 class JobController extends ApiController
@@ -44,6 +45,20 @@ class JobController extends ApiController
             return Employee::findOrFail($pm);
         });
         return new serviceShowResource($data);
+    }
+
+    /**
+     *  员工申请完成服务单
+     */
+    public function askFinish($service_id, Request $request)
+    {
+        Log::info("service_id is $service_id\r\n");
+        Log::info("是否含有文件:".$request->hasFile('wxFiles')."\r\n");
+        Log::info("POST:" .$request."\r\n");
+        /*
+        $re = Service::findOrFail($service_id)->update(['status'=>'申请完成']);
+        if($re) return $this->res(7002, '申请成功');
+        */
     }
 
 

@@ -43,15 +43,19 @@ class repairController extends ApiController
     {
         $begin = ($page - 1) * $pageSize;
         $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
-//            ->where('status', $status)
+            ->where('status', $status)
             ->where('refer_man', $emp_id)
             ->offset($begin)
             ->limit($pageSize)
             ->get();
+        $status = ServiceDAO::getServiceStatus();
         if( $data->count() == 0){
             return $this->res(-7003, '暂无数据');
         }else{
-            return $this->res(7003, '报修进展列表', new ServiceProcessCollection($data));
+            return $this->res(7003, '报修进展列表', [
+                'data' => new ServiceProcessCollection($data),
+                'status' => $status
+            ]);
         }
 
     }
