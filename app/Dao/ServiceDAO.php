@@ -21,7 +21,7 @@ class ServiceDAO
      * @param $emp_id 人员id
      * @return mixed
      */
-    public static function getService($page, $pageSize, $emp_id)
+    public static function getService($page, $pageSize, $emp_id, $status)
     {
         $begin = ($page - 1) * $pageSize;
         $data = DB::select("SELECT s.id, s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
@@ -30,7 +30,7 @@ class ServiceDAO
         LEFT JOIN employees as c on c.id in (s.man) 
         LEFT JOIN employees as c2 on c2.id = s.customer
         LEFT JOIN service_types as c3 on c3.id = s.type
-        where find_in_set('$emp_id', s.man) 
+        where find_in_set('$emp_id', s.man) and s.status = '$status'
         ORDER BY s.time1 desc
         LIMIT $begin, $pageSize");
 

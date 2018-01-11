@@ -89,11 +89,10 @@ class ChannelController extends ApiController
      */
     public function update(ChannelStoreRequest $request, $id)
     {
-        $re = Channel::find($id)->update($request->except(['customer','source_info', 'contractc', 'channel_applys']));
+        $re = Channel::findOrFail($id)->update($request->except(['customer','source_info', 'contractc', 'channel_applys']));
 
         //todo 假如将已完成改为拒绝, 则如何处置?
         //todo 假如将拒绝改为已完成, 则如何处置? 目前不更改记录
-
 
         if($re){
             //todo 失效缓存

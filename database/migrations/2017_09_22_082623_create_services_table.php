@@ -17,7 +17,7 @@ class CreateServicesTable extends Migration
             $table->increments('id');
             $table->integer('contract_id');
             $table->string('service_id');
-            $table->enum('status', ['待审核', '拒绝', '待派单', '已派单', '申请完成', '已完成', '申述中'])->default('待审核');
+            $table->enum('status', config('app.status'))->default('待审核');
 //            $table->integer('status_flag')->nullable();  //响应状态 0未处理 1已处理 2超时  todo 直接放前端判断
             $table->timestamp('time3')->nullable();  //响应时间, 记录出现"待审核", "已派单"的时间
             //员工拥有访问申请完成的api的权限, 访问此权限时, 会向管理员发送三位一体通知  所以还要封装一下邮件的类
