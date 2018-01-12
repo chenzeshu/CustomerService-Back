@@ -20,7 +20,7 @@ class ServiceVerifyResource extends Resource
             'contract' => $this->contract,
             'customer' => $this->getRelations()['customer'],
             'refer_man' => $this->getRelations()['refer_man'],
-            'source' => $this->source,
+            'source' => $this->getRelations()['source'],
             'desc1' => $this->desc1,
             'desc2' => $this->desc2,
             'workman' => $this->when(!is_null($this->workman), function(){
