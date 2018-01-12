@@ -6,6 +6,7 @@ use App\Dao\ServiceDAO;
 use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
+use App\Http\Resources\Back\ServiceVerifyCollection;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
 use App\Http\Resources\SP\ServiceProcessCollection;
@@ -46,19 +47,24 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        $emp_id = 27;
-        $begin = 0; $pageSize = 10;
-        $status = "拒绝";
-        $data = DB::select("SELECT s.id, s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
-        c.name, c2.name as customer, c3.name as type
-        FROM services as s
-        LEFT JOIN employees as c on c.id in (s.man)
-        LEFT JOIN employees as c2 on c2.id = s.customer
-        LEFT JOIN service_types as c3 on c3.id = s.type
-        where find_in_set('$emp_id', s.man) and s.status = '$status'
-        ORDER BY s.time1 desc
-        LIMIT $begin, $pageSize");
-        return $data;
+        $status = '待审核';
+        $emp = Service::where('status','=',$status)
+            ->with(['customer', 'contract', 'source', 'type', 'refer_man.company'])
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->each(function ($ser){
+                $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
+                $ser['workman'] = $ser->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->man})");
+                $ser['doc'] =  $ser->document == null ? null : DB::select("select `path` from docs where id in ({$ser->document}) and name = '申请证据'");
+            });
+        $emp = new ServiceVerifyCollection($emp);
+
+        $total = Service::where('status','=',$status)->count();
+        $data = [
+            'data' => $emp,
+            'total' => $total,
+        ];
+        return $this->res(200, '待审核服务申请', $data);
     }
 
     public function test2(Request $request)

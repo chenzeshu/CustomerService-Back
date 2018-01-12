@@ -117,4 +117,13 @@ class ServiceDAO
         }
         return $status;
     }
+    
+    /**
+     * 得到服务单类型
+     */
+    public static function getServiceTypes()
+    {
+        $service_types = Cache::get("service_types");
+        return $service_types;
+    }
 }

@@ -11,6 +11,7 @@ use App\Http\Helpers\JWTHelper;
 use App\Http\Helpers\Scope;
 use App\Http\Repositories\ServiceRepo;
 use App\Http\Requests\Service\ServiceStoreRequest;
+use App\Http\Resources\Back\ServiceVerifyCollection;
 use App\Http\Traits\UploadTrait;
 use App\Id_record;
 use App\Models\Contract;
@@ -59,13 +60,16 @@ class ServiceController extends ApiController
     {
         $emp = Service::where('status','=',$status)
             ->with(['customer', 'contract', 'source', 'type', 'refer_man.company'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->each(function ($ser){
                 $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
-            })
-            ->toArray();
-        $total = Service::where('status','=','待审核')->count();
+                $ser['workman'] = $ser->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->man})");
+                $ser['doc'] =  $ser->document == null ? null : DB::select("select `path` from docs where id in ({$ser->document}) and name = '申请证据'");
+            });
+        $emp = new ServiceVerifyCollection($emp);
+
+        $total = Service::where('status','=',$status)->count();
         $data = [
             'data' => $emp,
             'total' => $total,
@@ -313,10 +317,10 @@ class ServiceController extends ApiController
      * 管理员同意员工的服务单  申请完成 => 已完成
      * @int $service_id 服务单id
      */
-    public function passFinish($service_id)
+    public function passFinish($service_id, Request $request)
     {
         $service = Service::findOrFail($service_id);
-        $admin = JWTHelper::getUser();
+        $admin = JWTHelper::getUser($request);
         //todo 通知员工通过
         $man = explode(",", $service->man);
         foreach ($man as $m){
@@ -327,7 +331,7 @@ class ServiceController extends ApiController
             //todo 队列通知
 
         $service->update(['status' => '已完成']);
-        Log::info('管理员'.$admin->name.'通过服务单id'. $service_id .'的完成申请');
+        Log::info('管理员['.$admin->name.']通过了服务单id'. $service_id .'的完成申请');
         return $this->res(7006, '通过申请');
     }
 
@@ -335,10 +339,10 @@ class ServiceController extends ApiController
      * 管理员拒绝员工的服务单  申请完成 => 不变
      * @int $service_id 服务单id
      */
-    public function rejectFinish($service_id)
+    public function rejectFinish($service_id, Request $request)
     {
-        $admin = JWTHelper::getUser();
-        Log::info('管理员'.$admin->name.'拒绝了服务单id'. $service_id .'的完成申请');
+        $admin = JWTHelper::getUser($request);
+        Log::info('管理员['.$admin->name.']拒绝了服务单id'. $service_id .'的完成申请');
         //todo 通知员工被拒绝
         $service = Service::findOrFail($service_id);
         $man = explode(",", $service->man);

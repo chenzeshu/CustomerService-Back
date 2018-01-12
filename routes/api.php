@@ -21,6 +21,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::get('/emp_waitings/checkCode/{code}','EmpWaitingController@checkCode');  //微信小程序申请注册 => 短信验证
     Route::get('/emp_waitings/search/{openid}','EmpWaitingController@search');  //微信小程序申请注册 => 查询注册进度
 
+    Route::post('/upload/{service_id}', 'SP\commonController@upload');
+
+    //需要令牌组
     Route::group(['middleware'=>['jwt.empAuth', 'jwt.refreshEmp'], 'namespace'=>'SP'], function (){
         Route::get('/searchCompany/{keyword}','commonController@searchCompany');  //查询单位
         Route::get('/searchContract/{company_id}','commonController@searchContract');  //查询合同
@@ -37,19 +40,19 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         Route::group(['prefix'=>'repair'], function (){
             Route::post('/apply','repairController@apply');
             Route::get('/getProcess/{page}/{pageSize}/{emp_id}/{status}','repairController@getProcess');
+            Route::post('/allege/{service_id}','repairController@allege');
         });
 
     });
 
 /** ===================== ========== FileUpload =========== =========================*/
-    //todo 公用上传/临时删除file
-    Route::post('upload', 'ContractController@uploadFileToTemp');
-    Route::post('deleteFile','ContractController@deleteFile');
+//    //todo 公用上传/临时删除file
+//    Route::post('upload', 'ContractController@uploadFileToTemp');
+//    Route::post('deleteFile','ContractController@deleteFile');
 /** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
-//    Route::group(['middleware'=>[]], function (){
         //todo checkJWT
-            Route::get('/check', 'LoginController@check');
+        Route::get('/check', 'LoginController@check');
 
         //todo Users
         Route::group(['prefix'=>'users'], function () {

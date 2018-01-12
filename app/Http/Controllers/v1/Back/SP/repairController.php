@@ -57,7 +57,23 @@ class repairController extends ApiController
                 'status' => $status
             ]);
         }
-
     }
 
+    /**
+     * 用户申述  ---  建议处理手段为: 管理员在后台点击"受理" --> 发送短信给 客服人员 +  项目经理说明情况 -->  发送给用户:"已受理请等待" | 或者将单子"拒绝", 然后重开一单
+     */
+    public function allege($service_id, Request $request)
+    {
+       $service = Service::findOrFail($service_id);
+       if($service->status == "申述中"){
+           //防止提交后还喜欢连按或利用接口漏洞
+           return $this->res(-7008, '请勿重复提交');
+        }
+       $service->update([
+            'status' => '申述中',
+            'allege' => $request->allege
+        ]);
+        //todo 发送短信给管理员
+        return $this->res(7008, '申述成功');
+    }
 }

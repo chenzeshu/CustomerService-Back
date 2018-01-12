@@ -2,14 +2,26 @@
 
 namespace App\Http\Controllers\v1\back\SP;
 
+use App\Dao\ServiceDAO;
 use App\Http\Controllers\v1\Back\ApiController;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
 use App\Models\Company;
+use App\Models\Doc;
+use App\Models\Services\Service;
+use Illuminate\Http\File;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class commonController extends ApiController
 {
+    /**
+     * 保修检索公司
+     * @param $keyword 公司名关键字
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function searchCompany($keyword)
     {
         $data = Company::where('name', 'like',"%".$keyword."%")->get()->toArray();
@@ -19,6 +31,11 @@ class commonController extends ApiController
         return $this->res(7003, '公司列表', $data);
     }
 
+    /**
+     * 保修检索合同
+     * @param $company_id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function searchContract($company_id)
     {
         $company = Company::with('employees')->findOrFail($company_id);
@@ -32,17 +49,46 @@ class commonController extends ApiController
         if(empty($data)){  //empty这个函数读起来有歧义, 其实是空返回true
             return $this->res(7004, '查无结果');
         }
-        $service_types = $this->searchServiceType();
+
+        $service_types = ServiceDAO::getServiceTypes();
         $data = [
              $data, $service_types, new serviceCompanyResource($company)
         ];
         return $this->res(7003, '合同列表', $data);
     }
 
-
-    public function searchServiceType()
+    /**
+     * 申请完成: 可以不上传图片
+     * @param $service_id
+     * @param Request $request
+     * @return string
+     */
+    public function upload($service_id, Request $request)
     {
-        $service_types = Cache::get("service_types");
-        return $service_types;
+        $doc_id = "";
+
+        if($request->hasFile('wxFile')){
+            $file = $request->file('wxFile');
+            $file_path = Storage::putFile('public/apply', new File($file), 'public');
+
+            $doc = Doc::create([
+                'name' => $request->title,
+                'path' => $file_path,
+            ]);
+
+            $doc_id = $doc->id;
+        }
+
+        $model = Service::findOrFail($service_id);
+        $model->update([
+            'status' => '申请完成',
+            'document' => ltrim( $model->document . "," . $doc_id, ","),
+            'desc1' => $request->desc1,
+            'desc2' => $request->desc2
+        ]);
+
+        return $this->res(7004, '申请完毕');
     }
+
+
 }

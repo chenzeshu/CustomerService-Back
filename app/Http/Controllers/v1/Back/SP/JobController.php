@@ -24,7 +24,7 @@ class JobController extends ApiController
         $data = ServiceDAO::getService($page, $pageSize, $emp_id, $status);
         $type = ServiceDAO::getServiceStatus();
         if(empty($data)){
-            return $this->res(7000, '暂无服务', ['status' => $type]);
+            return $this->res(7000, '本状态下无服务单', ['data' => [], 'status' => $type]);
         }
         $data = [
             'data' => $data,
@@ -55,7 +55,6 @@ class JobController extends ApiController
         $re = Service::findOrFail($service_id)->update(['status'=>'申请完成']);
         Log::info("\r\n服务单请求申请:".date('Y-m-d H:i:s', time()));
         //todo 向管理员发送通知 + 后台展示
-
 
         if($re) return $this->res(7002, '申请成功');
     }
