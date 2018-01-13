@@ -2,11 +2,14 @@
 
 namespace App\Models\Channels;
 
+use App\Observers\OBTraits\ContractcUpdated;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Contractc_plan extends Model
 {
-    //use ContractcUpload;
+    use ContractcUpdated;
+    static $recordEvents = ['created', 'updated', 'deleted', 'saved'];
     protected $guarded = [];
 
     /**

@@ -23,13 +23,13 @@ class Contractc extends Model
 
     }
 
-
     /***** 缓存时代 *****/
     static function redis_refresh_data(){
         Cache::forget('contractcs');
         $data = Contractc::orderBy('id', 'desc')
             ->with([
                 'company',
+                'contractc_plans.plan',
                 'ChannelMoney'=>function($query) {
                     $query->with([
                         'ChannelMoneyDetails',

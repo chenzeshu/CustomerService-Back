@@ -37,7 +37,6 @@ class ChannelRepo
             throw new OutOfTimeException();
         }
         return [$planModel, $curTime];
-
     }
 
     /**

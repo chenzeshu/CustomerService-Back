@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Channel_plan extends Model
 {
+    protected $table = "plans";
     protected $guarded = [];
 
     public function contract_c()

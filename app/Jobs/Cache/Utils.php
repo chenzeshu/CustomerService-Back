@@ -6,6 +6,8 @@ use App\Models\Channels\Channel_info1;
 use App\Models\Channels\Channel_info3;
 use App\Models\Channels\Channel_info5;
 use App\Models\Channels\Channel_info2;
+use App\Models\Channels\Channel_plan;
+use App\Models\Channels\Contractc_plan;
 use App\Models\Services\Contract_planutil;
 use App\Models\Utils\Contract_type;
 use App\Models\Utils\Coor;
@@ -91,6 +93,7 @@ class Utils implements ShouldQueue
                 $this->plans();
                 $this->pros();
                 $this->contract_plans();
+                $this->channel_plans();
                 break;
         }
         $this->job->delete();
@@ -149,5 +152,10 @@ class Utils implements ShouldQueue
     private function contract_plans(){
         $contract_plans = Contract_planutil::all()->toArray();
         Cache::put('contract_plans', $contract_plans , $this->expiresAt);
+    }
+
+    private function channel_plans(){
+        $contract_plans = Channel_plan::all()->toArray();
+        Cache::put('channel_plans', $contract_plans , $this->expiresAt);
     }
 }

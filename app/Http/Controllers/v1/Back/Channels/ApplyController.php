@@ -145,7 +145,7 @@ class ApplyController extends ApiController
             //todo true表示根据实际运行表单, 改变套餐已用量
             list($planModel, $curTime) = $this->channelRepo->checkPlan($request);
             $model = Channel_real::where('channel_apply_id', $request->channel_apply_id);
-            //todo 如果第二个参数为真, 就进行套餐用量的修改
+            //todo 进行套餐用量的修改
             $this->channelRepo->reCalPlan($model->first(), $curTime, $planModel);
 
             if($model->first()){

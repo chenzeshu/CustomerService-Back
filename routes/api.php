@@ -147,6 +147,8 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/createMoneyDetail/{contractc_id}', 'ContractcController@createMoneyDetail');  //历次回款记录--创建
             Route::get('/delMoneyDetail/{money_detail_id}', 'ContractcController@delMoneyDetail');       //历次回款记录--删除
             Route::get('/getContractcPlans/{contractc_id}', 'ContractcController@getContractcPlans');
+            Route::post('/addPlan/{contractc_id}', 'ContractcController@addPlan');       //todo 新增套餐
+            Route::get('/deletePlan/{contractc_id}', 'ContractcController@deletePlan');       //todo 删除套餐
             Route::resource('/','ContractcController');
         });
 

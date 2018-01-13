@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Http\Helpers\Params;
 use App\Http\Repositories\ContractcRepo;
 use App\Http\Requests\contractc\ContractcRequest;
 use App\Http\Traits\UploadTrait;
 use App\Id_record;
 use App\Jobs\Cache\RefreshContractcs;
+use App\Models\Channels\Contractc_plan;
 use App\Models\Contractc;
 use App\Models\Money\ChannelMoneyDetail;
+use App\Observers\OBTraits\ContractcUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 //信道合同
 class ContractcController extends ApiController
@@ -31,10 +35,11 @@ class ContractcController extends ApiController
             $cons = Cache::get('contractcs');
         }
         list($cons,$total) = $this->repo->pageFilter($cons, $finish, $page, $pageSize);
-
+        $contractc_plans = Cache::get('channel_plans');
         $data = [
             'data' => $cons,
             'total' => $total,
+            'contractc_plans' =>$contractc_plans
         ];
         return $this->res(200, '信道合同', $data);
     }
@@ -67,7 +72,7 @@ class ContractcController extends ApiController
             $request['document'] = $this->getFinalIds($request, $doc_id);
             unset($request['fileList']);
         }
-        $re = Contractc::findOrFail($id)->update($request->except(['company', 'channel_money']));
+        $re = Contractc::findOrFail($id)->update($request->except(['company', 'channel_money', 'contractc_plans']));
         return $this->res(2003, '更新信道合同成功', $re);
     }
 
@@ -165,5 +170,37 @@ class ContractcController extends ApiController
     {
         $data = Contractc::findOrFail($contractc_id)->contractc_plans()->get();
         return $this->res(200, '套餐列表', $data);
+    }
+
+    /**
+     * 增加套餐
+     * @param $contractc_id
+     * @request->total 单位为分钟
+     */
+    public function addPlan($contractc_id, Request $request)
+    {
+        $total =  floor($request->total / Params::ChannelTotalUnit);
+        $re = Contractc_plan::create([
+           'contractc_id' => $contractc_id,
+           'plan_id' => $request->plan_id,
+           'total' => $total, //套餐总量,
+           'alias' => $request->alias
+        ]);
+
+        if($re){
+            return $this->res(2004, '创建套餐成功');
+        }
+    }
+
+    /**
+     * 删除套餐
+     * @param $contractc_id
+     */
+    public function deletePlan($contractc_id)
+    {
+        $re = Contractc_plan::destroy($contractc_id);
+        if($re){
+            return $this->res(2006, '删除套餐成功');
+        }
     }
 }

@@ -11,17 +11,20 @@ use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
 use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Http\Resources\SP\serviceShowResource;
+use App\Models\Channels\Channel_plan;
 use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use App\Models\Utils\Service_type;
+use App\Observers\OBTraits\ContractcUpdated;
 use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -47,24 +50,7 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        $status = '待审核';
-        $emp = Service::where('status','=',$status)
-            ->with(['customer', 'contract', 'source', 'type', 'refer_man.company'])
-            ->orderBy('updated_at', 'desc')
-            ->get()
-            ->each(function ($ser){
-                $ser['project_manager'] = $ser['contract']['PM'] == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->contract->PM})");
-                $ser['workman'] = $ser->man == null ? null : DB::select("select `id`, `name` from employees where id in ({$ser->man})");
-                $ser['doc'] =  $ser->document == null ? null : DB::select("select `path` from docs where id in ({$ser->document}) and name = '申请证据'");
-            });
-        $emp = new ServiceVerifyCollection($emp);
 
-        $total = Service::where('status','=',$status)->count();
-        $data = [
-            'data' => $emp,
-            'total' => $total,
-        ];
-        return $this->res(200, '待审核服务申请', $data);
     }
 
     public function test2(Request $request)
