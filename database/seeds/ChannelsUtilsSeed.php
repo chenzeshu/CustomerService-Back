@@ -21,13 +21,15 @@ class ChannelsUtilsSeed extends Seeder
         //站类型表
         DB::table('channel_info2s')->insert([
             ['name' => '车载站'],
-            ['name' => '地面站']
+            ['name' => '地面站'],
+            ['name' => '便携站']
         ]);
 
         //通信卫星表
         DB::table('channel_info3s')->insert([
             ['name' => '亚卫5号'],
-            ['name' => '亚卫6号']
+            ['name' => '亚卫6号'],
+            ['name' => '亚卫9号']
         ]);
 
         //频率表

@@ -44,6 +44,14 @@ class userSeed extends Seeder
                'status'=>'online',
                'scope' => 16
            ],
+           [
+               'name' => '孙洁琼',
+               'email'=>'2445580309@qq.com',
+               'password' => bcrypt('666666'),
+               'phone'=>'15850748814',
+               'status'=>'online',
+               'scope' => 16
+           ],
         ]);
     }
 }

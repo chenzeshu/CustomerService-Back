@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\back\SP;
 
 use App\Dao\ServiceDAO;
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Resources\SP\Channel\CompanyCollection;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
 use App\Models\Company;

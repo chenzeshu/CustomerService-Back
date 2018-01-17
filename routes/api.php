@@ -37,8 +37,15 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/{service_id}','JobController@showServiceDetail');
         });
 
+        //todo 报修
         Route::group(['prefix'=>'repair'], function (){
             Route::post('/apply','repairController@apply');
+            Route::get('/getProcess/{page}/{pageSize}/{emp_id}/{status}','repairController@getProcess');
+            Route::post('/allege/{service_id}','repairController@allege');
+        });
+
+        //todo 信道
+        Route::group(['prefix'=>'SP/channel'], function (){
             Route::get('/getProcess/{page}/{pageSize}/{emp_id}/{status}','repairController@getProcess');
             Route::post('/allege/{service_id}','repairController@allege');
         });
@@ -47,8 +54,8 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
 /** ===================== ========== FileUpload =========== =========================*/
 //    //todo 公用上传/临时删除file
-//    Route::post('upload', 'ContractController@uploadFileToTemp');
-//    Route::post('deleteFile','ContractController@deleteFile');
+    Route::post('upload', 'ContractController@uploadFileToTemp');
+    Route::post('deleteFile','ContractController@deleteFile');
 /** ===================== ========== JWT-AUTH =========== =========================*/
     Route::group(['middleware'=>['jwt.auth', 'jwt.refresh']], function (){
         //todo checkJWT
