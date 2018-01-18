@@ -46,8 +46,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo 信道
         Route::group(['prefix'=>'SP/channel'], function (){
-            Route::get('/getProcess/{page}/{pageSize}/{emp_id}/{status}','repairController@getProcess');
-            Route::post('/allege/{service_id}','repairController@allege');
+            Route::get('/xindao/{page}/{pageSize}/{emp_id}/{status}','ChannelController@getProcess');
+            Route::get('/xindao/searchContractc/{company_id}','ChannelController@searchContractc');
+            Route::get('/xindao/searchPlan/{contractc_id}','ChannelController@searchPlan');
         });
 
     });

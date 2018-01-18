@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\v1\Back\SP;
 
-use App\Dao\ChannelDAO;
-use App\Http\Resources\SP\Channel\CompanyResource;
+use App\Http\Controllers\v1\Back\ApiController;
+use App\Models\Channels\Contractc_plan;
 use App\Models\Company;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
-class ChannelController extends Controller
+class ChannelController extends ApiController
 {
     /**
      * @param $page 当前页数
@@ -24,18 +23,42 @@ class ChannelController extends Controller
     /**
      * 检索信道合同
      */
-    public function searchContract($company_id)
+    public function searchContractc($company_id)
     {
         $nowaTime = date('y-m-d', time());
-        $data = Company::findOrFail($company_id)->contracts()->get()->reject(function($contract) use ($nowaTime){
+        $data = Company::findOrFail($company_id)->contract_cs()->get()->reject(function($contract) use ($nowaTime){
             //过滤已过期合同
             if($contract->deadline < $nowaTime){
                 return true;
             }
         })->toArray();
 
+        $params  = Cache::many(['tongxins','jihuas']);  //通信卫星 + 计划
+
         if(empty($data)){  //empty必须要数组 [],  collect也不行
-            return $this->res(7004, '查无结果');
+            return $this->res(7004, '查无结果', $params);
+        }
+        $data = [
+          'data' => $data,
+          'params' => $params
+        ];
+        return $this->res(7003, '合同列表', $data);
+    }
+
+    /**
+     * 搜索套餐
+     */
+    public function searchPlan($contractc_id)
+    {
+        $data = Contractc_plan::where('contractc_id', $contractc_id)
+            ->get()
+            ->reject(function($item){
+                //先过滤掉无量套餐
+                return $item->total === $item->use;
+            })
+            ->toArray();
+        if(empty($data)){  //empty必须要数组 [],  collect也不行
+            return $this->res(7004, '查无结果', $data);
         }
         return $this->res(7003, '合同列表', $data);
     }

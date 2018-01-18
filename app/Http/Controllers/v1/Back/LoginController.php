@@ -50,7 +50,22 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
+        $nowaTime = date('y-m-d', time());
+        $data = Company::findOrFail(1)->contract_cs()->get()->reject(function($contract) use ($nowaTime){
+            //过滤已过期合同
+            if($contract->deadline < $nowaTime){
+                return true;
+            }
+        })->toArray();
+        return $data;
+        $params  = Cache::many(['tongxins','jihuas']);  //通信卫星 + 计划
 
+        if(empty($data)){  //empty必须要数组 [],  collect也不行
+            $data = array_merge($data, $params);
+            return $this->res(7004, '查无结果', $data);
+        }
+        $data = array_merge($data, $params);
+        return $this->res(7003, '合同列表', $data);
     }
 
     public function test2(Request $request)
