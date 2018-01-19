@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\v1\Back\SP;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Resources\SP\Channel\DeviceCollection;
 use App\Models\Channels\Contractc_plan;
 use App\Models\Company;
+use App\Models\Utils\Device;
 use Illuminate\Support\Facades\Cache;
 
 class ChannelController extends ApiController
@@ -58,8 +60,19 @@ class ChannelController extends ApiController
             })
             ->toArray();
         if(empty($data)){  //empty必须要数组 [],  collect也不行
-            return $this->res(7004, '查无结果', $data);
+            return $this->res(7004, '查无结果');
         }
         return $this->res(7003, '合同列表', $data);
+    }
+
+    public function searchDevice($company_id)
+    {
+        $data = Device::where('company_id', $company_id)->where('status', '!=', '停用')
+            ->get();
+
+        if($data->count() == 0){
+            return $this->res(7004, '查无结果');
+        }
+        return $this->res(7003, '设备列表', new DeviceCollection($data));
     }
 }

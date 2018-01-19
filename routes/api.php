@@ -49,6 +49,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/xindao/{page}/{pageSize}/{emp_id}/{status}','ChannelController@getProcess');
             Route::get('/xindao/searchContractc/{company_id}','ChannelController@searchContractc');
             Route::get('/xindao/searchPlan/{contractc_id}','ChannelController@searchPlan');
+            Route::get('/xindao/searchDevice/{company_id}','ChannelController@searchDevice');
         });
 
     });

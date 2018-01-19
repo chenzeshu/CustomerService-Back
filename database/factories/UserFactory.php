@@ -260,7 +260,7 @@ $factory->define(\App\Models\Utils\Device::class, function () use ($faker){
     return [
         "type"=>  $faker->randomElement($type),
         'id5'=>rand(1,2),
-        'device_id'=> $faker->md5,
+        'device_id'=> $faker->text(8),
         'ip' => $faker->ipv4,
         'sn' => $faker->uuid,
         'profession_id'=> $faker->randomElement($pro),
