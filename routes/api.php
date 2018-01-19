@@ -50,6 +50,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/xindao/searchContractc/{company_id}','ChannelController@searchContractc');
             Route::get('/xindao/searchPlan/{contractc_id}','ChannelController@searchPlan');
             Route::get('/xindao/searchDevice/{company_id}','ChannelController@searchDevice');
+            Route::post('/xindao/apply','ChannelController@apply');
         });
 
     });

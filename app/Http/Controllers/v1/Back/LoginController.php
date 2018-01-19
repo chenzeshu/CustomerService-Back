@@ -50,8 +50,8 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        $nowaTime = date('y-m-d H:i:s', time());
-        return $nowaTime;
+        $nowaTime = "2018年1月1日0点0分";
+
     }
 
     public function test2(Request $request)

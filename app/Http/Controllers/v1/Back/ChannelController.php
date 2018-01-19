@@ -50,7 +50,7 @@ class ChannelController extends ApiController
     {
         try{
             //todo 检查套餐余量
-            $this->repo->checkPlan($request);
+            $this->repo->checkPlan($request->id1, $request->t2, $request->t1);
             //todo 信道服务单号
             $recordModel = Id_record::find(5);
             $record = $recordModel->record;

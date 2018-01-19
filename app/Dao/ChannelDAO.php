@@ -23,6 +23,6 @@ class ChannelDAO
      */
     public static function getStars()
     {
-        return config('app.channel.starts');
+        return config('app.channel.stars');
     }
 }

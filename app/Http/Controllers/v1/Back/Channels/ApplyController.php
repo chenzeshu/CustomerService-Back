@@ -118,7 +118,7 @@ class ApplyController extends ApiController
     {
         try{
             //todo 检查套餐余量是否充足, 不足则抛出OutOfTimeException
-            $this->channelRepo->checkPlan($request);
+            $this->channelRepo->checkPlan($request->id1, $request->t2, $request->t1);
 
             $model = Channel_operative::where('channel_apply_id', $request->channel_apply_id);
             if($model->first()){
@@ -143,7 +143,7 @@ class ApplyController extends ApiController
     {
         try{
             //todo true表示根据实际运行表单, 改变套餐已用量
-            list($planModel, $curTime) = $this->channelRepo->checkPlan($request);
+            list($planModel, $curTime) = $this->channelRepo->checkPlan($request->id1, $request->t2, $request->t1);
             $model = Channel_real::where('channel_apply_id', $request->channel_apply_id);
             //todo 进行套餐用量的修改
             $this->channelRepo->reCalPlan($model->first(), $curTime, $planModel);

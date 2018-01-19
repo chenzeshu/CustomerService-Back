@@ -13,7 +13,7 @@ use App\Exceptions\Channels\OutOfTimeException;
 use App\Http\Helpers\Params;
 use App\Models\Channels\Contractc_plan;
 
-class ChannelRepo
+class ChannelRepo extends CurdRepo
 {
     public function pageFilter($channels, $status, $page, $pageSize)
     {
@@ -28,11 +28,19 @@ class ChannelRepo
         return [$data, $total];
     }
 
-    //todo 校验套餐的余量, 但不做减少, 直到实际运行才减少
-    public function checkPlan($request){
-        $planModel = Contractc_plan::findOrFail($request->id1);
-        $curTime = ceil((strtotime($request->t2) - strtotime($request->t1))/ Params::ChannelTime);
+    /**
+     *  校验套餐的余量, 但不做减少, 直到实际运行才减少
+     * @param $contractc_plan_id  信道套餐id
+     * @param $t1 申请信道 : 开始时间  非时间戳
+     * @param $t2 申请信道 : 结束时间
+     * @return array
+     * @throws OutOfTimeException
+     */
+    public function checkPlan($contractc_plan_id, $t1, $t2){
+        $planModel = Contractc_plan::findOrFail($contractc_plan_id);
+        $curTime = ceil((strtotime($t2) - strtotime($t1))/ Params::ChannelTime);
         $check = $planModel->total - $planModel->use - $curTime;
+
         if($check < 0){
             throw new OutOfTimeException();
         }
@@ -58,4 +66,22 @@ class ChannelRepo
         ]);
         return null;
     }
+
+    /**
+     * 将 "[2018年, 1月, 1日, 0点, 0分]" 数组格式 转换为 "2018-1-1 0:0"格式
+     * @param $time
+     * @return mixed
+     */
+    public function transformTimeFormat($time)
+    {
+        $time = implode("", $time);
+
+        $time = str_replace("年", "-", $time);
+        $time = str_replace("月", "-", $time);
+        $time = str_replace("日", " ", $time);
+        $time = str_replace("点", ":", $time);
+        $time = str_replace("分", "", $time);
+        return $time;
+    }
+
 }
