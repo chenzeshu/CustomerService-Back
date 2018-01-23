@@ -6,13 +6,16 @@ use App\Dao\ServiceDAO;
 use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
+use App\Exceptions\SP\ChannelNoCheckerExp;
 use App\Http\Resources\Back\ServiceVerifyCollection;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
 use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Http\Resources\SP\serviceShowResource;
+use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_plan;
 use App\Models\Company;
+use App\Models\Contractc;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
 use App\Models\Services\Contract_plan;
@@ -50,8 +53,29 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        $nowaTime = "2018年1月1日0点0分";
-
+        $status = "待审核";
+        $channel_id = 1;
+        return Channel::with(['contractc',
+            'employee',
+            'channel_applys' => function($query) use ($status){
+                $arr = ['channel_relations.device.company',
+                    'contractc_plan.'];
+                switch ($status){
+                    case "运营调配":
+                        $arr = array_merge($arr, ['channel_operative']);
+                        break;
+                    case "已完成":
+                        $arr = array_merge($arr, ['channel_real']);
+                        break;
+                    case "申述中":
+                        $arr = array_merge($arr, ['channel_real']);
+                        break;
+                    default: //待审核/拒绝
+                        break;
+                }
+                return $query->with($arr);
+            }, 'plans'])
+            ->findOrFail($channel_id);
     }
 
     public function test2(Request $request)

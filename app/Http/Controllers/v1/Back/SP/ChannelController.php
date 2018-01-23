@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\v1\Back\SP;
 
 use App\Exceptions\Channels\OutOfTimeException;
+use App\Exceptions\SP\ChannelNoCheckerExp;
+use App\Exceptions\SP\ChannelProcessingExp;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\v1\Back\ApiController;
 use App\Http\Repositories\ChannelRepo;
 use App\Http\Resources\SP\Channel\DeviceCollection;
-use App\Id_record;
+use App\Models\Channels\Channel;
 use App\Models\Channels\Contractc_plan;
 use App\Models\Company;
 use App\Models\Contractc;
 use App\Models\Utils\Device;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +35,61 @@ class ChannelController extends ApiController
      */
     public function page($page, $pageSize, $emp_id, $status)
     {
+        $begin = ($page - 1) * $pageSize;
+        if($status == "全部"){
+            $data = Channel::with(['plans', "employee"])->where('employee_id', $emp_id)->offset($begin)->limit($pageSize)->get();
+        }else{
+            $data = Channel::with(['plans', "employee"])->where('employee_id', $emp_id)->where('status', $status)->offset($begin)->limit($pageSize)->get();
+        }
+        if(empty($data->toArray())){
+            return $this->res(7004, '暂无更多', $data);
+        }
+        return $this->res(7003, $status.'列表', $data);
+    }
 
+    /**
+     * 查看信道单细节
+     * @param int $channel_id
+     * @param string $status 信道单状态
+     */
+    public function showDetail($channel_id, $status)
+    {
+        $data = Channel::with(['contractc',
+            'employee',
+            'channel_applys' => function($query) use ($status){
+                $arr = ['channel_relations.device.company',
+                    'contractc_plan.plan'];
+                switch ($status){
+                    case "运营调配":
+                        $arr = array_merge($arr, ['channel_operative' => function($query){
+                            return $query->with(['tongxin', 'pinlv', 'jihua']);
+                        }]);
+                        break;
+                    case "已完成" || "申述中":
+                        $arr = array_merge($arr, ['channel_real'=> function($query){
+                            return $query->with(['tongxin', 'pinlv', 'jihua','checker']);
+                        }]);
+                        break;
+                    default: //待审核/拒绝
+                        break;
+                }
+                return $query->with($arr);
+            }])
+            ->findOrFail($channel_id);
+        return $this->res(7003, "状态".$status, $data);
+
+        //1 项目经理 (服务单只跟着申请人走, 所以不上客户联系人)
+        //2 套餐详情、参数
+        //3 设备详情(型号, ip, 公司)
+        //4 服务单本身信息
+    }
+
+    /**
+     * 项目经理查看跟自己有关的信道服务单
+     */
+    public function pmRelation($pm_id)
+    {
+        return Contractc::with('channels')->whereIn('pm', [$pm_id])->get();
     }
 
     /**
@@ -101,7 +157,7 @@ class ChannelController extends ApiController
     }
 
     /**
-     *  提交申请, 创建信道单channel(待审核) + apply + relations
+     *  提交申请事务, 创建信道单channel(待审核) + apply + relations
      */
     public function apply(Request $request)
     {
@@ -110,10 +166,13 @@ class ChannelController extends ApiController
             //todo 整理传入参数
             $baseInfo = $request->baseInfo;  //第一页数据
             $data = $request->data;          //第二页数据
+            //todo 调整开始/结束时间的格式
             $baseInfo['begin'] = $this->repo->transformTimeFormat($baseInfo['begin']);
             $baseInfo['end'] = $this->repo->transformTimeFormat($baseInfo['end']);
             //todo 检查套餐余量
             $this->repo->checkPlan($baseInfo['plan_id'], $baseInfo['begin'], $baseInfo['end']);
+            //todo 检查本合同上次服务是否有人负责(无论是否临时, 若本次为第一次, 则无碍)
+            $this->repo->checkChannel($baseInfo['contractc_id']);
             //todo 生成信道服务单号
             list($recordModel, $channel_id) = $this->repo->generateNumber(5);
             //fixme 这个increment源码是否有抛错, 会回滚吗? | 后期重构时并入generateNumber并仅在事务中调用
@@ -133,7 +192,7 @@ class ChannelController extends ApiController
                 't1' => $baseInfo['begin'],
                 't2' => $baseInfo['end']
             ]);
-            //
+
             foreach ($data as $item){
                 $apply->channel_relations()->create([
                     'company_id'=>$item['companyId'],
@@ -148,6 +207,14 @@ class ChannelController extends ApiController
         catch(OutOfTimeException $e){
             DB::rollback();
             return $this->res(7004, '超出用量');
+        }
+        catch (ChannelNoCheckerExp $e){
+            DB::rollback();
+            return $this->res(7004, $e->msg);
+        }
+        catch (ChannelProcessingExp $e){
+            DB::rollback();
+            return $this->res(7004, $e->msg);
         }
         DB::commit();
         return $this->res(7003, '申请成功');

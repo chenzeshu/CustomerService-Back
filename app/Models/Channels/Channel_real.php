@@ -22,16 +22,16 @@ class Channel_real extends Model
 
     public function tongxin()
     {
-        return $this->hasOne(Channel_info3::class, 'id', 'id3');
+        return $this->hasOne(Channel_info3::class, 'id', 'id2');
     }
 
     public function pinlv()
     {
-        return $this->hasOne(Channel_info4::class, 'id', 'id5');
+        return $this->hasOne(Channel_info4::class, 'id', 'id4');
     }
 
     public function jihua()
     {
-        return $this->hasOne(Channel_info5::class, 'id', 'id4');
+        return $this->hasOne(Channel_info5::class, 'id', 'id3');
     }
 }

@@ -10,8 +10,11 @@ namespace App\Http\Repositories;
 
 
 use App\Exceptions\Channels\OutOfTimeException;
+use App\Exceptions\SP\ChannelNoCheckerExp;
+use App\Exceptions\SP\ChannelProcessingExp;
 use App\Http\Helpers\Params;
 use App\Models\Channels\Contractc_plan;
+use App\Models\Contractc;
 
 class ChannelRepo extends CurdRepo
 {
@@ -68,14 +71,33 @@ class ChannelRepo extends CurdRepo
     }
 
     /**
+     * 检查本合同上次服务是否有人负责(无论是否临时, 若本次为第一次, 则无碍)
+     * @param int $contractc_id 信道合同id
+     */
+    public function checkChannel($contractc_id)
+    {
+        $model = Contractc::findOrFail($contractc_id)->channels()->orderBy('created_at', 'desc')->first();
+
+        if(empty($model->toArray())){ //本合同下第一次
+            return true;
+        }
+        $data = $model->channel_applys()->orderBy('created_at', 'desc')->first()->channel_real()->first();
+        if(!$data){
+            throw new ChannelProcessingExp();
+        }
+        if($data->checker == ""){
+            throw new ChannelNoCheckerExp();
+        }
+        return true;
+    }
+
+    /**
      * 将 "[2018年, 1月, 1日, 0点, 0分]" 数组格式 转换为 "2018-1-1 0:0"格式
      * @param $time
      * @return mixed
      */
     public function transformTimeFormat($time)
     {
-        $time = implode("", $time);
-
         $time = str_replace("年", "-", $time);
         $time = str_replace("月", "-", $time);
         $time = str_replace("日", " ", $time);
