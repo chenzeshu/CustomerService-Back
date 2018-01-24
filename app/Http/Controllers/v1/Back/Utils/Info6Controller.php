@@ -25,16 +25,16 @@ class Info6Controller extends ApiController
     {
         $data = Channel_info6::create($request->all());
 
-        return $this->res(2002, "新建合同成功", ['data'=>$data]);
+        return $this->res(2002, "新建类型成功", ['data'=>$data]);
     }
 
     public function update(Request $request, $id)
     {
         $re = Channel_info6::find($id)->update($request->all());
         if($re){
-            return $this->res(2003, "修改合同成功");
+            return $this->res(2003, "修改类型成功");
         } else {
-            return $this->res(-2003, "修改合同失败");
+            return $this->res(-2003, "修改类型失败");
         }
     }
 
@@ -42,9 +42,9 @@ class Info6Controller extends ApiController
     {
         $re = Channel_info6::destroy($id);
         if($re){
-            return $this->res(2004, "删除合同成功");
+            return $this->res(2004, "删除类型成功");
         } else {
-            return $this->res(500, "删除合同失败");
+            return $this->res(500, "删除类型失败");
         }
     }
 
