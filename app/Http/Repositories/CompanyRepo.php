@@ -8,6 +8,7 @@
 
 namespace App\Http\Repositories;
 
+use Faker\Factory;
 use Faker\Generator as Faker;
 
 class CompanyRepo
@@ -31,7 +32,8 @@ class CompanyRepo
     /**
      *  为新公司新建临时服务合同
      */
-    public function createTempContract($data, Faker $faker){
+    public function createTempContract($data){
+        $faker = Factory::create('zh_CN');
         $type2 = ['销售', '客服', '临时'];
         return [
             "contract_id" => 'F'.date('Ymd', time()).rand(0,1000),

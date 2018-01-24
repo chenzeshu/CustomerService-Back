@@ -20,14 +20,15 @@ class CreateDevicesTable extends Migration
             $table->enum('type',['ad','非ad'])->default('ad');  //ad/非ad
             $table->integer('id5'); //传站类型的id
             $table->string('device_id', 80);  //设备型号, 20个汉字以内
-            $table->string('ip')->nullable();
-            $table->string('sn')->nullable();
-            $table->integer('profession_id');
+            $table->string('ip');
+            $table->timestamp('built_at');  //设备安装时间
             $table->enum('status', ['停用','重要','一般','自用', '损坏', '专项处理'])->default('一般');
-            $table->string('aerial', 30);  //天线 可能是1米, 0.9米, 碳纤维等 10个汉字以内
-            $table->string('pa', 30);  //10个汉字以内
-            $table->string('lnb',30);  //lnb型号, 10个汉字以内
-            $table->timestamp('built_at');
+            //以下是可以为空的
+            $table->string('sn')->nullable();
+            $table->integer('profession_id')->nullable();
+            $table->string('aerial', 30)->nullable();  //天线 可能是1米, 0.9米, 碳纤维等 10个汉字以内
+            $table->string('pa', 30)->nullable();  //10个汉字以内
+            $table->string('lnb',30)->nullable();  //lnb型号, 10个汉字以内
             $table->string('remark', 300)->nullable(); //100个汉字以内
             $table->timestamps();
 

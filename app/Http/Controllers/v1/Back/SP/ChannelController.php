@@ -77,19 +77,26 @@ class ChannelController extends ApiController
             }])
             ->findOrFail($channel_id);
         return $this->res(7003, "状态".$status, $data);
-
-        //1 项目经理 (服务单只跟着申请人走, 所以不上客户联系人)
-        //2 套餐详情、参数
-        //3 设备详情(型号, ip, 公司)
-        //4 服务单本身信息
     }
 
     /**
-     * 项目经理查看跟自己有关的信道服务单
+     * 预留：项目经理查看跟自己有关的信道服务单
      */
     public function pmRelation($pm_id)
     {
         return Contractc::with('channels')->whereIn('pm', [$pm_id])->get();
+    }
+
+    /**
+     * 申述
+     */
+    public function allege($channel_id, Request $request)
+    {
+        Channel::findOrFail($channel_id)->update([
+            'status' => '申述中',
+            'allege' => $request->allege
+        ]);
+        return $this->res(7008, '申述成功');
     }
 
     /**

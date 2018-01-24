@@ -11,9 +11,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');
 
-
 /** ===================== ========== 微信小程序 =========== =========================*/
     Route::post('/findUser', 'LoginController@findUser'); //验证是否注册过
+    Route::get('/findUserViaOpenid/{openid}', 'LoginController@findUserViaOpenid'); //通过openid直接校验jwt
     Route::get('/getjwt',  'LoginController@getJWT');
     Route::post('/emp_waitings','EmpWaitingController@store');  //微信小程序申请注册
     Route::get('/emp_waitings/delete/{id}','EmpWaitingController@delete');  //微信小程序申请注册 => 删除之前被拒绝的申请信息
@@ -52,6 +52,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/xindao/searchPlan/{contractc_id}','ChannelController@searchPlan');
             Route::get('/xindao/searchDevice/{company_id}','ChannelController@searchDevice');
             Route::post('/xindao/apply','ChannelController@apply');
+            Route::post('/xindao/allege/{channel_id}','ChannelController@allege');
         });
 
     });

@@ -7,6 +7,7 @@ use App\Http\Controllers\v1\Back\ApiController;
 use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Id_record;
 use App\Models\Services\Service;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class repairController extends ApiController
@@ -55,10 +56,19 @@ class repairController extends ApiController
                 'status' => $status
             ]);
         }else{
-            return $this->res(7003, '报修进展列表', [
-                'data' => new ServiceProcessCollection($data),
-                'status' => $status
-            ]);
+            try{
+                return $this->res(7003, '报修进展列表', [
+                    'data' => new ServiceProcessCollection($data),
+                    'status' => $status
+                ]);
+            }catch (ModelNotFoundException $e){
+                //ServiceProcessCollection里的ServiceShowResourceForError的Service_type模型会找不到>(当前最大id), 报404, 可以捕捉
+                return $this->res(-7003, '暂无数据', [
+                    'data' => [],
+                    'status' => $status
+                ]);
+            }
+
         }
     }
 

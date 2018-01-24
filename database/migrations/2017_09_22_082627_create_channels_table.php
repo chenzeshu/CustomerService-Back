@@ -20,6 +20,8 @@ class CreateChannelsTable extends Migration
             $table->integer('employee_id');
             $table->enum('status', config('app.channel.status'))->default('待审核');
             $table->enum('type',config('app.channel.stars'))->default('外部用星');
+            $table->text('allege')->nullable();  //申述内容
+
             $table->tinyInteger('source')->nullable();  //外键, 来源表的id
             $table->index('contractc_id'); //合同编号作为索引之一
             $table->index('employee_id'); //申请人索引

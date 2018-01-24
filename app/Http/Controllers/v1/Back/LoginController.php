@@ -26,6 +26,7 @@ use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -53,29 +54,36 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        $status = "待审核";
-        $channel_id = 1;
-        return Channel::with(['contractc',
-            'employee',
-            'channel_applys' => function($query) use ($status){
-                $arr = ['channel_relations.device.company',
-                    'contractc_plan.'];
-                switch ($status){
-                    case "运营调配":
-                        $arr = array_merge($arr, ['channel_operative']);
-                        break;
-                    case "已完成":
-                        $arr = array_merge($arr, ['channel_real']);
-                        break;
-                    case "申述中":
-                        $arr = array_merge($arr, ['channel_real']);
-                        break;
-                    default: //待审核/拒绝
-                        break;
-                }
-                return $query->with($arr);
-            }, 'plans'])
-            ->findOrFail($channel_id);
+        try{
+            return Service_type::findOrFail(7)->name;
+        }catch (ModelNotFoundException $e){
+            return $e->getMessage();
+        }
+
+        $page = 1;
+        $pageSize = 4;
+        $emp_id = 101;
+        $status = "已派单";
+        $begin = ($page - 1) * $pageSize;
+        $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
+            ->where('status', $status)
+            ->where('refer_man', $emp_id)
+            ->offset($begin)
+            ->limit($pageSize)
+            ->get();
+        $status = ServiceDAO::getServiceStatus();
+        return new ServiceProcessCollection($data);
+        if( $data->count() == 0){
+            return $this->res(-7003, '暂无数据',[
+                'data' => [],
+                'status' => $status
+            ]);
+        }else{
+            return $this->res(7003, '报修进展列表', [
+                'data' => new ServiceProcessCollection($data),
+                'status' => $status
+            ]);
+        }
     }
 
     public function test2(Request $request)
@@ -127,8 +135,6 @@ class LoginController extends ApiController
         }catch (BaseException $e){
             return $this->error($e);
         }
-
-
     }
 
     public function check()
@@ -138,17 +144,27 @@ class LoginController extends ApiController
     }
 
     /**
-     * 控制在2读以内
+     *
+     * 通过code求得openid, 控制在2读以内
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function findUser(Request $request)
     {
         $openid = $this->getOpenid($request->code);
+        return $this->findUserViaOpenid($openid);
+    }
+
+
+    public function findUserViaOpenid($openid)
+    {
         $emp = Employee::where('openid', $openid)->first();
         if($emp){
             $token = JWTAuth::fromUser($emp, ['com'=>$emp['company_id']]);
-            return $this->res(6000, '已经通过, 同意跳转', $token);
+            return $this->res(6000, '已经通过, 同意跳转', [
+                'token' => $token,
+                'openid' => $openid
+            ]);
         }else {
             if($data = Employee_waiting::with('errnos')->where('openid', $openid)->first()){
                 if($data['status'] == '未通过'){

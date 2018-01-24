@@ -15,6 +15,7 @@ class DeviceController extends ApiController
         $begin = ( $page -1 ) * $pageSize;
         $cons = Device::offset($begin)->limit($pageSize)
             ->with(['company', 'profession', 'channel_info2'])
+            ->orderBy('updated_at', 'desc')
             ->get()->toArray();
         $professions = Profession::all()->toArray();
         $info2s = Channel_info2::all()->toArray();

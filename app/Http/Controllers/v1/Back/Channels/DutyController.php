@@ -25,7 +25,7 @@ class DutyController extends ApiController
     public function update(Request $request, $id)
     {
         //fixme 修改时前端默认company_id的单位是灰色的, 除非选择更改公司按钮, 否则无法更改
-        $re = Channel_duty::find($id)->update($request->all());
+        $re = Channel_duty::find($id)->update($request->except('checker'));
         if($re){
             return $this->res(2003, "修改值班数据成功");
         } else {
