@@ -45,8 +45,10 @@ class ContractController extends Controller
      * @param string $other 预留字段
      * @return \Illuminate\Http\JsonResponse
      */
-    public function page($page, $pageSize, $finish="", $other="")
+    public function page($page, $pageSize, Request $request)
     {
+        $finish = $request->value1;
+        $other = $request->value2;
         $cons = Cache::get('contracts');
 
         if( empty($cons) ){

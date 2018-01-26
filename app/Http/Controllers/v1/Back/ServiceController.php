@@ -37,11 +37,21 @@ class ServiceController extends ApiController
      * @param $pageSize
      * @return \Illuminate\Http\JsonResponse
      */
-    public function page($page, $pageSize, $status="", $charge_flag="")
+    public function page($page, $pageSize, Request $request)
     {
+        $status = $request->value1;
+        $charge_flag = $request->value2;
+        $company_name = $request->value3;
+        $emp_name = $request->value4;
+
         $begin = ( $page -1 ) * $pageSize;
         $services = Service::get_pagination($status, $charge_flag, $begin, $pageSize);
+        $services = $this->repo->filterData($services, $company_name, $emp_name);
         $total = Service::get_total($status, $charge_flag);
+        if($company_name !== "" || $emp_name !==""){
+            $total = count($services);
+        }
+
         list($service_types, $service_sources) = Service::get_cache();
 
         $data = [

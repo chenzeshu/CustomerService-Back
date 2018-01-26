@@ -27,8 +27,10 @@ class ContractcController extends ApiController
         $this->repo = $repo;
     }
 
-    public function page($page, $pageSize, $finish="", $other="")
+    public function page($page, $pageSize, Request $request)
     {
+        $status = $request->value1;
+        $other = $request->value2;
         $cons = Cache::get('contractcs');
         if( empty($cons) ){
             Contractc::redis_refresh_data();

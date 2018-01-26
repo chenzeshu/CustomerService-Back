@@ -42,4 +42,42 @@ class ServiceRepo
             return;
         }
     }
+
+    /**
+     * 筛选
+     */
+    public function filterData($data, $company_name, $emp_name)
+    {
+        $data = collect($data);
+        if($company_name != ""){
+            $data = $this->filterCompanyName($data, $company_name);
+        }
+        if($emp_name != ""){
+            $data = $this->filterEmpName($data, $emp_name);
+        }
+        return $data->toArray();
+    }
+
+    public function filterCompanyName($data, $company_name)
+    {
+        return $data->filter(function($item) use ($company_name){
+           if(strpos($item['contract']['company']['name'], $company_name)  !== false){
+               return true;
+           }
+        });
+    }
+
+    public function filterEmpName($data, $emp_name)
+    {
+        return $data->filter(function($item) use ($emp_name){
+            $item = collect($item['man'])->filter(function($man) use ($emp_name){
+                if(strpos($man->name, $emp_name) !== false){
+                    return true;
+                }
+            });
+            if(count($item) > 0){
+                return true;
+            }
+        });
+    }
 }

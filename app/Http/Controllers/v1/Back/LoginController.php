@@ -54,36 +54,16 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        try{
-            return Service_type::findOrFail(7)->name;
-        }catch (ModelNotFoundException $e){
-            return $e->getMessage();
-        }
-
-        $page = 1;
-        $pageSize = 4;
-        $emp_id = 101;
-        $status = "已派单";
-        $begin = ($page - 1) * $pageSize;
-        $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
-            ->where('status', $status)
-            ->where('refer_man', $emp_id)
-            ->offset($begin)
-            ->limit($pageSize)
-            ->get();
-        $status = ServiceDAO::getServiceStatus();
-        return new ServiceProcessCollection($data);
-        if( $data->count() == 0){
-            return $this->res(-7003, '暂无数据',[
-                'data' => [],
-                'status' => $status
-            ]);
-        }else{
-            return $this->res(7003, '报修进展列表', [
-                'data' => new ServiceProcessCollection($data),
-                'status' => $status
-            ]);
-        }
+        $begin = 0;
+        $pageSize = 10;
+        $status = $charge_flag = "";
+        $company_name = "诺依曼";
+        $services = Service::get_pagination($status, $charge_flag, $begin, $pageSize);
+        return collect($services)->filter(function($item) use ($company_name){
+            if(strpos($item['contract']['company']['name'], $company_name) !== false){
+                return true;
+            }
+        });
     }
 
     public function test2(Request $request)

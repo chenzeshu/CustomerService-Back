@@ -76,7 +76,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
          *  @url api/v1/company
          */
         Route::group(['prefix'=>'company'], function (){
-            Route::get('/page/{page}/{pageSize}','CompanyController@page');
+            Route::post('/page/{page}/{pageSize}','CompanyController@page');
             Route::get('/s/{name}/{page}/{pageSize}','CompanyController@search');  //todo 模糊搜索
 
             //todo 得到某个单独emp的数据
@@ -91,7 +91,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo emp
         Route::group(['prefix'=>'employees'], function(){
-            Route::get('/page/{page}/{pageSize}', 'EmployeeController@page');
+            Route::post('/page/{page}/{pageSize}', 'EmployeeController@page');
             Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
             Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
             Route::get('/se/out/{empName}','EmployeeController@searchOutEmps');  //todo 模糊搜索外部员工
@@ -118,7 +118,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo contracts
         Route::group(['prefix'=>'contracts'], function(){
-            Route::get('/page/{page}/{pageSize}/{finish?}/{other?}', 'ContractController@page');
+            Route::post('/page/{page}/{pageSize}', 'ContractController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractController@update');
             Route::get('/delete/{id}','ContractController@destroy');
@@ -133,7 +133,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo services
         Route::group(['prefix'=>'services'], function(){
-            Route::get('/page/{page}/{pageSize}/{status?}/{reach?}', 'ServiceController@page');
+            Route::post('/page/{page}/{pageSize}', 'ServiceController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ServiceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ServiceController@update');
             Route::get('/delete/{id}','ServiceController@destroy');
@@ -151,7 +151,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo contract_cs
         Route::group(['prefix'=>'contractcs'], function(){
-            Route::get('/page/{page}/{pageSize}/{finish?}/{other?}', 'ContractcController@page');
+            Route::post('/page/{page}/{pageSize}', 'ContractcController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ContractcController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractcController@update');
             Route::get('/delete/{id}','ContractcController@destroy');
@@ -166,7 +166,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo channels
         Route::group(['prefix'=>'channels'], function(){
-            Route::get('/page/{page}/{pageSize}/{status?}/{other?}', 'ChannelController@page');
+            Route::post('/page/{page}/{pageSize}', 'ChannelController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ChannelController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ChannelController@update');
             Route::get('/delete/{id}','ChannelController@destroy');

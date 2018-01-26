@@ -9,6 +9,7 @@ use App\Http\Requests\channel\ChannelStoreRequest;
 use App\Id_record;
 use App\Models\Channels\Channel;
 use App\Models\Channels\Contractc_plan;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ChannelController extends ApiController
@@ -23,8 +24,10 @@ class ChannelController extends ApiController
      * $other 为配合前端预留的参数, 目前channelController用不上
      */
     //todo 缓存分页
-    public function page($page, $pageSize, $status = "", $other = "")
+    public function page($page, $pageSize, Request $request)
     {
+        $status = $request->value1;
+        $other = $request->value2;
         $channels = Cache::get('channels');
         if(empty($channels)){
             Channel::redis_refresh_data();
