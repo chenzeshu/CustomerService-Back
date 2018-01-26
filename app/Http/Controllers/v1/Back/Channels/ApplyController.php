@@ -112,7 +112,7 @@ class ApplyController extends ApiController
      * 更新运营表, 若不存在则创建
      * $id apply_id
      */
-    public function updateOperative(Request $request, $id)
+    public function updateOperative(Request $request)
     {
         try{
             //todo 检查套餐余量是否充足, 不足则抛出OutOfTimeException
@@ -137,7 +137,7 @@ class ApplyController extends ApiController
      * $id apply_id
      * 更新实际运行表, 若不存在则创建
      */
-    public function updateReal(Request $request, $id)
+    public function updateReal(Request $request)
     {
         try{
             //todo true表示根据实际运行表单, 改变套餐已用量
