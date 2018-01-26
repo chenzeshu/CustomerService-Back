@@ -7,14 +7,12 @@ use App\Exceptions\Channels\OutOfTimeException;
 use App\Exceptions\ScopeExp\ScopeExp;
 use App\Http\Controllers\v1\Back\ApiController;
 use App\Http\Helpers\JWTHelper;
-use App\Http\Helpers\Params;
 use App\Http\Helpers\Scope;
 use App\Http\Repositories\ChannelRepo;
 use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_apply;
 use App\Models\Channels\Channel_operative;
 use App\Models\Channels\Channel_real;
-use App\Models\Channels\Contractc_plan;
 use Illuminate\Http\Request;
 
 //信道申请表
