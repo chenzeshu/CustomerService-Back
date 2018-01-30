@@ -22,6 +22,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class Utils implements ShouldQueue
 {
@@ -97,6 +98,8 @@ class Utils implements ShouldQueue
                 break;
         }
         $this->job->delete();
+
+        Log::info('缓存utils Cache成功');
     }
 
     private function service_types(){
