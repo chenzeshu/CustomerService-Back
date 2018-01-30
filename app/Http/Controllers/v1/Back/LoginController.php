@@ -56,22 +56,24 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        $content = "诺依曼公司";
+        $content = "诺依曼 区";
+        $content = json_encode($content, JSON_UNESCAPED_UNICODE);
         $client = ClientBuilder::create()->build();
+
+        $json = '{
+                  "query":{
+                    "multi_match":{
+                      "query":'.$content.',
+                      "fields": ["name", "address"]
+                    }
+                  }
+                }';
+
 
         $params = [
             'index' => 'cs',
             'type' => 'company',
-            'body' => [
-                "query" => [
-                    'match' => [
-                        'name' => [
-                            'query' => $content,
-                            'fuzziness' => "auto"
-                        ]
-                    ]
-                ]
-            ]
+            'body' => $json
         ];
         $data = $client->search($params);
 

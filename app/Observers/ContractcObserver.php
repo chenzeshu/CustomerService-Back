@@ -33,6 +33,7 @@ class ContractcObserver
 
     public function deleting(Contractc $contractc)
     {
+
     }
 
     public function deleted()

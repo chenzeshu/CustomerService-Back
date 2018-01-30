@@ -57,7 +57,7 @@ class DutyController extends ApiController
             });
 
         $emp = $model->each(function ($item){
-                    $item->checker = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})");
+                    $item->checker = $item->employee_id == null ? null : DB::select("select `id`, `name` from employees where id in ({$item->employee_id})")[0];
                 })
                 ->toArray();
 

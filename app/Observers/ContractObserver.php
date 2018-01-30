@@ -10,6 +10,7 @@ namespace App\Observers;
 
 
 use App\Http\Controllers\v1\Back\ServiceController;
+use App\Http\Repositories\ServiceRepo;
 use App\Id_record;
 use App\Models\Contract;
 
@@ -41,7 +42,7 @@ class ContractObserver
     {
         //执行服务单删除逻辑
         $services = $contract->services()->get();
-        $controller = new ServiceController();
+        $controller = new ServiceController(new ServiceRepo());
         foreach ($services as $service){
             $controller->destroy($service->id);
         }

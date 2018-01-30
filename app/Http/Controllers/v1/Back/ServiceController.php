@@ -25,6 +25,7 @@ class ServiceController extends ApiController
 {
     use UploadTrait;
     protected $repo;
+
     function __construct(ServiceRepo $repo)
     {
         $this->save_path = "services";
@@ -48,7 +49,8 @@ class ServiceController extends ApiController
         $services = Service::get_pagination($status, $charge_flag, $begin, $pageSize);
         $services = $this->repo->filterData($services, $company_name, $emp_name);
         $total = Service::get_total($status, $charge_flag);
-        if($company_name !== "" || $emp_name !==""){
+        //假如是搜索筛选
+        if(trim($company_name)|| trim($emp_name)){
             $total = count($services);
         }
 
