@@ -10,7 +10,6 @@ namespace App\Observers;
 
 
 use Elasticsearch\ClientBuilder;
-use Illuminate\Support\Facades\Log;
 
 class CompanyOb
 {
@@ -32,7 +31,6 @@ class CompanyOb
             ]
         ];
         $client->index($params);
-        Log::info('已存入id:'.$model->id);
     }
 
     /**
@@ -56,7 +54,6 @@ class CompanyOb
                 ]
             ],
         ];
-        $data = $client->deleteByQuery($params);
-        Log::info($data);
+        $client->deleteByQuery($params);
     }
 }
