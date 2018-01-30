@@ -3,13 +3,12 @@
 namespace App\Jobs\ES;
 
 use App\Models\Company;
-use App\User;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class FillJob implements ShouldQueue
 {
