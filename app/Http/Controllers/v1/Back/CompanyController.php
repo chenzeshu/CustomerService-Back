@@ -149,21 +149,12 @@ class CompanyController extends ApiController
     //要求关键字模糊查询
     public function search($name, $page, $pageSize)
     {
-        $this->init($page, $pageSize);
-        $data = Company::where('name', 'like', '%'.$name.'%')
-                        ->orderBy('id', 'desc')
-                        ->offset($this->begin)
-                        ->limit($pageSize)
-                        ->get()
-                        ->toArray();
-
-        $total = Company::where('name', 'like', '%'.$name.'%')
-                        ->count();
+        $data = $this->repo->esSearch($name);
 
         $data= [
-            'data'=> $data,
-            'total'=> $total,
+            'data'=> $data['hits']['hits'],
+            'total'=> count($data['hits']['hits']),
         ];
-        return $this->res(200, '搜索结果', $data);
+        return $this->res(2001, '搜索结果', $data);
     }
 }

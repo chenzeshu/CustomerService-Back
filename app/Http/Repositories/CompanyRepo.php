@@ -8,10 +8,11 @@
 
 namespace App\Http\Repositories;
 
+use Elasticsearch\ClientBuilder;
 use Faker\Factory;
 use Faker\Generator as Faker;
 
-class CompanyRepo
+class CompanyRepo implements EsInterface
 {
     /**
      *  为新公司新建临时信道合同
@@ -48,5 +49,32 @@ class CompanyRepo
             "document" => rand(1,100).','.rand(1,100),
         ];
         $data->contracts()->create($temp);
+    }
+
+    /**
+     * 通过ES模糊匹配
+     * @param $content
+     * @return array|string
+     */
+    public function esSearch($content)
+    {
+        $client = ClientBuilder::create()->build();
+
+        $params = [
+            'index' => 'cs',
+            'type' => 'company',
+            'body' => [
+                "query" => [
+                    'match' => [
+                        'name' => [
+                            'query' => $content,
+                            'fuzziness' => "auto"
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $data = $client->search($params);
+        return $data;
     }
 }

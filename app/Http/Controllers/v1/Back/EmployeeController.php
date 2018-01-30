@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\v1\Back;
 
+use App\Http\Repositories\CompanyRepo;
 use App\Http\Repositories\MailRepository;
 use App\Models\Company;
 use App\Models\Contract;
@@ -14,9 +15,11 @@ use Illuminate\Support\Facades\DB;
 class EmployeeController extends ApiController
 {
     protected $mail;
-    function __construct(MailRepository $mail)
+    protected $companyRepo;
+    function __construct(MailRepository $mail, CompanyRepo $companyRepo)
     {
         $this->mail = $mail;
+        $this->companyRepo = $companyRepo;
     }
 
     /**
@@ -135,15 +138,15 @@ class EmployeeController extends ApiController
      */
     public function searchCompanies($companyName)
     {
-        $companies = Company::where('name', 'like', '%'.$companyName.'%')
-                            ->limit(10)
-                            ->get(['id', 'name'])
-                            ->toArray();
-        $total  = Company::where('name', 'like', '%'.$companyName.'%')
-                         ->count();
+        $companies = $this->companyRepo->esSearch($companyName);
+        $_companies = [];
+        foreach ($companies['hits']['hits'] as $company){
+            array_push($_companies, $company['_source']);
+        }
+
         $data = [
-            'data' => $companies,
-            'sTotal' => $total
+            'data' => $_companies,
+            'sTotal' => count($_companies)
         ];
         return $this->res(200, '搜索结果', $data);
     }

@@ -29,7 +29,7 @@ class ContractcController extends ApiController
 
     public function page($page, $pageSize, Request $request)
     {
-        $status = $request->value1;
+        $finish = $request->value1;
         $other = $request->value2;
         $cons = Cache::get('contractcs');
         if( empty($cons) ){

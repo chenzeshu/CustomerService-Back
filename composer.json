@@ -12,7 +12,8 @@
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
         "predis/predis": "*",
-        "tymon/jwt-auth": "^0.5.12"
+        "tymon/jwt-auth": "^0.5.12",
+        "elasticsearch/elasticsearch": "~6.0"
     },
     "require-dev": {
         "encore/redis-manager": "^0.1.0",

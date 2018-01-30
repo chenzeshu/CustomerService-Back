@@ -13,6 +13,7 @@ use App\Http\Resources\SP\serviceCompanyResource;
 use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Http\Resources\SP\serviceShowResource;
 use App\Models\Channels\Channel;
+use App\Models\Channels\Channel_info3;
 use App\Models\Channels\Channel_plan;
 use App\Models\Company;
 use App\Models\Contractc;
@@ -26,6 +27,7 @@ use App\Services\Sms;
 use App\User;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
+use Elasticsearch\ClientBuilder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -54,16 +56,31 @@ class LoginController extends ApiController
 
     public function test(Request $request)
     {
-        $begin = 0;
-        $pageSize = 10;
-        $status = $charge_flag = "";
-        $company_name = "诺依曼";
-        $services = Service::get_pagination($status, $charge_flag, $begin, $pageSize);
-        return collect($services)->filter(function($item) use ($company_name){
-            if(strpos($item['contract']['company']['name'], $company_name) !== false){
-                return true;
-            }
-        });
+        $content = "诺依曼公司";
+        $client = ClientBuilder::create()->build();
+
+        $params = [
+            'index' => 'cs',
+            'type' => 'company',
+            'body' => [
+                "query" => [
+                    'match' => [
+                        'name' => [
+                            'query' => $content,
+                            'fuzziness' => "auto"
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $data = $client->search($params);
+
+        $data= [
+            'data'=> $data['hits']['hits'],
+            'total'=> count($data['hits']['hits']),
+        ];
+        return $this->res(200, '搜索结果', $data);
+
     }
 
     public function test2(Request $request)

@@ -5,6 +5,7 @@ namespace App;
 use App\Models\Utils\Loginlog;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
