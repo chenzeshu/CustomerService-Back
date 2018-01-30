@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ES\FillJob;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class EsCompany extends Command
 {
@@ -39,5 +40,6 @@ class EsCompany extends Command
     public function handle()
     {
         FillJob::dispatch();
+        Log::info('缓存 ES:company');
     }
 }

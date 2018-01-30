@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\Cache\Utils;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class CacheUtils extends Command
 {
@@ -39,5 +40,6 @@ class CacheUtils extends Command
     public function handle()
     {
         Utils::dispatch("all");
+        Log::info('缓存utils Cache');
     }
 }
