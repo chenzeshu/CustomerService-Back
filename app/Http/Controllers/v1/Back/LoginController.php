@@ -54,11 +54,32 @@ class LoginController extends ApiController
         $this->name[$foos] = $foosCallback->bindTo($this, __CLASS__);
     }
 
-    public function test($param = "")
+    public function test()
     {
-        $pm = explode(",", "1,2,3");
-        $item = Employee::findOrFail($pm);
-        return $item;
+        $service_id = "F2018001";
+        $emp_id = "101";
+        $item = Service::with(['contract', 'visits'])->where('service_id', $service_id)
+            ->first()->toArray();
+        $list = "";
+        if($item['contract']['TM']){
+            $list .= $item['contract']['TM'] .",";
+        }
+        if($item['man']){
+            $list .= $item['man'] .",";
+        }
+        if($item['visits']){
+            $list .= $item['visits'][0]['visitor']. ",";
+        }
+        $list .= $item['contract']['PM'] . "," . $item['contract']['TM'] . "," . $item['customer'] . "," . $item['refer_man'];
+        $list = rtrim(ltrim($list, "," ),  "," );
+        $arr = explode(",", $list);
+            foreach ($arr as $a){
+                if($a === $emp_id){
+                    return $this->res(7003, '已拉取', $item);
+                }
+            }
+            unset($a);
+            return $this->res(-7003, '不存在');  //此人无权限
 
     }
 

@@ -33,8 +33,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         Route::group(['prefix'=>'paidan'], function (){
             Route::get('/page/{page}/{pageSize}/{emp_id}/{status}', 'JobController@showServiceList'); //检索与自己有关的服务单
             Route::get('/askFinish/{serviceid}', 'JobController@askFinish'); //检索与自己有关的服务单
-            Route::get('/s/{name}/{page}/{pageSize}','JobController@search');  //todo 模糊搜索\
-            Route::get('/{service_id}','JobController@showServiceDetail');
+            Route::get('/s/{name}/{page}/{pageSize}','JobController@search');  //todo 模糊搜索
+            Route::get('/{service_id}','JobController@showServiceDetail');  //todo 详情页
+            Route::post('/getServiceInfo', 'JobController@getServiceInfo'); //todo 得到服务单详情以确保搜索人能不能查看详情
         });
 
         //todo 报修
@@ -48,7 +49,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         Route::group(['prefix'=>'SP/channel'], function (){
             Route::get('/xindao/{page}/{pageSize}/{emp_id}/{status}','ChannelController@page');
             Route::get('/xindao/show/{channel_id}/{status}','ChannelController@showDetail');
-            Route::post('/xindao/getChannelInfo','ChannelController@getChannelInfo');
+            Route::post('/xindao/getChannelInfo','ChannelController@getChannelInfo');   //todo 得到服务单详情以确保搜索人能不能查看详情
             Route::get('/xindao/searchContractc/{company_id}','ChannelController@searchContractc');
             Route::get('/xindao/searchPlan/{contractc_id}','ChannelController@searchPlan');
             Route::get('/xindao/searchDevice/{company_id}','ChannelController@searchDevice');

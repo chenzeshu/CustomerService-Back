@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\Back\SP;
 
 use App\Dao\ServiceDAO;
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Repositories\JobRepo;
 use App\Http\Resources\SP\serviceShowResource;
 use App\Models\Employee;
 use App\Models\Services\Service;
@@ -16,6 +17,13 @@ use Illuminate\Support\Facades\Log;
 //派单
 class JobController extends ApiController
 {
+    protected $repo;
+
+    function __construct(JobRepo $repo)
+    {
+        $this->repo = $repo;
+    }
+
     /**
      * 列出与自己有关的服务单
      */
@@ -46,6 +54,26 @@ class JobController extends ApiController
         });
         return new serviceShowResource($data);
     }
+
+    public function getServiceInfo(Request $request)
+    {
+        if( $emp_id     = $request->emp_id ){
+            $service_id = $request->service_id;
+
+            $service = Service::with(['contract', 'visits'])
+                ->where('service_id', $service_id)
+                ->first()
+                ->toArray();
+
+            if($this->repo->filterRelation($service, $emp_id)){
+                return $this->res(7003, '已拉取', $service);
+            }
+            return $this->res(-7003, '不存在');  //此人无权限
+        }else{
+            return $this->res(-7003, '没有提供搜索者id');
+        }
+    }
+
 
     /**
      *  员工申请完成服务单
