@@ -182,7 +182,7 @@ class ServiceController extends ApiController
             $recordModel = Id_record::find(4);  //模型的自加放在服务单生成成功时
             $record = $recordModel->record;
             $len = 3 - strlen($record);
-            $request['service_id'] = date('Y', time()).zerofill($len).$record;
+            $request['service_id'] = "F".date('Y', time()).zerofill($len).$record;
 
             //todo  临时文件移入永久文件夹
             if($request->has('fileList')){

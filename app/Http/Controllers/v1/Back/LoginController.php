@@ -54,34 +54,11 @@ class LoginController extends ApiController
         $this->name[$foos] = $foosCallback->bindTo($this, __CLASS__);
     }
 
-    public function test(Request $request)
+    public function test($param = "")
     {
-        $content = "诺依曼 区";
-        $content = json_encode($content, JSON_UNESCAPED_UNICODE);
-        $client = ClientBuilder::create()->build();
-
-        $json = '{
-                  "query":{
-                    "multi_match":{
-                      "query":'.$content.',
-                      "fields": ["name", "address"]
-                    }
-                  }
-                }';
-
-
-        $params = [
-            'index' => 'cs',
-            'type' => 'company',
-            'body' => $json
-        ];
-        $data = $client->search($params);
-
-        $data= [
-            'data'=> $data['hits']['hits'],
-            'total'=> count($data['hits']['hits']),
-        ];
-        return $this->res(200, '搜索结果', $data);
+        $pm = explode(",", "1,2,3");
+        $item = Employee::findOrFail($pm);
+        return $item;
 
     }
 

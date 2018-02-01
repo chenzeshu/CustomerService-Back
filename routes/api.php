@@ -10,7 +10,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');
-
+//    Route::get('/xindao/show/{channel_id}/{status}','ChannelController@showDetail');
 /** ===================== ========== 微信小程序 =========== =========================*/
     Route::post('/findUser', 'LoginController@findUser'); //验证是否注册过
     Route::get('/findUserViaOpenid/{openid}', 'LoginController@findUserViaOpenid'); //通过openid直接校验jwt
@@ -48,6 +48,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         Route::group(['prefix'=>'SP/channel'], function (){
             Route::get('/xindao/{page}/{pageSize}/{emp_id}/{status}','ChannelController@page');
             Route::get('/xindao/show/{channel_id}/{status}','ChannelController@showDetail');
+            Route::post('/xindao/getChannelInfo','ChannelController@getChannelInfo');
             Route::get('/xindao/searchContractc/{company_id}','ChannelController@searchContractc');
             Route::get('/xindao/searchPlan/{contractc_id}','ChannelController@searchPlan');
             Route::get('/xindao/searchDevice/{company_id}','ChannelController@searchDevice');

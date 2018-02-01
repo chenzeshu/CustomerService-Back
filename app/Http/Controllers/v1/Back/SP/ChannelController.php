@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\Back\SP;
 use App\Exceptions\Channels\OutOfTimeException;
 use App\Exceptions\SP\ChannelNoCheckerExp;
 use App\Exceptions\SP\ChannelProcessingExp;
+use App\Models\Employee;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\v1\Back\ApiController;
 use App\Http\Repositories\ChannelRepo;
@@ -47,38 +48,41 @@ class ChannelController extends ApiController
         return $this->res(7003, $status.'列表', $data);
     }
 
+
     /**
      * 查看信道单细节
-     * @param int $channel_id
+     * @param int $channel_id  信道单的id
      * @param string $status 信道单状态
      */
     public function showDetail($channel_id, $status)
     {
-        $data = Channel::with(['contractc',
-            'employee',
-            'channel_applys' => function($query) use ($status){
-                $arr = ['channel_relations.device.company',
-                    'contractc_plan.plan'];
-                switch ($status){
-                    case "运营调配":
-                        $arr = array_merge($arr, ['channel_operative' => function($query){
-                            return $query->with(['tongxin', 'pinlv', 'jihua']);
-                        }]);
-                        break;
-                    case "已完成" || "申述中":
-                        $arr = array_merge($arr, ['channel_real'=> function($query){
-                            return $query->with(['tongxin', 'pinlv', 'jihua','checker']);
-                        }]);
-                        break;
-                    default: //待审核/拒绝
-                        break;
-                }
-                return $query->with($arr);
-            }])
-            ->findOrFail($channel_id);
+        $with_arr = $this->repo->getShowWithArr($status);
+        $data = Channel::with($with_arr)->findOrFail($channel_id);
+        //todo 拿到pm详情
+        $pm = explode(",", $data['contractc']['PM']);
+        $data['contractc']['PM'] = Employee::findOrFail($pm);
         return $this->res(7003, "状态".$status, $data);
     }
 
+    /**
+     * 通过信道编号获得信道id与status
+     */
+    public function getChannelInfo(Request $request)
+    {
+        $emp_id = $request->emp_id;
+        $data = Channel::where('channel_id', $request->channel_id)
+            ->get()
+            ->filter(function ($item) use ($emp_id){
+                return $emp_id === $item['employee_id'] ? true :false;
+            })
+            ->toArray();
+        if(empty($data)){
+            return $this->res(-7003, "不存在");
+        }
+
+        return $this->res(7003, "搜索结果", $data[0]);
+    }
+    
     /**
      * 预留：项目经理查看跟自己有关的信道服务单
      */

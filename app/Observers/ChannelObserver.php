@@ -11,6 +11,7 @@ namespace App\Observers;
 
 use App\Id_record;
 use App\Models\Channels\Channel;
+use Illuminate\Support\Facades\Log;
 
 class ChannelObserver
 {
@@ -19,6 +20,7 @@ class ChannelObserver
      */
     public function saved()
     {
+        Log::info('channelComing');
         Channel::forget_cache();
     }
 

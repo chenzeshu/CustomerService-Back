@@ -43,6 +43,7 @@ class CreateServicesTable extends Migration
             $table->timestamps();
             //索引
             $table->index('contract_id');
+            $table->index('service_id'); //服务编号作为索引之一
             $table->index('document');
             $table->index('visit');
             $table->index('refer_man');

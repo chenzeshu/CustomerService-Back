@@ -13,6 +13,7 @@ use App\Exceptions\Channels\OutOfTimeException;
 use App\Exceptions\SP\ChannelNoCheckerExp;
 use App\Exceptions\SP\ChannelProcessingExp;
 use App\Http\Helpers\Params;
+use App\Models\Channels\Channel;
 use App\Models\Channels\Contractc_plan;
 use App\Models\Contractc;
 
@@ -104,6 +105,36 @@ class ChannelRepo extends CurdRepo
         $time = str_replace("点", ":", $time);
         $time = str_replace("分", "", $time);
         return $time;
+    }
+
+    /**
+     * 用于show方法的with数组
+     * @param $status
+     * @return array
+     */
+    public function getShowWithArr($status)
+    {
+        return ['contractc',
+            'employee',
+            'channel_applys' => function($query) use ($status){
+                $arr = ['channel_relations.device.company',
+                    'contractc_plan.plan'];
+                switch ($status){
+                    case "运营调配":
+                        $arr = array_merge($arr, ['channel_operative' => function($query){
+                            return $query->with(['tongxin', 'pinlv', 'jihua']);
+                        }]);
+                        break;
+                    case "已完成" || "申述中":
+                        $arr = array_merge($arr, ['channel_real'=> function($query){
+                            return $query->with(['tongxin', 'pinlv', 'jihua','checker']);
+                        }]);
+                        break;
+                    default: //待审核/拒绝
+                        break;
+                }
+                return $query->with($arr);
+            }];
     }
 
 }

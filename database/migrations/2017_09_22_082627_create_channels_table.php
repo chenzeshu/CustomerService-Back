@@ -24,6 +24,7 @@ class CreateChannelsTable extends Migration
 
             $table->tinyInteger('source')->nullable();  //外键, 来源表的id
             $table->index('contractc_id'); //合同编号作为索引之一
+            $table->index('channel_id'); //服务编号作为索引之一
             $table->index('employee_id'); //申请人索引
             $table->timestamps();
         });

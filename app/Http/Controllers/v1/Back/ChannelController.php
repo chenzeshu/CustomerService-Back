@@ -58,7 +58,7 @@ class ChannelController extends ApiController
             $recordModel = Id_record::find(5);
             $record = $recordModel->record;
             $len = 3 - strlen($record);
-            $request['channel_id'] = date('Y', time()).zerofill($len).$record;
+            $request['channel_id'] = "X".date('Y', time()).zerofill($len).$record;
 
             //todo 通过校验后, 正式创建
             $channelModel = Channel::create($request->except(['id2','id3', 't1', 't2', 'id1','customer']));
