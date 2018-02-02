@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\back\SP;
 
 use App\Dao\ServiceDAO;
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Repositories\CompanyRepo;
 use App\Http\Resources\SP\Channel\CompanyCollection;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
@@ -18,6 +19,13 @@ use Illuminate\Support\Facades\Storage;
 
 class commonController extends ApiController
 {
+    protected $repo;
+
+    function __construct(CompanyRepo $repo)
+    {
+        $this->repo = $repo;
+    }
+
     /**
      * 保修检索公司
      * @param $keyword 公司名关键字
@@ -25,7 +33,9 @@ class commonController extends ApiController
      */
     public function searchCompany($keyword)
     {
-        $data = Company::where('name', 'like',"%".$keyword."%")->get()->toArray();
+//        $data = Company::where('name', 'like',"%".$keyword."%")->get()->toArray();
+        $data = $this->repo->esSearch($keyword);
+
         if(empty($data)){  //empty这个函数读起来有歧义, 其实是空返回true
             return $this->res(7004, '查无结果');
         }

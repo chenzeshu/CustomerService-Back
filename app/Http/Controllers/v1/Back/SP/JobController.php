@@ -27,7 +27,7 @@ class JobController extends ApiController
     /**
      * 列出与自己有关的服务单
      */
-    public function showServiceList($page, $pageSize, $emp_id, $status = "已派单")
+    public function showServiceList($page, $pageSize, $emp_id, $status = "全部")
     {
         $data = ServiceDAO::getService($page, $pageSize, $emp_id, $status);
         $type = ServiceDAO::getServiceStatus();
@@ -55,6 +55,11 @@ class JobController extends ApiController
         return new serviceShowResource($data);
     }
 
+    /**
+     * 提前拿到服务单的一部分信息, 以防止无关人员通过检索服务单号查看详情
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getServiceInfo(Request $request)
     {
         if( $emp_id     = $request->emp_id ){

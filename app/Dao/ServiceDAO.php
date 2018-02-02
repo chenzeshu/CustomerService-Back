@@ -13,6 +13,7 @@ use App\Models\Employee;
 use App\Models\Services\Service;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ServiceDAO
 {
@@ -31,9 +32,15 @@ class ServiceDAO
         LEFT JOIN employees as c on c.id in (s.man) 
         LEFT JOIN employees as c2 on c2.id = s.customer
         LEFT JOIN service_types as c3 on c3.id = s.type
-        where find_in_set('$emp_id', s.man) and s.status = '$status'
+        where find_in_set('$emp_id', s.man)
         ORDER BY s.time1 desc
         LIMIT $begin, $pageSize");
+        Log::info($status.PHP_EOL);
+        if($status !== "全部"){
+            $data = collect($data)->filter(function($item) use ($status){
+                return $item->status == $status;
+            })->toArray();
+        }
 
         $len = count($data);
         if($len >= 1){

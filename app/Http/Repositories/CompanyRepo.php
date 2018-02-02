@@ -74,7 +74,13 @@ class CompanyRepo implements EsInterface
                 ]
             ]
         ];
-        $data = $client->search($params);
-        return $data;
+        $companies = $client->search($params);
+        //由于es的搜索结果有很多数据, 稍微筛选一下, 只选出company的
+        $_companies = [];
+        foreach ($companies['hits']['hits'] as $company){
+            array_push($_companies, $company['_source']);
+        }
+
+        return $_companies;
     }
 }

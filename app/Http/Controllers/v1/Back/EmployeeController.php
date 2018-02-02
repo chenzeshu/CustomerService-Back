@@ -139,14 +139,10 @@ class EmployeeController extends ApiController
     public function searchCompanies($companyName)
     {
         $companies = $this->companyRepo->esSearch($companyName);
-        $_companies = [];
-        foreach ($companies['hits']['hits'] as $company){
-            array_push($_companies, $company['_source']);
-        }
 
         $data = [
-            'data' => $_companies,
-            'sTotal' => count($_companies)
+            'data' => $companies,
+            'sTotal' => count($companies)
         ];
         return $this->res(200, '搜索结果', $data);
     }

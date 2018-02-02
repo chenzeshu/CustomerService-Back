@@ -7,6 +7,7 @@ use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
 use App\Exceptions\SP\ChannelNoCheckerExp;
+use App\Http\Repositories\CompanyRepo;
 use App\Http\Resources\Back\ServiceVerifyCollection;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
@@ -56,30 +57,7 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $service_id = "F2018001";
-        $emp_id = "101";
-        $item = Service::with(['contract', 'visits'])->where('service_id', $service_id)
-            ->first()->toArray();
-        $list = "";
-        if($item['contract']['TM']){
-            $list .= $item['contract']['TM'] .",";
-        }
-        if($item['man']){
-            $list .= $item['man'] .",";
-        }
-        if($item['visits']){
-            $list .= $item['visits'][0]['visitor']. ",";
-        }
-        $list .= $item['contract']['PM'] . "," . $item['contract']['TM'] . "," . $item['customer'] . "," . $item['refer_man'];
-        $list = rtrim(ltrim($list, "," ),  "," );
-        $arr = explode(",", $list);
-            foreach ($arr as $a){
-                if($a === $emp_id){
-                    return $this->res(7003, '已拉取', $item);
-                }
-            }
-            unset($a);
-            return $this->res(-7003, '不存在');  //此人无权限
+        return (new CompanyRepo())->esSearch('群英');
 
     }
 

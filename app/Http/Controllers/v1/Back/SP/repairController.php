@@ -44,11 +44,18 @@ class repairController extends ApiController
     {
         $begin = ($page - 1) * $pageSize;
         $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
-            ->where('status', $status)
             ->where('refer_man', $emp_id)
             ->offset($begin)
             ->limit($pageSize)
-            ->get();
+            ->get()
+            ->filter(function($item) use ($status){
+                if($status == "全部"){
+                    return true;
+                }else{
+                    return $item->status == $status ? true : false;
+                }
+            });
+
         $status = ServiceDAO::getServiceStatus();
         if( $data->count() == 0){
             return $this->res(-7003, '暂无数据',[
