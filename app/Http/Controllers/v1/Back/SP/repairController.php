@@ -9,6 +9,7 @@ use App\Id_record;
 use App\Models\Services\Service;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class repairController extends ApiController
 {
@@ -55,7 +56,6 @@ class repairController extends ApiController
                     return $item->status == $status ? true : false;
                 }
             });
-
         $status = ServiceDAO::getServiceStatus();
         if( $data->count() == 0){
             return $this->res(-7003, '暂无数据',[
