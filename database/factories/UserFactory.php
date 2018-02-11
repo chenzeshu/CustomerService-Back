@@ -68,7 +68,7 @@ $factory->define(\App\Models\Services\Contract_plan::class, function () use ($fa
        'plan_id' => rand(1,10),
        'total' => rand(5, 10),  //总次数
        'use' => rand(1,5), //使用次数
-       'desc'=>$faker->text(30),
+       'desc'=>$faker->text(30)
    ];
 });
 
@@ -175,6 +175,9 @@ $factory->define(\App\Models\Services\Service::class, function () use ($faker){
         "time1" => $faker->date('Y-m-d H:i:s'),
         "time2" => $faker->date('Y-m-d H:i:s'),
         'day_sum'=>rand(0,10),
+        'desc1' => $faker->text(40),
+        'desc2' => $faker->text(40),
+        'question' => $faker->text(40),
     ];
 });
 
