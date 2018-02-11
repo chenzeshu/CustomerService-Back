@@ -18,6 +18,7 @@ use App\Models\Utils\Device;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChannelController extends ApiController
 {
