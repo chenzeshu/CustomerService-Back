@@ -6,7 +6,6 @@ use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Employee;
 use App\Models\Utils\Service_source;
-use App\Models\Utils\Service_type;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -135,7 +134,7 @@ class Service extends Model
      */
     public function type()
     {
-        return $this->hasMany(Service_type::class, 'id', 'type');
+        return $this->hasOne(Contract_planutil::class, 'id', 'type');
     }
 
     /**

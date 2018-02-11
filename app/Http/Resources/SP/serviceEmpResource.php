@@ -17,6 +17,7 @@ class serviceEmpResource extends Resource
         return [
           'name' => $this->name,
           'phone' => $this->phone,
+          'status' => $this->status,
           'avatar' => $this->when(is_null($this->avatar), function(){
               return '404';
           }),

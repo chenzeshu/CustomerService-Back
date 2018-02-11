@@ -53,15 +53,15 @@ class UtilsSeed extends Seeder
         //服务套餐表
         DB::table('contract_planutils')->insert([
              ['name'=>'巡检', 'unit'=>'次/年', 'type'=>'有计划', 'type2'=>'普通'],
-             ['name'=>'应急保障', 'unit'=>'人/天', 'type'=>'无计划', 'type2'=>'普通'],
-             ['name'=>'培训', 'unit'=>'人/天', 'type'=>'无计划', 'type2'=>'普通'],
-             ['name'=>'长期租赁','unit'=>'日', 'type'=>'无计划', 'type2'=>'其他'],
-             ['name'=>'短期租赁', 'unit'=>'日', 'type'=>'无计划', 'type2'=>'其他'],
-             ['name'=>'延长保修', 'unit'=> '年', 'type'=>'无计划', 'type2'=>'其他'],
-             ['name'=>'设备维修', 'unit'=>'次', 'type'=>'无计划', 'type2'=>'普通'],
-             ['name'=>'上门维修', 'unit'=>'次', 'type'=>'无计划', 'type2'=>'普通'],
-             ['name'=>'升级改造', 'unit'=>'次', 'type'=>'无计划', 'type2'=>'普通'],
-             ['name'=>'采购设备', 'unit'=>'元(人民币)', 'type'=>'无计划', 'type2'=>'财务'],
+            ['name'=>'应急保障', 'unit'=>'人/天', 'type'=>'无计划', 'type2'=>'普通'],
+            ['name'=>'培训', 'unit'=>'人/天', 'type'=>'无计划', 'type2'=>'普通'],
+            ['name'=>'长期租赁','unit'=>'日', 'type'=>'无计划', 'type2'=>'其他'],
+            ['name'=>'短期租赁', 'unit'=>'日', 'type'=>'无计划', 'type2'=>'其他'],
+            ['name'=>'延长保修', 'unit'=> '年', 'type'=>'无计划', 'type2'=>'其他'],
+            ['name'=>'设备维修', 'unit'=>'次', 'type'=>'无计划', 'type2'=>'普通'],
+            ['name'=>'上门维修', 'unit'=>'次', 'type'=>'无计划', 'type2'=>'普通'],
+            ['name'=>'升级改造', 'unit'=>'次', 'type'=>'无计划', 'type2'=>'普通'],
+            ['name'=>'采购设备', 'unit'=>'元(人民币)', 'type'=>'无计划', 'type2'=>'财务'],
         ]);
 
         DB::table('id_records')->insert([

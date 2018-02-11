@@ -22,7 +22,6 @@ class CreateChannelRelationsTable extends Migration
             //索引
             $table->index('channel_apply_id');  //父级索引
             $table->index('device_id');  //子级索引
-            $table->index('id5');  //子级索引
             $table->index('company_id');  //子级索引
             $table->timestamps();
         });

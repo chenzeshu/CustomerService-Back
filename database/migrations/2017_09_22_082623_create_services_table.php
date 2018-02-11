@@ -40,6 +40,7 @@ class CreateServicesTable extends Migration
             $table->string('allege', 600)->nullable(); //申述内容    200字以内
             $table->integer('visit')->nullable(); //外键---访问表
             $table->float('plan_num', 8,2)->default(1);   //必须填写,  单次套餐用量, 这是为了防止服务单被删除后, 套餐使用总量找不到减少的参考物, 从而错乱
+            $table->string('question', 210)->nullable(); //保修问题描述
             $table->timestamps();
             //索引
             $table->index('contract_id');

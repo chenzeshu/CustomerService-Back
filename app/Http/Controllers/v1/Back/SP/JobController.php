@@ -8,6 +8,7 @@ use App\Http\Controllers\v1\Back\ApiController;
 use App\Http\Repositories\JobRepo;
 use App\Http\Resources\SP\serviceShowResource;
 use App\Models\Employee;
+use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use App\Models\Utils\Service_type;
 use Illuminate\Http\Request;
@@ -48,11 +49,19 @@ class JobController extends ApiController
     public function showServiceDetail($service_id)
     {
         $data = Service::with(['contract.company', 'type'])->findOrFail($service_id);
+        $contract_id = $data['contract']['id'];  //todo 用于检索套餐使用详情, 因为下方提前使用了fractalAPI 不想改了, 赘生上去
+
         $data->customer = Employee::findOrFail($data->customer);
-        $data->pm = collect(explode(",", $data->contract['PM']))->map(function($pm){
-            return Employee::findOrFail($pm);
+        $data->man = collect(explode(",", $data->man))->map(function($m){
+            return Employee::findOrFail($m);
         });
-        return new serviceShowResource($data);
+        $res = new serviceShowResource($data);
+        $plan_id = $res['type']; //todo 用于检索套餐使用详情
+        $use = Contract_plan::where('contract_id', $contract_id)->where('plan_id', $plan_id)->first();  //todo 检索套餐使用详情
+        return [
+            'data' => $res,
+            'use' => $use
+        ];
     }
 
     /**

@@ -96,7 +96,7 @@ class ChannelController extends ApiController
      */
     public function allege(Request $request)
     {
-
+        $channen_id = (int)$request->channel_id;
         Channel::findOrFail($request->channel_id)->update([
             'status' => '申述中',
             'allege' => $request->allege

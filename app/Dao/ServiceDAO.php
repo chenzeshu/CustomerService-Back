@@ -75,6 +75,7 @@ class ServiceDAO
             'type' => $request->type_id,
             'customer'=> $request->cus_id,
             'refer_man' => $request->zhongId,
+            'question' => $request->question,
             'source'=>4
         ]);
     }
@@ -94,6 +95,7 @@ class ServiceDAO
             'type' => $request->type_id,
             'customer'=> $request->cus_id,
             'refer_man' => $request->cus_id,
+            'question' => $request->question,
             'source'=>4
         ]);
     }

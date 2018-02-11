@@ -70,6 +70,7 @@ class commonController extends ApiController
 
     /**
      * 申请完成: 可以不上传图片
+     * 调取时, 拿到服务单的file内容数组, 拿出里面有public/apply的即可
      * @param $service_id
      * @param Request $request
      * @return string

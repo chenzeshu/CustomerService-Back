@@ -57,8 +57,8 @@ class LoginController extends ApiController
 
     public function test()
     {
-        return (new CompanyRepo())->esSearch('群英');
-
+//        return (new CompanyRepo())->esSearch('群英');
+        return $use = Contract_plan::where('contract_id', 70)->get();
     }
 
     public function test2(Request $request)

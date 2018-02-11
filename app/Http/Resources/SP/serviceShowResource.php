@@ -19,12 +19,13 @@ class serviceShowResource extends Resource
            'status'=> $this->status,
            'time1' => $this->time1,
            'time2' => $this->time2,
-           'type' => $this->type,
+           'type' => $this->getRelations()['type'],
            'customer' =>new serviceEmpResource($this->customer),
            'desc1' => $this->desc1,
            'desc2' => $this->desc2,
-           'pm' => new serviceEmpCollection($this->pm),
+           'man' => new serviceEmpCollection($this->man),
            'company' => new serviceCompanyResource($this->contract->company),
+           'question' => $this->question
        ];
     }
 }
