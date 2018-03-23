@@ -152,8 +152,8 @@ class CompanyController extends ApiController
         $data = $this->repo->esSearch($name);
 
         $data= [
-            'data'=> $data['hits']['hits'],
-            'total'=> count($data['hits']['hits']),
+            'data'=> $data,
+            'total'=> count($data),
         ];
         return $this->res(2001, '搜索结果', $data);
     }

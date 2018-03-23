@@ -11,6 +11,7 @@ namespace App\Http\Repositories;
 use Elasticsearch\ClientBuilder;
 use Faker\Factory;
 use Faker\Generator as Faker;
+use Illuminate\Support\Facades\Log;
 
 class CompanyRepo implements EsInterface
 {
@@ -80,6 +81,7 @@ class CompanyRepo implements EsInterface
         foreach ($companies['hits']['hits'] as $company){
             array_push($_companies, $company['_source']);
         }
+        Log::info($_companies);
 
         return $_companies;
     }
