@@ -120,6 +120,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo contracts
         Route::group(['prefix'=>'contracts'], function(){
+            Route::post('/newpage', 'ContractController@newPage');
             Route::post('/page/{page}/{pageSize}', 'ContractController@page');
             Route::get('/s/{name}/{page}/{pageSize}','ContractController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ContractController@update');

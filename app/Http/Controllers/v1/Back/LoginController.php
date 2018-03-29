@@ -8,6 +8,7 @@ use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
 use App\Exceptions\SP\ChannelNoCheckerExp;
 use App\Http\Repositories\CompanyRepo;
+use App\Http\Repositories\ContractRepo;
 use App\Http\Resources\Back\ServiceVerifyCollection;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
@@ -17,6 +18,7 @@ use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_info3;
 use App\Models\Channels\Channel_plan;
 use App\Models\Company;
+use App\Models\Contract;
 use App\Models\Contractc;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
@@ -57,7 +59,9 @@ class LoginController extends ApiController
 
     public function test()
     {
-        return (new CompanyRepo())->esSearch('群英');
+//        return (new CompanyRepo())->esSearch('群英');
+//       return ( new ContractRepo())->newPageRepo(['company_id'=>139, 'page'=> 1, 'pageSize'=>10]);
+
     }
 
     public function test2(Request $request)

@@ -67,6 +67,23 @@ class ContractController extends Controller
     }
 
     /**
+     * 新的更好用的page分页
+     */
+    public function newPage(Request $request)
+    {
+        $sc = $request->post('searchCondition');
+
+        list($data, $total) = $this->repo->newPageRepo($sc);
+        $data = [
+            'data' => $data,
+            'total' => $total,
+        ];
+        $cache = Contract::get_cache();
+        $data = array_merge($data, $cache);
+        return $this->res(200, '搜索成功', $data);
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

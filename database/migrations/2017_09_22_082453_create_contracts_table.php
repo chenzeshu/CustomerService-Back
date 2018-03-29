@@ -23,7 +23,7 @@ class CreateContractsTable extends Migration
             $table->enum('type2', ['销售', '客服'])->default('销售');
             $table->string('PM',50);
             $table->string('TM',50)->nullable();
-            $table->timestamp('time1');
+            $table->timestamp('time1')->nullable();
             $table->timestamp('time2')->nullable();
             $table->timestamp('time3')->nullable();
             $table->text('desc')->nullable();
