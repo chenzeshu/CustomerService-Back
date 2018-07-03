@@ -13,6 +13,7 @@ class CreateServicesTable extends Migration
      */
     public function up()
     {
+        //服务总表
         Schema::create('services', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('contract_id');
@@ -53,7 +54,18 @@ class CreateServicesTable extends Migration
 //            $table->index('source'); 不做, 因为关联表太小了
 //            $table->index('type');    不做, 因为关联表太小
         });
-
+        //服务类型
+        Schema::create('service_types', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 30);  //最多10个汉字
+            $table->timestamps();
+        });
+        //服务来源
+        Schema::create('service_sources', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 30);  //最多10个汉字
+            $table->timestamps();
+        });
 
     }
 
@@ -65,6 +77,8 @@ class CreateServicesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('services');
+        Schema::dropIfExists('service_types');
+        Schema::dropIfExists('service_sources');
 
     }
 }

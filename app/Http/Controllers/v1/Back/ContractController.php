@@ -9,12 +9,14 @@ use App\Http\Traits\UploadTrait;
 use App\Id_record;
 use App\Jobs\Cache\RefreshContracts;
 use App\Models\Contract;
+use App\Models\Money\ServiceMoney;
 use App\Models\Money\ServiceMoneyDetail;
 use App\Models\Services\Contract_plan;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ContractController extends Controller
 {
@@ -117,17 +119,6 @@ class ContractController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -203,13 +194,14 @@ class ContractController extends Controller
     {
         Contract::findOrFail($contract_id)
             ->ServiceMoney()
-            ->update($request->except([
+            ->updateOrCreate(["contract_id"=> $contract_id],$request->except([
                 'checker',
                 'contract_id',
                 'reach',
                 'service_money_details',
                 'left'
-            ]));
+            ]) );
+
         return $this->res(2006, '成功');
     }
 
@@ -218,12 +210,17 @@ class ContractController extends Controller
      */
     public function createMoneyDetail($contract_id, Request $request)
     {
-        Contract::findOrFail($contract_id)
+        $moneyTotal = Contract::findOrFail($contract_id)
             ->ServiceMoney()
-            ->first()
-            ->ServiceMoneyDetails()
-            ->create($request->all());
-        return $this->res(2006, '成功');
+            ->first();
+        if($moneyTotal){
+            $moneyTotal
+                ->ServiceMoneyDetails()
+                ->create($request->all());
+            return $this->res(2006, '成功');
+        }else {
+            return $this->res(-2006,  '请先填写账款详情');
+        }
     }
 
     /**

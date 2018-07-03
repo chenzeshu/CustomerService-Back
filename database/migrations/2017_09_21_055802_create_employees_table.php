@@ -13,12 +13,13 @@ class CreateEmployeesTable extends Migration
      */
     public function up()
     {
+        //人员总表
         Schema::create('employees', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->integer('company_id');
-            $table->string('openid')->unique();   //必须填写(登陆的时候必然存在)
-            $table->string('avatar',256)->nullable();       //头像, 保存url
+            $table->string('openid')->unique()->nullable()->comment('微信openid');
+            $table->string('avatar',256)->nullable()->comment('头像的url');
             $table->string('phone',30)->unique();       //必须填写
             $table->string('email',64)->nullable();
             $table->enum('status', ['offline', 'online', '离职', '拒绝'])->default('online');  //不管待审批表里的最终被拒绝还是如何, 都会进入这个表, 成为记录

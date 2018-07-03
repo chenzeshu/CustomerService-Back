@@ -139,12 +139,12 @@ class Contract extends Model
     public function ServiceMoneyDetails()
     {
         return $this->hasManyThrough(ServiceMoneyDetail::class,
-            ServiceMoney::class,
-            'contract_id',
-        'service_money_id',
-        'id',
-        'id'
-            );
+                    ServiceMoney::class,
+                    'contract_id',
+                    'service_money_id',
+                    'id',
+                    'id'
+                );
     }
 
     /**
