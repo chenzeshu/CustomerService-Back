@@ -40,8 +40,6 @@ class CacheUtils extends Command
     public function handle()
     {
         Utils::dispatch("all");
-        $time = date('Y-m-d H:i:s');
-        Log::useDailyLog(storage_path('logs/job.log'));
-        Log::info($time . ': 缓存utils Cache');
+        Log::info('缓存utils Cache');
     }
 }
