@@ -44,7 +44,7 @@ class repairController extends ApiController
     public function getProcess($page, $pageSize, $emp_id, $status)
     {
         $begin = ($page - 1) * $pageSize;
-        $data = Service::with(['type','customer', 'refer_man', 'contract.company'])
+        $data = Service::with(['type', 'customer', 'refer_man', 'contract.company'])
             ->where('refer_man', $emp_id)
             ->offset($begin)
             ->limit($pageSize)
@@ -57,6 +57,7 @@ class repairController extends ApiController
                 }
             });
         $status = ServiceDAO::getServiceStatus();
+
         if( count($data) == 0){
             return $this->res(-7003, '暂无数据',[
                 'data' => [],
@@ -70,7 +71,7 @@ class repairController extends ApiController
                 ]);
             }catch (ModelNotFoundException $e){
                 //ServiceProcessCollection里的ServiceShowResourceForError的Service_type模型会找不到>(当前最大id), 报404, 可以捕捉
-                return $this->res(-7003, '暂无数据', [
+                return $this->res(-7004, 'modelFindBUG', [
                     'data' => [],
                     'status' => $status
                 ]);

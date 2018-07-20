@@ -4,6 +4,7 @@ namespace App\Http\Resources\SP;
 
 use App\Models\Utils\Service_type;
 use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Support\Facades\Log;
 
 class ServiceShowResourceForError extends Resource
 {
@@ -15,14 +16,14 @@ class ServiceShowResourceForError extends Resource
      */
     public function toArray($request)
     {
-        $this->type = Service_type::findOrFail($this->type)->name;
+//        $this->type = Service_type::findOrFail($this->type)->name;
         return [
             'id' => $this->id,
             'service_id' => $this->service_id,
             'status'=> $this->status,
             'time1' => $this->time1,
             'time2' => $this->time2,
-            'type' => $this->type,
+            'type' => $this->type['name'],
             'customer' =>new serviceEmpResource($this->customerTemp),
             'desc1' => $this->desc1,
             'desc2' => $this->desc2,

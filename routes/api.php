@@ -7,6 +7,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
+    Route::get('/repair/getProcess/{page}/{pageSize}/{emp_id}/{status}','SP\repairController@getProcess');
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');
@@ -41,7 +42,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         //todo 报修
         Route::group(['prefix'=>'repair'], function (){
             Route::post('/apply','repairController@apply');
-            Route::get('/getProcess/{page}/{pageSize}/{emp_id}/{status}','repairController@getProcess');
+//            Route::get('/getProcess/{page}/{pageSize}/{emp_id}/{status}','repairController@getProcess');
             Route::post('/allege/{service_id}','repairController@allege');
         });
 

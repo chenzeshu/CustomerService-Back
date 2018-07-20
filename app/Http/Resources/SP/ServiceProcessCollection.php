@@ -3,7 +3,9 @@
 namespace App\Http\Resources\SP;
 
 use App\Models\Employee;
+use App\Models\Utils\Service_type;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class ServiceProcessCollection extends ResourceCollection
 {
@@ -16,11 +18,15 @@ class ServiceProcessCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map(function($col){
+            $col->type = Service_type::findOrFail($col->type);
+//            Log::info($col->type->name);
             $col->pm = collect(explode(",", $col->contract['PM']))->map(function($pm){
-                return Employee::findOrFail($pm);
+                if(!$pm) return null;
+                else return Employee::findOrFail($pm);
             });
             $col->man = collect(explode(",", $col->man))->map(function($man){
-                return Employee::findOrFail($man);
+                if(!$man) return null;
+                else return Employee::findOrFail($man);
             });
             $col->customerTemp = $col->getRelations()['customer'][0];
             return new ServiceShowResourceForError($col);
