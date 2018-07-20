@@ -95,7 +95,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         Route::group(['prefix'=>'employees'], function(){
             Route::post('/page/{page}/{pageSize}', 'EmployeeController@page');
             Route::get('/s/{name}/{page}/{pageSize}','EmployeeController@search');  //todo 模糊搜索
-            Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo 模糊搜索单位
+            Route::get('/sc/{companyName}','EmployeeController@searchCompanies');  //todo ES模糊搜索单位
             Route::get('/se/out/{empName}','EmployeeController@searchOutEmps');  //todo 模糊搜索外部员工
             Route::get('/se/inner/{empName}','EmployeeController@searchInnerEmps');  //todo 模糊搜索中网员工
             Route::get('/scon/{contract_id}','EmployeeController@searchContracts');  //todo 模糊搜索普通合同编号

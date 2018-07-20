@@ -40,6 +40,8 @@ class EsCompany extends Command
     public function handle()
     {
         FillJob::dispatch();
-        Log::info('缓存 ES:company');
+        $time = date('Y-m-d H:i:s');
+        Log::useDailyLog(storage_path('logs/job.log'));
+        Log::info($time . ': 缓存ES:company');
     }
 }

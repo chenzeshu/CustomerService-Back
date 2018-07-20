@@ -81,7 +81,6 @@ class CompanyRepo implements EsInterface
         foreach ($companies['hits']['hits'] as $company){
             array_push($_companies, $company['_source']);
         }
-        Log::info($_companies);
 
         return $_companies;
     }
