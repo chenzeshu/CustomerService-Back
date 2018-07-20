@@ -57,7 +57,7 @@ class repairController extends ApiController
                 }
             });
         $status = ServiceDAO::getServiceStatus();
-        if( $data->count() == 0){
+        if( count($data) == 0){
             return $this->res(-7003, '暂无数据',[
                 'data' => [],
                 'status' => $status
