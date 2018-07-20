@@ -52,9 +52,12 @@ class JobController extends ApiController
         $contract_id = $data['contract']['id'];  //todo 用于检索套餐使用详情, 因为下方提前使用了fractalAPI 不想改了, 赘生上去
 
         $data->customer = Employee::findOrFail($data->customer);
-        $data->man = collect(explode(",", $data->man))->map(function($m){
-            return Employee::findOrFail($m);
-        });
+        if($data->man){
+            $data->man = collect(explode(",", $data->man))->map(function($m){
+                return Employee::findOrFail($m);
+            });
+        }
+
         $res = new serviceShowResource($data);
         $plan_id = $res['type']; //todo 用于检索套餐使用详情
         $use = Contract_plan::where('contract_id', $contract_id)->where('plan_id', $plan_id)->first();  //todo 检索套餐使用详情

@@ -17,13 +17,13 @@ class serviceShowResource extends Resource
     {
        return [
            'status'=> $this->status,
-           'time1' => $this->time1,
-           'time2' => $this->time2,
+           'time1' => $this->time1 ? $this->time1 : '未派单',
+           'time2' => $this->time2 ? $this->time2 : '未解决',
            'type' => $this->getRelations()['type'],
            'customer' =>new serviceEmpResource($this->customer),
-           'desc1' => $this->desc1,
-           'desc2' => $this->desc2,
-           'man' => new serviceEmpCollection($this->man),
+           'desc1' => $this->desc1 ? $this->desc1 : '未填写',
+           'desc2' => $this->desc2 ? $this->desc2 : '未填写',
+           'man' => $this->man ? new serviceEmpCollection($this->man) : '未派单',
            'company' => new serviceCompanyResource($this->contract->company),
            'question' => $this->question
        ];
