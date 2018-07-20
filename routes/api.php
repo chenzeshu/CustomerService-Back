@@ -7,7 +7,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
+    //todo test
     Route::get('/paidan/{service_id}','SP\JobController@showServiceDetail');  //todo 服务详情
+
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');

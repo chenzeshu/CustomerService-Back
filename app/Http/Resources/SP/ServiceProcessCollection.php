@@ -3,6 +3,8 @@
 namespace App\Http\Resources\SP;
 
 use App\Models\Employee;
+use App\Models\Services\Contract_plan;
+use App\Models\Services\Contract_planutil;
 use App\Models\Utils\Service_type;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Log;
@@ -18,8 +20,7 @@ class ServiceProcessCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map(function($col){
-            $col->type = Service_type::findOrFail($col->type);
-//            Log::info($col->type->name);
+            $col->type = Contract_planutil::findOrFail($col->type);
             $col->pm = collect(explode(",", $col->contract['PM']))->map(function($pm){
                 if(!$pm) return null;
                 else return Employee::findOrFail($pm);

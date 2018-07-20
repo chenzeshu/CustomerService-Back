@@ -23,7 +23,7 @@ class CreateServicesTable extends Migration
             $table->timestamp('time3')->nullable();  //响应时间, 记录出现"待审核", "已派单"的时间
             //员工拥有访问申请完成的api的权限, 访问此权限时, 会向管理员发送三位一体通知  所以还要封装一下邮件的类
             $table->integer('source')->nullable();
-            $table->integer('type')->nullable();  //类型 --- service_types 不是 套餐
+            $table->integer('type')->nullable();  //类型 --- contract_planutils 不是 套餐contract_plans
             $table->string('refer_man')->nullable(); //fixme 提交人
             $table->string('man',50)->nullable();
             $table->string('customer',50);
@@ -55,11 +55,11 @@ class CreateServicesTable extends Migration
 //            $table->index('type');    不做, 因为关联表太小
         });
         //服务类型
-        Schema::create('service_types', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name', 30);  //最多10个汉字
-            $table->timestamps();
-        });
+//        Schema::create('service_types', function (Blueprint $table) {
+//            $table->increments('id');
+//            $table->string('name', 30);  //最多10个汉字
+//            $table->timestamps();
+//        });
         //服务来源
         Schema::create('service_sources', function (Blueprint $table) {
             $table->increments('id');
@@ -77,7 +77,7 @@ class CreateServicesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('services');
-        Schema::dropIfExists('service_types');
+//        Schema::dropIfExists('service_types');
         Schema::dropIfExists('service_sources');
 
     }

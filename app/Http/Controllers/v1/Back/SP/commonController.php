@@ -10,6 +10,8 @@ use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
 use App\Models\Company;
 use App\Models\Doc;
+use App\Models\Services\Contract_plan;
+use App\Models\Services\Contract_planutil;
 use App\Models\Services\Service;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
@@ -66,6 +68,23 @@ class commonController extends ApiController
              $data, $service_types, new serviceCompanyResource($company)
         ];
         return $this->res(7003, '合同列表', $data);
+    }
+
+    public function searchMeal(Request $request)
+    {
+        $typeArr = [];
+        Contract_plan::where('contract_id', $request->contractId)
+            ->get()
+            ->map(function ($meal) use (&$typeArr){
+                $typeArr[] = $meal->plan_id;
+                return $meal;
+            });
+        $data = Contract_planutil::findOrFail($typeArr);
+
+        if(count($data) == 0){
+            return $this->res(-7003, '本合同下没有套餐');
+        }
+        return $this->res(7003, '含套餐的类型列表', $data);
     }
 
     /**

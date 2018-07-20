@@ -16,7 +16,6 @@ class ServiceShowResourceForError extends Resource
      */
     public function toArray($request)
     {
-//        $this->type = Service_type::findOrFail($this->type)->name;
         return [
             'id' => $this->id,
             'service_id' => $this->service_id,

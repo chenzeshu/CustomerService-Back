@@ -60,7 +60,12 @@ class JobController extends ApiController
 
         $res = new serviceShowResource($data);
         $plan_id = $res['type']; //todo 用于检索套餐使用详情
-        $use = Contract_plan::where('contract_id', $contract_id)->where('plan_id', $plan_id)->first();  //todo 检索套餐使用详情
+        Log::info([
+            'contract_id' => $contract_id,
+            'plan_id' => $plan_id
+        ]);
+        //fixme 看来必须为service增加一个plan_id并且在选择时的前端也打通这个问题
+        $use = Contract_plan::where('contract_id', 1)->where('plan_id', 9)->first();  //todo 检索套餐使用详情
         return [
             'data' => $res,
             'use' => $use
