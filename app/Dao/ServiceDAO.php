@@ -72,6 +72,7 @@ class ServiceDAO
         return Service::create([
             'contract_id' => $request->contract_id,
             'service_id' => $service_id,
+            'contract_plan_id' => $request->meal_id,
             'type' => $request->type_id,
             'customer'=> $request->cus_id,
             'refer_man' => $request->zhongId,
@@ -92,6 +93,7 @@ class ServiceDAO
         return Service::create([
             'contract_id' => $request->contract_id,
             'service_id' => $service_id,
+            'contract_plan_id' => $request->meal_id,
             'type' => $request->type_id,
             'customer'=> $request->cus_id,
             'refer_man' => $request->cus_id,

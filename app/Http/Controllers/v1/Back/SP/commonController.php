@@ -70,6 +70,11 @@ class commonController extends ApiController
         return $this->res(7003, '合同列表', $data);
     }
 
+    /**
+     * 检索套餐
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function searchMeal(Request $request)
     {
         $typeArr = [];

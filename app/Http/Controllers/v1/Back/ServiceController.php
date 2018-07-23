@@ -66,7 +66,7 @@ class ServiceController extends ApiController
     }
 
     /**
-     * 筛选出待审核的服务单
+     * 展示待审核的服务单
      */
     public function verify($status = "待审核")
     {
@@ -124,16 +124,23 @@ class ServiceController extends ApiController
     }
 
     /**
-     * 通过未审核服务单
+     * post方法
+     * 为其选择套餐并通过未审核服务单
      */
-    public function pass($id)
+    public function pass(Request $request)
     {
-        $re = Service::findOrFail($id)->update([
-            'status'=>'待派单'
+        $re = Service::findOrFail($request->service_id)->update([
+            'status'=>'待派单',
+            'contract_plan_id' => $request->plan_id,
         ]);
         return $this->res(200, '审核通过, 用户将收到通知');
     }
 
+    /**
+     * 拒绝申请
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function rej($id)
     {
         $re = Service::findOrFail($id)->update([
@@ -225,16 +232,20 @@ class ServiceController extends ApiController
      */
     public function update(ServiceStoreRequest $request, $id)
     {
+        //todo 注意： 因为用户通过小程序提交时，不会绝对清楚应该提交什么服务类型，所以不能强制后台只能选择合同下对应套餐，而是展示所有套餐。
+        //todo 同时，在update时，由于必须选择套餐，所以套餐应被更新到services的contract_plan_id里
         $update = Service::findOrFail($id);
         //修改时, 要校验跟之前的套餐是否相同, 如果不同, 之前的减一, 之后的加一
         //更好的方法是, update就不给修改套餐, 应该删掉重发, 删掉自动触发监听, 对套餐中间表进行修改
         //否则更改服务单的代价太大了, 无论是待审核->待派单, 还是什么都会有影响, 太细了, 不适合这个版本
 
-        //todo 审核是否拒绝, 如果由其他状态变为拒绝, 减1;  拒绝变为其他状态, 加1;
-        if($request->status == "拒绝" && $update->status !="拒绝"){
+        //todo 审核是否拒绝
+        //todo 如果由【非拒绝或非待审批状态】变为拒绝, 减1;
+        if($request->status == "拒绝" && $update->status != '待审批' && $update->status !="拒绝"){
             //todo 不使用increment是为了更精确地触发模型事件(而不是一更新服务单就去触发, 粒度细化为plan)
             $this->repo->myDecrement($update, 'use', $request->plan_num);
-        }else if ($request->status != "拒绝" && $update->status == "拒绝"){
+        }else if ($request->status != "拒绝" && $request->status != '待审批' && $update->status == "拒绝"){
+            //todo 拒绝变为非待审批状态, 加1;
             $this->repo->myIncrement($update, 'use', $request->plan_num);
         }
 

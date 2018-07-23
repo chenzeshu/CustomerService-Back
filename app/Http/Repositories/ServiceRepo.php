@@ -21,7 +21,7 @@ class ServiceRepo
      */
     public function myIncrement($parentModel, $column, $num)
     {
-            $model = $parentModel->contract_plans()->findOrFail($parentModel->type);
+            $model = $parentModel->contract_plan();
             $model->update([$column => $model->use + $num]);
     }
 
@@ -34,7 +34,8 @@ class ServiceRepo
     public function myDecrement($parentModel, $column, $num)
     {
         try {
-            $model = $parentModel->contract_plans()->findOrFail($parentModel->type);
+            //tips 一个服务对应一个套餐详情，一个类型对应多个套餐详情，一个套餐详情对应一个类型和多个服务
+            $model = $parentModel->contract_plan();
             $model->update([$column => $model->use - $num]);
         } catch (ModelNotFoundException $e) {
             //假如服务单是刚创建, 没有人工去选套餐就要删除的话, 就会找不到contract_plans

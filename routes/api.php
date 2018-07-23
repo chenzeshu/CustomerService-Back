@@ -28,9 +28,11 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
     //需要令牌组
     Route::group(['middleware'=>['jwt.empAuth', 'jwt.refreshEmp'], 'namespace'=>'SP'], function (){
+        //todo 检索分组
         Route::get('/searchCompany/{keyword}','commonController@searchCompany');  //查询单位
         Route::get('/searchContract/{company_id}','commonController@searchContract');  //查询合同
-        Route::get('/searchServiceType','c:ommonController@searchServiceType');  //查询合同
+        Route::get('/searchServiceType','commonController@searchServiceType');  //查询服务类型
+        Route::post('/searchMeal','commonController@searchMeal');  //查询可用服务类型 + 套餐详情
 
         //todo 小程序派单模块
         Route::group(['prefix'=>'paidan'], function (){
@@ -107,7 +109,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
             Route::get('/verify', 'EmployeeController@verify');  //todo 筛选未审核者
-            Route::post('/pass/{id}', 'EmployeeController@pass');  //todo 通过未审核者
+            Route::post('/pass/{id}/{contract_plan_id}', 'EmployeeController@pass');  //todo 通过未审核者
             Route::post('/rej/{id}', 'EmployeeController@rej');  //todo 拒绝未审核者
             Route::resource('/','EmployeeController');
         });
@@ -145,7 +147,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/delete/{id}','ServiceController@destroy');
             Route::get('/verify/{status}', 'ServiceController@verify');  //todo 筛选未审核服务单
             Route::get('/temp/verify', 'ServiceController@verifyTemp');  //todo 筛选临时未审核服务单
-            Route::get('/pass/{id}', 'ServiceController@pass');  //todo 通过未审核服务单
+            Route::post('/pass', 'ServiceController@pass');  //todo 通过未审核服务单
             Route::get('/rej/{id}', 'ServiceController@rej');  //todo 拒绝未审核服务单
             Route::get('/passFinish/{service_id}', 'ServiceController@passFinish');  //todo 通过服务单完成申请
             Route::get('/rejectFinish/{service_id}', 'ServiceController@rejectFinish');  //todo 拒绝服务单完成申请
