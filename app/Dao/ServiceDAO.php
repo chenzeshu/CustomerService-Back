@@ -118,7 +118,7 @@ class ServiceDAO
         $len = 3 - strlen($recordModel->record);
         return  [
              $recordModel,
-             '服'.date('Y', time()).zerofill($len).$recordModel->record
+             config('app.regex.service').date('Y', time()).zerofill($len).$recordModel->record
         ];
     }
 

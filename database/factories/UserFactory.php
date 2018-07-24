@@ -198,7 +198,7 @@ $factory->define(\App\Models\Channels\Channel::class, function () use ($faker){
     $status = ['待审核','运营调配', '已完成', '拒绝'];
     $type = ['内部用星', '外部用星'];
     return [
-        "channel_id"=> 'X'.date('Ymd', time()).rand(0,1000),
+        "channel_id"=> config('app.regex.channel').date('Ymd', time()).rand(0,1000),
         "employee_id" => rand(3,100),
         "status"=>  $faker->randomElement($status),
         "source" => rand(1,4),
