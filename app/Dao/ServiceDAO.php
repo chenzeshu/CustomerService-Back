@@ -35,7 +35,6 @@ class ServiceDAO
         where find_in_set('$emp_id', s.man)
         ORDER BY s.time1 desc
         LIMIT $begin, $pageSize");
-        Log::info($status.PHP_EOL);
         if($status !== "全部"){
             $data = collect($data)->filter(function($item) use ($status){
                 return $item->status == $status;
@@ -68,8 +67,8 @@ class ServiceDAO
      */
     public static function empCreate($request)
     {
-        $service_id = self::generateId();
-        return Service::create([
+        list($recordModel, $service_id) = self::generateId();
+        $re = Service::create([
             'contract_id' => $request->contract_id,
             'service_id' => $service_id,
             'contract_plan_id' => $request->meal_id,
@@ -79,6 +78,10 @@ class ServiceDAO
             'question' => $request->question,
             'source'=>4
         ]);
+        if($re){
+            $recordModel->increment('record');
+            return $re;
+        }
     }
 
     /**
@@ -89,8 +92,8 @@ class ServiceDAO
      */
     public static function cusCreate($request)
     {
-        $service_id = self::generateId();
-        return Service::create([
+        list($recordModel, $service_id) = self::generateId();
+        $re = Service::create([
             'contract_id' => $request->contract_id,
             'service_id' => $service_id,
             'contract_plan_id' => $request->meal_id,
@@ -100,6 +103,10 @@ class ServiceDAO
             'question' => $request->question,
             'source'=>4
         ]);
+        if($re){
+            $recordModel->increment('record');
+            return $re;
+        }
     }
 
     /**
@@ -107,9 +114,12 @@ class ServiceDAO
      */
     private static function generateId(){
         //todo 自动生成服务单编号
-        $record = Id_record::find(4)->record;
-        $len = 3 - strlen($record);
-        return  date('Y', time()).zerofill($len).$record;
+        $recordModel = Id_record::find(config('app.record.service'));
+        $len = 3 - strlen($recordModel->record);
+        return  [
+             $recordModel,
+             '服'.date('Y', time()).zerofill($len).$recordModel->record
+        ];
     }
 
     /**

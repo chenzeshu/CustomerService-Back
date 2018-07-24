@@ -44,10 +44,11 @@ class ServiceController extends ApiController
         $charge_flag = $request->value2;
         $company_name = $request->value3;
         $emp_name = $request->value4;
+        $service_id = $request->value5;
 
         $begin = ( $page -1 ) * $pageSize;
         $services = Service::get_pagination($status, $charge_flag, $begin, $pageSize);
-        $services = $this->repo->filterData($services, $company_name, $emp_name);
+        $services = $this->repo->filterData($services, $company_name, $emp_name, $service_id);
         $total = Service::get_total($status, $charge_flag);
         //假如是搜索筛选
         if(trim($company_name)|| trim($emp_name)){
@@ -189,7 +190,7 @@ class ServiceController extends ApiController
             $recordModel = Id_record::find(4);  //模型的自加放在服务单生成成功时
             $record = $recordModel->record;
             $len = 3 - strlen($record);
-            $request['service_id'] = "F".date('Y', time()).zerofill($len).$record;
+            $request['service_id'] = "服".date('Y', time()).zerofill($len).$record;
 
             //todo  临时文件移入永久文件夹
             if($request->has('fileList')){
@@ -209,7 +210,6 @@ class ServiceController extends ApiController
                 //todo 服务单生成成功, 此时可以放心record加1
                 $recordModel->increment('record');
                 return $this->res(2002, "新建信道服务单成功", $data);
-
             }
 
         }

@@ -48,7 +48,7 @@ class ServiceRepo
     /**
      * 筛选
      */
-    public function filterData($data, $company_name, $emp_name)
+    public function filterData($data, $company_name, $emp_name, $service_id)
     {
         $data = collect($data);
         if($company_name != ""){
@@ -56,6 +56,9 @@ class ServiceRepo
         }
         if($emp_name != ""){
             $data = $this->filterEmpName($data, $emp_name);
+        }
+        if($service_id != ""){
+            $data = $this->filterServiceId($data, $emp_name);
         }
         return $data->toArray();
     }
@@ -78,6 +81,15 @@ class ServiceRepo
                 }
             });
             if(count($item) > 0){
+                return true;
+            }
+        });
+    }
+
+    public function filterServiceId($data, $service_id)
+    {
+        return $data->filter(function($item) use ($service_id){
+            if($item['service_id'] === $service_id){
                 return true;
             }
         });

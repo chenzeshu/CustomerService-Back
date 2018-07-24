@@ -5,6 +5,12 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/test', function (){
+    $recordModel = \App\Id_record::find(4);  //模型的自加放在服务单生成成功时
+    $record = $recordModel->record;
+    $len = 3 - strlen($record);
+    return "F".date('Y', time()).zerofill($len).$record;
+});
 
 Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     //todo test
@@ -141,7 +147,6 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         //todo services
         Route::group(['prefix'=>'services'], function(){
             Route::post('/page/{page}/{pageSize}', 'ServiceController@page');
-            Route::get('/s/{name}/{page}/{pageSize}','ServiceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'ServiceController@update');
             Route::get('/delete/{id}','ServiceController@destroy');
             Route::get('/verify/{status}', 'ServiceController@verify');  //todo 筛选未审核服务单

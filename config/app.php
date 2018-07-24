@@ -34,6 +34,16 @@ return [
         'device' => 3,
     ],
 
+    //id_record表的记录
+//    [1=>销字合同计数, 2=>客字合同计数, 3=>信合计数, 4=>客服, 5=>信服]
+    'record' => [
+        'contract_sell' => 1,
+        'contract_cus' => 2,
+        'contractc' => 3,
+        'service' => 4,
+        'channel' => 5,
+    ],
+
     'status' => ['待审核', '拒绝', '待派单', '已派单', '申请完成', '已完成', '申述中'],
 
     'channel' => [
