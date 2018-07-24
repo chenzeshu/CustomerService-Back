@@ -74,10 +74,9 @@ class JobController extends ApiController
     public function getServiceInfo(Request $request)
     {
         if( $emp_id     = $request->emp_id ){
-            $service_id = ltrim($request->service_id, config('app.regex.service'));
 
             $service = Service::with(['contract', 'visits'])
-                ->where('service_id', $service_id)
+                ->where('service_id', $request->service_id)
                 ->first()
                 ->toArray();
 
