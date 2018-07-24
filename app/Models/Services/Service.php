@@ -153,7 +153,7 @@ class Service extends Model
      * 一个服务只会对应一个套餐，而一个套餐（详情）对应若干个服务
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function contract_plan()
+    public function contract_plan_detail()
     {
         return $this->hasOne(Contract_plan::class,
             'id',
