@@ -78,7 +78,8 @@ class JobController extends ApiController
 
             $service = Service::with(['contract', 'visits'])
                 ->where('service_id', $service_id)
-                ->first();
+                ->first()
+                ->toArray();
 
             if($this->repo->filterRelation($service, $emp_id)){
                 return $this->res(7003, '已拉取', $service);
