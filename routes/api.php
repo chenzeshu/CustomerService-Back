@@ -8,7 +8,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     //todo test
-    Route::get('/paidan/{service_id}','SP\JobController@showServiceDetail');  //todo 服务详情
 
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
@@ -39,7 +38,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/page/{page}/{pageSize}/{emp_id}/{status}', 'JobController@showServiceList'); //检索与自己有关的服务单
             Route::get('/askFinish/{serviceid}', 'JobController@askFinish'); //检索与自己有关的服务单
             Route::get('/s/{name}/{page}/{pageSize}','JobController@search');  //todo 模糊搜索
-//            Route::get('/{service_id}','JobController@showServiceDetail');  //todo 服务详情
+            Route::get('/{service_id}','JobController@showServiceDetail');  //todo 服务详情
             Route::post('/getServiceInfo', 'JobController@getServiceInfo'); //todo 得到服务单详情以确保搜索人能不能查看详情
         });
 

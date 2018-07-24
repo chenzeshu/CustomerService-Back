@@ -18,7 +18,7 @@ class CreateServicesTable extends Migration
             $table->increments('id');
             $table->integer('contract_id');
             $table->string('service_id');
-            $table->integer('contract_plan_id')->comment('具体套餐详情id');
+            $table->integer('contract_plan_id')->nullable()->comment('具体套餐详情id');
             $table->enum('status', config('app.status'))->default('待审核');
 //            $table->integer('status_flag')->nullable();  //响应状态 0未处理 1已处理 2超时  todo 直接放前端判断
             $table->timestamp('time3')->nullable();  //响应时间, 记录出现"待审核", "已派单"的时间
