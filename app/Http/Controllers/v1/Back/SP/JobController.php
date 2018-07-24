@@ -42,14 +42,13 @@ class JobController extends ApiController
         return $this->res(7001, '服务信息', $data);
     }
 
-
     /**
      * 显示服务单详情
      */
     public function showServiceDetail($service_id)
     {
         $data = Service::with(['contract.company', 'type'])->findOrFail($service_id);
-        $contract_id = $data['contract']['id'];  //todo 用于检索套餐使用详情, 因为下方提前使用了fractalAPI 不想改了, 赘生上去
+//        $contract_id = $data['contract']['id'];  //todo 用于检索套餐使用详情, 因为下方提前使用了fractalAPI 不想改了, 赘生上去
 
         $data->customer = Employee::findOrFail($data->customer);
         if($data->man){
@@ -75,7 +74,7 @@ class JobController extends ApiController
     public function getServiceInfo(Request $request)
     {
         if( $emp_id     = $request->emp_id ){
-            $service_id = $request->service_id;
+            $service_id = ltrim($request->service_id, config('app.regex.service'));
 
             $service = Service::with(['contract', 'visits'])
                 ->where('service_id', $service_id)
