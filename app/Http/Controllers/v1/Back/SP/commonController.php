@@ -78,7 +78,7 @@ class commonController extends ApiController
     public function searchMeal(Request $request)
     {
         $typeArr = [];
-        Contract_plan::where('contract_id', $request->contractId)
+        $plans = Contract_plan::where('contract_id', $request->contractId)
             ->get()
             ->map(function ($meal) use (&$typeArr){
                 $typeArr[] = $meal->plan_id;
@@ -88,8 +88,26 @@ class commonController extends ApiController
 
         if(count($data) == 0){
             return $this->res(-7003, '本合同下没有套餐');
+        } else {
+            //todo 做套餐余量查询
+            $plans = $plans->filter(function ($meal){
+                if($meal->use >= $meal->total){
+                    //没有余量
+                    return false;
+                }
+                return true;
+            });
+            if(count($plans) > 0){
+                return $this->res(7003, '含套餐的类型列表', $data);
+            } else {
+                return $this->res(7003, '所有套餐超限，请联系客服', []);
+            }
+
         }
-        return $this->res(7003, '含套餐的类型列表', $data);
+
+
+
+
     }
 
     /**

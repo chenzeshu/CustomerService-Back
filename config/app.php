@@ -50,6 +50,16 @@ return [
         'channel' => '信'
     ],
 
+    //套餐 plan
+    "plan" => [
+        'service' => [
+            'default_num'=> 1
+        ],
+        "channel" => [
+            'default_num'=> 1
+        ]
+    ],
+
     'status' => ['待审核', '拒绝', '待派单', '已派单', '申请完成', '已完成', '申述中'],
 
     'channel' => [

@@ -130,11 +130,19 @@ class ServiceController extends ApiController
      */
     public function pass(Request $request)
     {
-        $re = Service::findOrFail($request->service_id)->update([
-            'status'=>'待派单',
-            'contract_plan_id' => $request->plan_id,
-        ]);
-        return $this->res(200, '审核通过, 用户将收到通知');
+        try{
+            $update = Service::findOrFail($request->service_id);
+
+            $this->repo->myIncrement($update, 'use', config("app.plan.service.default_num"), $request->plan_id);
+
+            $update->update([
+                'status'=>'待派单',
+                'contract_plan_id' => $request->plan_id,
+            ]);
+            return $this->res(200, '审核通过, 用户将收到通知');
+        } catch(TooMuchUseException $e){
+            return $this->res($e->code, $e->msg);
+        }
     }
 
     /**
@@ -207,7 +215,7 @@ class ServiceController extends ApiController
             //todo 存储
             $data = Service::create($request->all());
             if($data){
-                //todo 服务单生成成功, 此时可以放心record加1
+                //todo 服务单生成成功, 此时可以放心编号record加1
                 $recordModel->increment('record');
                 return $this->res(2002, "新建信道服务单成功", $data);
             }
