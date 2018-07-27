@@ -132,7 +132,7 @@ class ServiceController extends ApiController
     {
         try{
             $update = Service::findOrFail($request->service_id);
-
+            //fixme 此处为小程序提交与审核，此时默认num为1， 也确实没有什么影响，具体的操作在服务单页面改了。
             $this->repo->myIncrement($update, 'use', config("app.plan.service.default_num"), $request->plan_id);
 
             $update->update([

@@ -48,6 +48,7 @@ class repairController extends ApiController
             ->where('refer_man', $emp_id)
             ->offset($begin)
             ->limit($pageSize)
+            ->orderBy('updated_at', 'desc')
             ->get()
             ->filter(function($item) use ($status){
                 if($status == "全部"){

@@ -5,16 +5,8 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('/test', function (){
-    $recordModel = \App\Id_record::find(4);  //模型的自加放在服务单生成成功时
-    $record = $recordModel->record;
-    $len = 3 - strlen($record);
-    return "F".date('Y', time()).zerofill($len).$record;
-});
 
 Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
-    //todo test
-
     Route::post('/login', 'LoginController@login');
     Route::get('/test', 'LoginController@test');
     Route::get('/test2', 'LoginController@test2');
@@ -68,7 +60,6 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         });
 
     });
-
 /** ===================== ========== FileUpload =========== =========================*/
 //    //todo 公用上传/临时删除file
     Route::post('upload', 'ContractController@uploadFileToTemp');

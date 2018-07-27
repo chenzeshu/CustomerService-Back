@@ -13,5 +13,4 @@ class Scope
 {
     const ORDINARY = 8;  //一般权限者
     const TEMP_CONTRACT_SERVICE_MANAGER = 16;  //临时合同的服务单的审批者, 如信道临时合同为钱正宇
-
 }
