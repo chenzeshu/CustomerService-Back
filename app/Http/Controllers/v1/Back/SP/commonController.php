@@ -39,7 +39,7 @@ class commonController extends ApiController
         $data = $this->repo->esSearch($keyword);
 
         if(empty($data)){  //empty这个函数读起来有歧义, 其实是空返回true
-            return $this->res(7004, '查无结果');
+            return $this->res(7004, '无此公司');
         }
         return $this->res(7003, '公司列表', $data);
     }
@@ -60,7 +60,7 @@ class commonController extends ApiController
             }
         })->toArray();
         if(empty($data)){  //empty这个函数读起来有歧义, 其实是空返回true
-            return $this->res(7004, '查无结果');
+            return $this->res(7004, '未签合同');
         }
 
         $service_types = ServiceDAO::getServiceTypes();
