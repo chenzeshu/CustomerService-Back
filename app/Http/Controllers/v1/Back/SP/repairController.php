@@ -71,7 +71,8 @@ class repairController extends ApiController
                     'status' => $status
                 ]);
             }catch (ModelNotFoundException $e){
-                //ServiceProcessCollection里的ServiceShowResourceForError的Service_type模型会找不到>(当前最大id), 报404, 可以捕捉
+                //ServiceProcessCollection里的ServiceShowResourceForError的Service_type模型会找不到(当前最大id), 报404, 可以捕捉
+                //2018.7.31 出现了一直报-7004， 原因是删除了人员表里的20号人物，而项目经理刚好是这个人。
                 return $this->res(-7004, 'modelFindBUG', [
                     'data' => [],
                     'status' => $status
