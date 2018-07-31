@@ -27,7 +27,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
     Route::group(['middleware'=>['jwt.empAuth', 'jwt.refreshEmp'], 'namespace'=>'SP'], function (){
         //todo 检索分组
         Route::get('/searchCompany/{keyword}','commonController@searchCompany');  //查询单位
-        Route::get('/searchCompanyByNo/{number}','commonController@searchCompany');  //查询单位
+        Route::get('/searchCompanyByNo/{number}','commonController@searchCompanyByNo');  //查询单位
         Route::get('/searchContract/{company_id}','commonController@searchContract');  //查询合同
         Route::get('/searchServiceType','commonController@searchServiceType');  //查询服务类型
         Route::post('/searchMeal','commonController@searchMeal');  //查询可用服务类型 + 套餐详情
