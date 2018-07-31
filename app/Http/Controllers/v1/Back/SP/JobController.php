@@ -33,13 +33,13 @@ class JobController extends ApiController
         $data = ServiceDAO::getService($page, $pageSize, $emp_id, $status);
         $type = ServiceDAO::getServiceStatus();
         if(empty($data)){
-            return $this->res(7000, '本状态下无服务单', ['data' => [], 'status' => $type]);
+            return $this->res(-7003, '本状态下无服务单', ['data' => [], 'status' => $type]);
         }
         $data = [
             'data' => $data,
             'status' => $type
         ];
-        return $this->res(7001, '服务信息', $data);
+        return $this->res(7003, '服务信息', $data);
     }
 
     /**
