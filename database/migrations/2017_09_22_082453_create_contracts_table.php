@@ -20,7 +20,7 @@ class CreateContractsTable extends Migration
             $table->string('name'); //合同名称
             $table->decimal('money', 10, 2)->nullable();
             $table->string('contract_id');
-            $table->string('type1');
+            $table->string('type1');        //1-3分别是 集成、服务、综合
             $table->enum('type2', ['销售', '客服'])->default('销售');
             $table->string('PM',50);
             $table->string('TM',50)->nullable();

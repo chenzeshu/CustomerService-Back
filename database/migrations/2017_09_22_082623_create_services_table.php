@@ -57,6 +57,7 @@ class CreateServicesTable extends Migration
 //            $table->index('type');    不做, 因为关联表太小
         });
         //服务类型
+        //fixme 用contract_plan_utils代替了
 //        Schema::create('service_types', function (Blueprint $table) {
 //            $table->increments('id');
 //            $table->string('name', 30);  //最多10个汉字

@@ -26,12 +26,12 @@ class ServiceDAO
     public static function getService($page, $pageSize, $emp_id, $status)
     {
         $begin = ($page - 1) * $pageSize;
-        $data = DB::select("SELECT s.id, s.service_id, s.status, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
+        $data = DB::select("SELECT s.id, s.service_id, s.status, s.type, s.charge_if, s.time1, s.time2 ,s.man, s.customer as customer_id,
         c.name, c2.name as customer, c3.name as type
         FROM services as s 
         LEFT JOIN employees as c on c.id in (s.man) 
         LEFT JOIN employees as c2 on c2.id = s.customer
-        LEFT JOIN service_types as c3 on c3.id = s.type
+        LEFT JOIN contract_planutils as c3 on c3.id = s.type
         where find_in_set('$emp_id', s.man)
         ORDER BY s.time1 desc
         LIMIT $begin, $pageSize");
@@ -50,7 +50,6 @@ class ServiceDAO
                     $arr = DB::select("select name from employees where id in (".$d->man.")");
 
                     $d->name = collect($arr)->implode('name', ",");
-
                 }
             });
         }

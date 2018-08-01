@@ -96,14 +96,10 @@ class ContractController extends Controller
         //contract_id规则写在前端
         if($request->type2 == "销售"){
             $recordModel = Id_record::find(1);
-            $record = $recordModel->record;
-            $len = 3 - strlen($record);
-            $request['contract_id'] ="中网销字".date('Y', time()).zerofill($len).$record;
+            $request['contract_id'] = self::generateContractId($recordModel, '销');
         }else{
             $recordModel = Id_record::find(2);
-            $record = $recordModel->record;
-            $len = 3 - strlen($record);
-            $request['contract_id'] = "中网客字".date('Y', time()).zerofill($len).$record;
+            $request['contract_id'] = self::generateContractId($recordModel, '客');
         }
 
         //如果从company入口进入, 前端记录并并入了company_id
@@ -116,6 +112,19 @@ class ContractController extends Controller
         $data = Contract::create($request->except('company'));
         $recordModel->increment('record');
         return $this->res(2002, "新建合同成功", ['data'=>$data]);
+    }
+
+    /**
+     * 生成合同编号
+     * @param $recordModel 不传1和2，而是$recordModel，是因为其在主方法的外部还是会被用到。
+     * @param $str
+     * @return string
+     */
+    public function generateContractId($recordModel, $str)
+    {
+        $record = $recordModel->record;
+        $len = 3 - strlen($record);
+        return "中网{$str}字".date('Y', time()).zerofill($len).$record;
     }
 
     /**

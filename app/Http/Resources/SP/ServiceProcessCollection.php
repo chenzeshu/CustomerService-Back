@@ -21,6 +21,11 @@ class ServiceProcessCollection extends ResourceCollection
     {
         return $this->collection->map(function($col){
             $col->type = Contract_planutil::findOrFail($col->type);
+            if(!$col->contract_plan_id){
+            //假如不是临时合同 依靠$col->contract_plan_id判断
+                $col->type['name'] =  $col->type['name'].'(临时)';
+            }
+
             $col->pm = collect(explode(",", $col->contract['PM']))->map(function($pm){
                 if(!$pm) return null;
                 else return Employee::findOrFail($pm);
