@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\SP;
 
+use App\Http\Helpers\Params;
 use App\Models\Employee;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Contract_planutil;
@@ -21,7 +22,7 @@ class ServiceProcessCollection extends ResourceCollection
     {
         return $this->collection->map(function($col){
             $col->type = Contract_planutil::findOrFail($col->type);
-            if(!$col->contract_plan_id){
+            if($col->contract_plan_id == Params::NOMEAL){
             //假如不是临时合同 依靠$col->contract_plan_id判断
                 $col->type['name'] =  $col->type['name'].'(临时)';
             }
