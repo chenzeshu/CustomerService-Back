@@ -51,7 +51,9 @@ class commonController extends ApiController
      */
     public function searchCompanyByNo($number)
     {
-        $data = Company::findOrFail($number);
+        $data = Company::findOrFail($number)->toArray();
+        $allType = ServiceDAO::getServiceTypes();
+        $data = array_merge($data, ['allTypes' => $allType]);
         return $this->res(7003, '公司列表', $data);
     }
 
@@ -71,7 +73,7 @@ class commonController extends ApiController
             }
         })->toArray();
         if(empty($data)){  //empty这个函数读起来有歧义, 其实是空返回true
-            return $this->res(7004, '未签合同，请选临时合同');
+            return $this->res(7004, '未签合同，请选临时合同', []);
         }
 
         $service_types = ServiceDAO::getServiceTypes();

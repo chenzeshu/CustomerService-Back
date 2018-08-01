@@ -8,16 +8,20 @@ use App\Http\Controllers\v1\Back\ContractController;
 use App\Http\Helpers\Params;
 use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Id_record;
-use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Services\Service;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use PhpParser\Node\Param;
 
 class repairController extends ApiController
 {
+    protected $contractController;
+    public function __construct(ContractController $contractController)
+    {
+        $this->contractController = $contractController;
+    }
+
     /**
      * 在选择的合同下创建服务单
      * @param $contract_id
@@ -25,28 +29,26 @@ class repairController extends ApiController
      */
     public function apply(Request $request)
     {
-        if($request->contract['id'] == 'temp'){
+        if($request->contract_id == 'temp'){
             $recordModel = Id_record::find(1);
 
             //1. 先创建临时合同
             $contract = Contract::create([
                 'company_id' => $request->com_id,
                 'name' => '临时合同',
-                'contract_id' => ContractController::generateContractId($recordModel, '销'),
+                'contract_id' => $this->contractController->generateContractId($recordModel, '销'),
                 'type1' => 3,
                 'type2' => '销售',
-                'PM' => Param::getQianNo(),
+                'PM' => Params::getQianNo(),
             ]);
             //2. 创建非正式的$request对象
-            $request = collect([
-                'contract_id' => $contract->contract_id,
-                'contract_plan_id' => Params::NOMEAL,
-                'type_id' => $request->type_id,
-                'customer'=> $request->cus_id,
-                'zhongId' => $request->zhongId,
-                'question' => $request->question,
-                'source'=>4
-            ]);
+                $request->contract_id = $contract->id;
+                $request->meal_id = Params::NOMEAL;        //contract_plan.id
+//                $request->type_id = $request->type_id;
+                $request->customer = $request->cus_id;
+//                $request->zhongId = $request->zhongId;
+//                $request->question = $request->question;
+                $request->source=4;
         }
 
         //合同过期过滤已在 CommonController制作
@@ -63,10 +65,6 @@ class repairController extends ApiController
         return $this->res(7004, '报修成功');
     }
 
-
-    private function generateContractId(){
-
-    }
     /**
      * @param $page 当前页数
      * @param $pageSize 每页数据量

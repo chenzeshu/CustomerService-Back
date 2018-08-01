@@ -18,7 +18,7 @@ class Params
 
     const NOMEAL = 9999;  //没有套餐的contract_plan_id;
 
-    public function getQianNo()
+    static public function getQianNo()
     {
         return Employee::where('name','钱正宇')->first()->id;
     }
