@@ -104,6 +104,7 @@ class ServiceController extends ApiController
                 ->with(['customer', 'contract'=>function($query){
                     return $query->where('name', '临时合同');
                 }, 'source', 'type', 'refer_man.company'])
+                ->orderBy('update_at', 'desc')
                 ->get()
                 ->reject(function ($item){
                     return $item->contract == null;
