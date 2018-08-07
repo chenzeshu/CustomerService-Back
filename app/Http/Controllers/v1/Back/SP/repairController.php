@@ -12,7 +12,6 @@ use App\Models\Contract;
 use App\Models\Services\Service;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class repairController extends ApiController
 {

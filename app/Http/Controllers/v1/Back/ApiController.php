@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\v1\Back;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Chenzeshu\ChenUtils\Traits\PageTrait;
 use Chenzeshu\ChenUtils\Traits\ReturnTrait;
 use Illuminate\Http\Request;
@@ -18,6 +19,11 @@ class ApiController extends Controller
 {
     use PageTrait, ReturnTrait;
 
+    /**
+     * github-服务器钩子
+     * @param Request $request
+     * @return bool
+     */
     public function webhook(Request $request)
     {
         $signature = "sha1=".hash_hmac('sha1', $request->getContent(), env('WEBHOOK_SECRET_TOKEN'));
