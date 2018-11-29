@@ -22,6 +22,7 @@ use App\Models\Contract;
 use App\Models\Contractc;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
+use App\Models\Problem\Problem;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use App\Models\Utils\Service_type;
@@ -59,8 +60,14 @@ class LoginController extends ApiController
 
     public function test()
     {
-//        return (new CompanyRepo())->esSearch('群英');
-//       return ( new ContractRepo())->newPageRepo(['company_id'=>139, 'page'=> 1, 'pageSize'=>10]);
+
+        $problems = Problem::offset(10)->limit(10)->get();
+        $total = Problem::count();
+        $data = [
+            'data' => $problems,
+            'total' => $total,
+        ];
+        return $this->res(2000, '故障信息列表', $data);
 
     }
 

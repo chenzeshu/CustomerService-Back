@@ -307,7 +307,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo 设备
         Route::group(['prefix'=>'devices', 'namespace'=>'Utils'], function (){
-            Route::get('/page/{page}/{pageSize}', 'DeviceController@page');
+            Route::post('/page/{page}/{pageSize}', 'DeviceController@page');
             Route::get('/s/{name}/{page}/{pageSize}','DeviceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'DeviceController@update');
             Route::get('/delete/{id}','DeviceController@destroy');
@@ -346,6 +346,33 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/update/{id}', 'ContractPlanController@update');
             Route::get('/delete/{id}','ContractPlanController@destroy');
             Route::resource('/','ContractPlanController');
+        });
+
+        /**
+         * ----------------------故障信息库--------------------------
+         */
+        Route::group(['prefix'=>'problems', 'namespace'=>'Problems'], function (){
+            Route::post('/page/{page}/{pageSize}', 'ProblemController@getPage');
+//            Route::get('/s/{name}/{page}/{pageSize}','ProblemController@search');  //todo 模糊搜索
+            Route::post('/update/{problem_id}', 'ProblemController@update');
+            Route::get('/delete/{problem_id}','ProblemController@delete');
+            Route::resource('/','ProblemController');
+        });
+
+        Route::group(['prefix'=>'ptypes', 'namespace'=>'Problems'], function (){
+            Route::post('/page/{page}/{pageSize}', 'ProblemTypeController@getPage');
+//            Route::get('/s/{name}/{page}/{pageSize}','ProblemTypeController@search');  //todo 模糊搜索
+            Route::post('/update/{ptype_id}', 'ProblemTypeController@update');
+            Route::get('/delete/{ptype_id}','ProblemTypeController@delete');
+            Route::resource('/','ProblemTypeController');
+        });
+
+        Route::group(['prefix'=>'precords', 'namespace'=>'Problems'], function (){
+            Route::post('/page/{page}/{pageSize}', 'ProblemRecordController@getPage');
+//            Route::get('/s/{name}/{page}/{pageSize}','ProblemController@search');  //todo 模糊搜索
+//            Route::post('/update/{precord_id}', 'ProblemRecordController@update');
+            Route::get('/delete/{precord_id}','ProblemRecordController@delete');
+            Route::resource('/','ProblemController');
         });
     });
 });
