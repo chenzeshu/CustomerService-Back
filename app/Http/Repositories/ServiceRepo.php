@@ -11,6 +11,7 @@ namespace App\Http\Repositories;
 
 use App\Exceptions\Services\BelowZeroException;
 use App\Exceptions\Services\TooMuchUseException;
+use App\Models\Problem\Problem;
 use App\Models\Services\Contract_plan;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -110,5 +111,10 @@ class ServiceRepo
                 return true;
             }
         });
+    }
+
+    public function synchronize_problem($problem_data)
+    {
+        Problem::create($problem_data);
     }
 }

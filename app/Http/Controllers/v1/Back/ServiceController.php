@@ -15,6 +15,7 @@ use App\Http\Resources\Back\ServiceVerifyCollection;
 use App\Http\Traits\UploadTrait;
 use App\Id_record;
 use App\Models\Contract;
+use App\Models\Problem\ProblemType;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use Illuminate\Http\Request;
@@ -56,12 +57,13 @@ class ServiceController extends ApiController
         }
 
         list($service_types, $service_sources) = Service::get_cache();
-
+        $problem_types = ProblemType::get(['ptype_name', 'ptype_id'])->toArray();
         $data = [
             'data' => $services,
             'total' => $total,
             'types' => $service_types,
-            'sources' => $service_sources
+            'sources' => $service_sources,
+            'problem_types' => $problem_types
         ];
         return $this->res(200, '服务单信息', $data);
     }
@@ -85,7 +87,7 @@ class ServiceController extends ApiController
         $total = Service::where('status','=',$status)->count();
         $data = [
             'data' => $emp,
-            'total' => $total,
+            'total' => $total
         ];
         return $this->res(200, '待审核服务申请', $data);
     }
@@ -213,14 +215,33 @@ class ServiceController extends ApiController
                 $request['time3'] = date('Y-m-d H:i:s', time());
             }
 
+
             //todo 存储
-            $data = Service::create($request->all());
+            $data = Service::create($request->except(['problem_type', 'problem_step', 'problem_desc',
+                'problem_solution', 'problem_urgency', 'problem_imporantce']));
             if($data){
+                //存储成功后，得到新服务单id
+                if($request->problem_if == 1){
+                    $request->problem_if = true;
+                    $problem_data = [
+                        "device_id" => $request->device_id,
+                        "service_id" => $data->service_id,
+                        "problem_type" => $request->problem_type,  //故障类型id
+                        "problem_step" => $request->problem_step,  //故障类型id
+                        "problem_desc" => $request->problem_desc,
+                        "problem_solution" => $request->problem_solution,
+                        "problem_urgency" =>$request->problem_urgency,
+                        "problem_importance" => $request->problem_importance,
+                    ];
+                    $this->repo->synchronize_problem($problem_data);
+                }
+
+
+
                 //todo 服务单生成成功, 此时可以放心编号record加1
                 $recordModel->increment('record');
                 return $this->res(2002, "新建信道服务单成功", $data);
             }
-
         }
         catch (TimePassedException $e){
             return $this->res($e->code, $e->msg);

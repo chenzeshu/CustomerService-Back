@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Back\Problems;
 
 use App\Http\Controllers\v1\Back\ApiController;
 use App\Models\Problem\Problem;
+use App\Models\Problem\ProblemType;
 use Illuminate\Http\Request;
 
 class ProblemController extends ApiController
@@ -13,11 +14,13 @@ class ProblemController extends ApiController
         //todo 分页得到所有故障
         $offset = $pageSize * ($page - 1);
 
-        $problems = Problem::offset($offset)->limit(10)->get();
+        $problems = Problem::with('problemType')->offset($offset)->limit(10)->get();
         $total = Problem::count();
+        $types = ProblemType::get(['ptype_id', 'ptype_name'])->toArray();
         $data = [
             'data' => $problems,
             'total' => $total,
+            'types' => $types
         ];
         return $this->res(2000, '故障信息列表', $data);
     }

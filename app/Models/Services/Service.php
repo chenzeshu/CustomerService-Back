@@ -5,6 +5,7 @@ namespace App\Models\Services;
 use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Employee;
+use App\Models\Problem\Problem;
 use App\Models\Utils\Service_source;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -64,6 +65,7 @@ class Service extends Model
                        'company', 'planUtils'
                     ]);
                 },
+                'problem.device',
                 'visits.employees',
                 'refer_man'])
             ->get()
@@ -159,5 +161,9 @@ class Service extends Model
             'id',
             'contract_plan_id')
             ->select('plan_id','total', 'use', 'id');
+    }
+
+    public function problem(){
+        return $this->belongsTo(Problem::class, 'id', 'service_id');
     }
 }

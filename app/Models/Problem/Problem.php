@@ -22,7 +22,7 @@ class Problem extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function device(){
-        return $this->hasOne(Device::class);
+        return $this->hasOne(Device::class, 'id', 'device_id');
     }
 
     /**
@@ -47,5 +47,11 @@ class Problem extends Model
      */
     public function problemRecord(){
         return $this->hasMany(ProblemRecord::class);
+    }
+
+    public function problemType()
+    {
+        return $this->belongsTo(ProblemType::class, 'problem_type', 'ptype_id')
+            ->select(['ptype_id', 'ptype_name']);
     }
 }

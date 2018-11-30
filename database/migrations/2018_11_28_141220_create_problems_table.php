@@ -24,7 +24,7 @@ class CreateProblemsTable extends Migration
          */
         Schema::create('problems', function (Blueprint $table) {
             $table->increments('problem_id');
-            $table->unsignedInteger('device_id')->comment('设备id，问题必须关联到具体设备');
+            $table->unsignedInteger('device_id')->nullable()->comment('设备id，但问题不一定关联设备，只需要选到故障大类即可');
             $table->unsignedInteger('service_id')->nullable()->comment('服务单id外键');
             $table->unsignedInteger('problem_type')->default(1)->comment('问题类型的外键，必须选择一个种类');
             $table->enum('problem_step', ['未解决', '运维解决中', '技术或厂商解决中', '专家解决中', '已解决'])->default('未解决')->comment('问题解决步骤');
