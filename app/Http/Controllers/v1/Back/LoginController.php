@@ -60,14 +60,7 @@ class LoginController extends ApiController
 
     public function test()
     {
-
-        $problems = Problem::offset(10)->limit(10)->get();
-        $total = Problem::count();
-        $data = [
-            'data' => $problems,
-            'total' => $total,
-        ];
-        return $this->res(2000, '故障信息列表', $data);
+       return Service::findOrFail(809)->problem()->get();
 
     }
 

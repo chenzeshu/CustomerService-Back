@@ -21,8 +21,14 @@ class Problem extends Model
      * 得到具体问题对应的设备
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function device(){
-        return $this->hasOne(Device::class, 'id', 'device_id');
+    public function devices(){
+        return $this->hasManyThrough(
+            Device::class,
+            ProblemDevice::class,
+            'problem_id',
+            'id',
+            'problem_id',
+        'device_id');
     }
 
     /**
@@ -34,15 +40,7 @@ class Problem extends Model
     }
 
     /**
-     * 得到问题记录
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function problems(){
-        return $this->hasMany(Problem::class);
-    }
-
-    /**
-     * 得到本故障的报警记录
+     * 得到报警的具体时间记录（报警内容就是Problem表本身）
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function problemRecord(){

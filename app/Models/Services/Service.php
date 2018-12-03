@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Contract;
 use App\Models\Employee;
 use App\Models\Problem\Problem;
+use App\Models\Utils\Device;
 use App\Models\Utils\Service_source;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
@@ -65,7 +66,7 @@ class Service extends Model
                        'company', 'planUtils'
                     ]);
                 },
-                'problem.device',
+                'problem.devices',
                 'visits.employees',
                 'refer_man'])
             ->get()
@@ -163,6 +164,10 @@ class Service extends Model
             ->select('plan_id','total', 'use', 'id');
     }
 
+    /**
+     * 一个服务单如果与故障有关系，会归属于一个故障
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function problem(){
         return $this->belongsTo(Problem::class, 'id', 'service_id');
     }
