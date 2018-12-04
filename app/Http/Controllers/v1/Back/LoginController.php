@@ -60,8 +60,8 @@ class LoginController extends ApiController
 
     public function test()
     {
-       return Service::findOrFail(809)->problem()->get();
-
+        $problem = Problem::findOrFail(3);
+        return $problem;
     }
 
     public function test2(Request $request)

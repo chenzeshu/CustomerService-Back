@@ -22,13 +22,11 @@ class Problem extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function devices(){
-        return $this->hasManyThrough(
+        return $this->belongsToMany(
             Device::class,
-            ProblemDevice::class,
+            'problem_devices',
             'problem_id',
-            'id',
-            'problem_id',
-        'device_id');
+            'device_id');
     }
 
     /**

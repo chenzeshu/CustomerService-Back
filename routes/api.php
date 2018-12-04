@@ -351,7 +351,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
         /**
          * ----------------------故障信息库--------------------------
          */
-        Route::group(['prefix'=>'problems', 'namespace'=>'Problems'], function (){
+        Route::group(['prefix'=>'problem', 'namespace'=>'Problems'], function (){
             Route::post('/page/{page}/{pageSize}', 'ProblemController@getPage');
 //            Route::get('/s/{name}/{page}/{pageSize}','ProblemController@search');  //todo 模糊搜索
             Route::post('/update/{problem_id}', 'ProblemController@update');
@@ -359,7 +359,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::resource('/','ProblemController');
         });
 
-        Route::group(['prefix'=>'ptypes', 'namespace'=>'Problems'], function (){
+        Route::group(['prefix'=>'ptype', 'namespace'=>'Problems'], function (){
             Route::post('/page/{page}/{pageSize}', 'ProblemTypeController@getPage');
 //            Route::get('/s/{name}/{page}/{pageSize}','ProblemTypeController@search');  //todo 模糊搜索
             Route::post('/update/{ptype_id}', 'ProblemTypeController@update');
@@ -367,7 +367,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::resource('/','ProblemTypeController');
         });
 
-        Route::group(['prefix'=>'precords', 'namespace'=>'Problems'], function (){
+        Route::group(['prefix'=>'precord', 'namespace'=>'Problems'], function (){
             Route::post('/page/{page}/{pageSize}', 'ProblemRecordController@getPage');
 //            Route::get('/s/{name}/{page}/{pageSize}','ProblemController@search');  //todo 模糊搜索
 //            Route::post('/update/{precord_id}', 'ProblemRecordController@update');

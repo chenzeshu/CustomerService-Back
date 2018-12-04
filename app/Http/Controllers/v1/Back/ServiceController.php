@@ -175,8 +175,8 @@ class ServiceController extends ApiController
             if($con->time3 < date('y-m-d', time())){
                 throw new TimePassedException();
             }
-            //todo  通过前端传来的type字段, 知道服务中间表的id, 从而知道服务的total和use以及服务类型planUtil的细节
-            $model = Contract_plan::with('planUtil')->findOrFail($request->type);
+            //todo  前端的contract_plan_id字段, 即contract_plan表的id, 可知服务的total、use以及服务类型planUtil的细节
+            $model = Contract_plan::with('planUtil')->findOrFail($request->contract_plan_id);
 
             //拿到了这个服务单的所有细节
             if($model->toArray()['plan_util']['type2'] == "普通"){ //普通的要比较次数
@@ -218,25 +218,22 @@ class ServiceController extends ApiController
 
             //todo 存储
             $data = Service::create($request->except(['problem_type', 'problem_step', 'problem_desc',
-                'problem_solution', 'problem_urgency', 'problem_imporantce']));
+                'problem_solution', 'problem_urgency', 'problem_importance', 'device_ids']));
             if($data){
                 //存储成功后，得到新服务单id
                 if($request->problem_if == 1){
                     $request->problem_if = true;
                     $problem_data = [
-                        "device_id" => $request->device_id,
-                        "service_id" => $data->service_id,
+                        "service_id" => $data->id,
                         "problem_type" => $request->problem_type,  //故障类型id
                         "problem_step" => $request->problem_step,  //故障类型id
-                        "problem_desc" => $request->problem_desc,
-                        "problem_solution" => $request->problem_solution,
+                        "problem_desc" => $request->desc1,
+                        "problem_solution" => $request->desc2,
                         "problem_urgency" =>$request->problem_urgency,
                         "problem_importance" => $request->problem_importance,
                     ];
-                    $this->repo->synchronize_problem($problem_data);
+                    $this->repo->synchronize_problem($problem_data, $request->device_ids);
                 }
-
-
 
                 //todo 服务单生成成功, 此时可以放心编号record加1
                 $recordModel->increment('record');
@@ -296,8 +293,25 @@ class ServiceController extends ApiController
         }
 
         //todo 修改
-        $re = $update->update($request->except(['contract','company', 'visits']));
+        $re = $update->update($request->except(['contract','company', 'visits', 'problem', 'device_ids']));
         if($re){
+            //存储成功后，得到新服务单id
+            if($request->problem_if == 1){
+                $request->problem_if = true;
+                $problem = $request->problem;
+                $problem_data = [
+                    "problem_id" => $problem['problem_id'],
+                    "service_id" => $request->id,
+                    "problem_type" => $problem['problem_type'],  //故障类型id
+                    "problem_step" => $problem['problem_step'],  //故障类型id
+                    "problem_desc" => $request->desc1,
+                    "problem_solution" => $request->desc2,
+                    "problem_urgency" => $problem['problem_urgency'],
+                    "problem_importance" => $problem['problem_importance'],
+                ];
+                $this->repo->update_problem($problem_data, $request->device_ids);
+            }
+
             return $this->res(2003, "修改服务单成功");
         } else {
             return $this->res(500, "修改服务单失败");

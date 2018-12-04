@@ -14,6 +14,7 @@ use App\Exceptions\Services\TooMuchUseException;
 use App\Models\Problem\Problem;
 use App\Models\Services\Contract_plan;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class ServiceRepo
 {
@@ -113,8 +114,30 @@ class ServiceRepo
         });
     }
 
-    public function synchronize_problem($problem_data)
+    /**
+     * 服务单页面新建故障及故障设备
+     * @param $problem_data
+     * @param $device_ids
+     */
+    public function synchronize_problem($problem_data, $device_ids)
     {
-        Problem::create($problem_data);
+        DB::transaction(function () use ($problem_data, $device_ids){
+            $problem = Problem::create($problem_data);
+            $problem->devices()->attach($device_ids);
+        });
+    }
+
+    /**
+     * 服务单页面更新故障及故障设备
+     * @param $problem_data
+     * @param $device_ids
+     */
+    public function update_problem($problem_data, $device_ids)
+    {
+        DB::transaction(function () use ($problem_data, $device_ids){
+            $problem = Problem::findOrFail($problem_data['problem_id']);
+            $problem->update($problem_data);
+            $problem->devices()->sync($device_ids);
+        });
     }
 }
