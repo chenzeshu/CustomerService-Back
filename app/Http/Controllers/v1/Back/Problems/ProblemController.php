@@ -14,8 +14,36 @@ class ProblemController extends ApiController
         //todo 分页得到所有故障
         $offset = $pageSize * ($page - 1);
 
-        $problems = Problem::with('problemType')->offset($offset)->limit(10)->get();
-        $total = Problem::count();
+        $searchObj = $request->searchObj;
+        if(!empty($searchObj['problem_type']['ptype_id'])){
+            $problems = Problem::whereHas('problemType', function($query) use ($searchObj){
+                    $query->where('ptype_id', (int)$searchObj['problem_type']['ptype_id']);
+            })->with('problemType');
+        } else {
+            $problems = Problem::with('problemType');
+        }
+
+        if(!empty($searchObj['problem_step'])){
+            $problems = $problems->where('problem_step', $searchObj['problem_step']);
+        }
+
+        if(!empty($searchObj['problem_urgency'])){
+            $problems = $problems->where('problem_urgency', $searchObj['problem_urgency']);
+        }
+
+        if(!empty($searchObj['problem_importance'])){
+            $problems = $problems->where('problem_importance', $searchObj['problem_importance']);
+        }
+
+        if(!empty($searchObj['problem_desc'])){
+            $problems = $problems->where('problem_desc', $searchObj['problem_desc']);
+        }
+
+        //计算复合条件的总个数
+        $total = $problems->count();
+        //提供分页数据
+        $problems = $problems->offset($offset)->limit(10)->get();
+
         $types = ProblemType::get(['ptype_id', 'ptype_name'])->toArray();
         $data = [
             'data' => $problems,

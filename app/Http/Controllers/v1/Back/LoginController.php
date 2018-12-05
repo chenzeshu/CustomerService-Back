@@ -60,7 +60,9 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $problem = Problem::findOrFail(3);
+        $problem = Problem::whereHas('problemType', function($query) {
+            $query->where('ptype_id', 1);
+        })->with('problemType')->get();
         return $problem;
     }
 

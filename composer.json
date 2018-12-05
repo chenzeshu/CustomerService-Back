@@ -6,14 +6,15 @@
     "type": "project",
     "require": {
         "php": ">=7.0.0",
+        "barryvdh/laravel-ide-helper": "^2.5",
         "chenzeshu/chen-utils": "0.0.6",
+        "elasticsearch/elasticsearch": "~6.0",
         "fideloper/proxy": "~3.3",
         "garveen/laravoole": "^0.5.1",
         "laravel/framework": "5.5.*",
         "laravel/tinker": "~1.0",
         "predis/predis": "*",
-        "tymon/jwt-auth": "^0.5.12",
-        "elasticsearch/elasticsearch": "~6.0"
+        "tymon/jwt-auth": "^0.5.12"
     },
     "require-dev": {
         "encore/redis-manager": "^0.1.0",
