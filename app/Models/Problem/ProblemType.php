@@ -20,6 +20,14 @@ class ProblemType extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function problems(){
-        return $this->hasMany(Problem::class);
+        return $this->hasMany(Problem::class, 'problem_type');
+    }
+
+    /**
+     * 用于：得到故障分类所属的已解决的故障记录的ORM withCount
+     */
+    public function problemsFinished()
+    {
+        return $this->hasMany(Problem::class, 'problem_type');
     }
 }

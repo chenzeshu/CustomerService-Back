@@ -17,8 +17,9 @@ class ProblemController extends ApiController
         $searchObj = $request->searchObj;
         if(!empty($searchObj['problem_type']['ptype_id'])){
             $problems = Problem::whereHas('problemType', function($query) use ($searchObj){
-                    $query->where('ptype_id', (int)$searchObj['problem_type']['ptype_id']);
-            })->with('problemType');
+                            $query->where('ptype_id', (int)$searchObj['problem_type']['ptype_id']);
+                        })
+                        ->with('problemType');
         } else {
             $problems = Problem::with('problemType');
         }

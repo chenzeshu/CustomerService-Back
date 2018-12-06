@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Back\Problems;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Models\Problem\Problem;
 use App\Models\Problem\ProblemType;
 use Illuminate\Http\Request;
 
@@ -10,16 +11,25 @@ class ProblemTypeController extends ApiController
 {
     public function getPage($page, $pageSize, Request $request)
     {
-        //todo 分页得到所有故障
+        //todo 分页得到所有故障类型
         $offset = $pageSize * ($page - 1);
 
-        $problems = ProblemType::offset($offset)
-            ->limit(10)
-            ->get();
+        $problems = ProblemType::with(['problems' => function($query){
+                        $query->withCount('devices');
+                    }])
+                    ->withCount('problems')
+                    ->withCount(['problemsFinished' => function ($query) {
+                        $query->where('problem_step', '已解决');
+                    }])
+                    ->offset($offset)
+                    ->limit(10)
+                    ->get();
+        $problem_count = Problem::count();
         $total = ProblemType::count();
         $data = [
             'data' => $problems,
             'total' => $total,
+            'problem_count' => $problem_count,
         ];
         return $this->res(2000, '获取成功', $data);
     }
