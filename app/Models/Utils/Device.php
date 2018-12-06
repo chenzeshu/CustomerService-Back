@@ -4,6 +4,7 @@ namespace App\Models\Utils;
 
 use App\Models\Channels\Channel_info2;
 use App\Models\Company;
+use App\Models\Problem\Problem;
 use Illuminate\Database\Eloquent\Model;
 
 class Device extends Model
@@ -24,5 +25,14 @@ class Device extends Model
     public function channel_info2()
     {
         return $this->belongsTo(Channel_info2::class, 'id5', 'id');
+    }
+
+    public function problems()
+    {
+        return $this->belongsToMany(
+            Problem::class,
+            'problem_devices',
+            'device_id',
+            'problem_id');
     }
 }

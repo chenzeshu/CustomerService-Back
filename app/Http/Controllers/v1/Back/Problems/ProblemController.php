@@ -3,42 +3,25 @@
 namespace App\Http\Controllers\v1\Back\Problems;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Repositories\ProblemRepo;
 use App\Models\Problem\Problem;
 use App\Models\Problem\ProblemType;
 use Illuminate\Http\Request;
 
 class ProblemController extends ApiController
 {
+    public function __construct(ProblemRepo $problemRepo)
+    {
+        $this->problemRepo = $problemRepo;
+    }
+
+
     public function getPage($page, $pageSize, Request $request)
     {
         //todo 分页得到所有故障
         $offset = $pageSize * ($page - 1);
-
-        $searchObj = $request->searchObj;
-        if(!empty($searchObj['problem_type']['ptype_id'])){
-            $problems = Problem::whereHas('problemType', function($query) use ($searchObj){
-                            $query->where('ptype_id', (int)$searchObj['problem_type']['ptype_id']);
-                        })
-                        ->with('problemType');
-        } else {
-            $problems = Problem::with('problemType');
-        }
-
-        if(!empty($searchObj['problem_step'])){
-            $problems = $problems->where('problem_step', $searchObj['problem_step']);
-        }
-
-        if(!empty($searchObj['problem_urgency'])){
-            $problems = $problems->where('problem_urgency', $searchObj['problem_urgency']);
-        }
-
-        if(!empty($searchObj['problem_importance'])){
-            $problems = $problems->where('problem_importance', $searchObj['problem_importance']);
-        }
-
-        if(!empty($searchObj['problem_desc'])){
-            $problems = $problems->where('problem_desc', $searchObj['problem_desc']);
-        }
+        //todo 处理筛选
+        $problems = $this->problemRepo->dealWithSearch($request);
 
         //计算复合条件的总个数
         $total = $problems->count();

@@ -34,7 +34,7 @@ class Problem extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function service(){
-        return $this->hasOne(Service::class);
+        return $this->belongsTo(Service::class);
     }
 
     /**
@@ -47,7 +47,10 @@ class Problem extends Model
 
     public function problemType()
     {
-        return $this->belongsTo(ProblemType::class, 'problem_type', 'ptype_id')
+        return $this->belongsTo(
+            ProblemType::class,
+            'problem_type',
+            'ptype_id')
             ->select(['ptype_id', 'ptype_name']);
     }
 }
