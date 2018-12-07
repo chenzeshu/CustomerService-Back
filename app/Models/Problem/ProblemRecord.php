@@ -14,4 +14,5 @@ class ProblemRecord extends Model
     protected $primaryKey = 'precord_id';
 
     protected $guarded = [];
+
 }

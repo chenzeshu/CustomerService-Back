@@ -353,7 +353,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
          */
         Route::group(['prefix'=>'problem', 'namespace'=>'Problems'], function (){
             Route::post('/page/{page}/{pageSize}', 'ProblemController@getPage');
-//            Route::get('/s/{name}/{page}/{pageSize}','ProblemController@search');  //todo 模糊搜索
+            Route::post('/report','ProblemController@report');  //todo 模糊搜索
             Route::post('/update/{problem_id}', 'ProblemController@update');
             Route::get('/delete/{problem_id}','ProblemController@delete');
             Route::resource('/','ProblemController');

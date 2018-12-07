@@ -49,10 +49,12 @@ class CreateProblemsTable extends Migration
         });
 
         /**
-         * 报警记录表
+         * 报警记录表 -- 其实是problem_records的子表，可以做hasMany，但是由于attach太方便了，所以做成了belongsToMany
          */
         Schema::create('problem_records', function (Blueprint $table) {
             $table->increments('precord_id');
+            $table->unsignedInteger('problem_id');
+            $table->unsignedInteger('device_id');
             $table->timestamps();
         });
 

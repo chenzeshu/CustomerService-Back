@@ -25,6 +25,7 @@ use App\Models\Employee_waiting;
 use App\Models\Problem\Problem;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
+use App\Models\Utils\Device;
 use App\Models\Utils\Service_type;
 use App\Observers\OBTraits\ContractcUpdated;
 use App\Services\Sms;
@@ -60,9 +61,7 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $problem = Problem::whereHas('problemType', function($query) {
-            $query->where('ptype_id', 1);
-        })->with('problemType')->get();
+        $problem = Employee::where('name', '陈泽书')->get();
         return $problem;
     }
 

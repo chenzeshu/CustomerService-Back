@@ -3,16 +3,23 @@
 namespace App\Http\Controllers\v1\Back\Problems;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Repositories\MailRepository;
 use App\Http\Repositories\ProblemRepo;
+use App\Jobs\reportJob;
+use App\Models\Employee;
 use App\Models\Problem\Problem;
 use App\Models\Problem\ProblemType;
+use App\Models\Utils\Device;
 use Illuminate\Http\Request;
 
 class ProblemController extends ApiController
 {
-    public function __construct(ProblemRepo $problemRepo)
+
+    private $mailRepository;
+    public function __construct(ProblemRepo $problemRepo, MailRepository $mailRepository)
     {
         $this->problemRepo = $problemRepo;
+        $this->mailRepository = $mailRepository;
     }
 
 
@@ -82,9 +89,58 @@ class ProblemController extends ApiController
         return $this->res(2004, "删除故障信息成功");
     }
 
-    public function search($keywords)
+    /**
+     * 短信报警 + 记录
+     * @param Request $request
+     */
+    public function report(Request $request)
     {
-        //todo 考虑中：是否要es?
+        $device_ids = $request->device_ids;
+        $problem_id = $request->problem_id;
+        $emp_ids = $request->emp_ids;
+
+        list($problem, $emps, $data) = $this->problemRepo->pakReportData($device_ids, $problem_id, $emp_ids);
+
+        //todo 发送预警短信
+        $report_job = (new reportJob($emps, $data));
+        $this->dispatch($report_job);
+
+        //todo 记录本次报警
+        $problem->reportRecords()->attach($device_ids);
+
+        return $this->res(2002, '发送成功', $problem);
     }
 
 }
+
+
+
+//        //todo 获得故障模型
+//        $problem = Problem::findOrFail($problem_id);
+//        //todo 获得设备模型
+//        $device_name = Device::whereIn('id', $device_ids)
+//            ->get(['device_id'])
+//            ->map(function ($device){
+//                return $device->device_id;
+//            })
+//            ->implode(' 、 ');
+//        //todo 获得被通知人
+
+//        $emps = Employee::findOrFail($emp_ids);
+//
+//        //todo 组装数据
+//        $data = [
+//            'device_name' => $device_name,
+//            'problem_desc' => $problem->problem_desc,
+//            'four00tel' => env('FOUR00TEL')
+//        ];
+//
+//        foreach ($emps as $emp){
+//            $this->mailRepository->sendReportMsg(
+//                $emp->phone,
+//                array_merge([
+//                    "name" => $emp->name,
+//                ],
+//                    $data)
+//            );
+//        }

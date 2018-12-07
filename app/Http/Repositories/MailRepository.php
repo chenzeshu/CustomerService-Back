@@ -36,4 +36,9 @@ class MailRepository
     {
         return (new Sms())->sendSms(env('SIGN_NAME'), "SMS_120115188", $phoneNumber,['name'=>$name]);
     }
+
+    public function sendReportMsg($phoneNumber, $data)
+    {
+        return (new Sms())->sendSms(env('SIGN_NAME'), "SMS_152284845", $phoneNumber, $data);
+    }
 }

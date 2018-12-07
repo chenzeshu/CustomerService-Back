@@ -39,10 +39,11 @@ class Problem extends Model
 
     /**
      * 得到报警的具体时间记录（报警内容就是Problem表本身）
+     * 对应中间表 problem_record
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function problemRecord(){
-        return $this->hasMany(ProblemRecord::class);
+    public function reportRecords(){
+        return $this->belongsToMany(Device::class, 'problem_records', 'problem_id', 'device_id');
     }
 
     public function problemType()

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\v1\Back\Problems;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Models\Problem\Problem;
 use App\Models\Problem\ProblemRecord;
 use Illuminate\Http\Request;
 
@@ -12,9 +13,12 @@ class ProblemRecordController extends ApiController
     {
         $offset = $pageSize * ($page - 1);
 
-        $data = ProblemRecord::offset($offset)
+        $data = Problem::with('reportRecords')
+            ->offset($offset)
             ->limit(10)
-            ->get();
+            ->get()
+            ->toArray();
+
         $total = ProblemRecord::count();
 
         return $this->res(2000, '获取成功', ['data'=>$data, 'total' => $total]);
