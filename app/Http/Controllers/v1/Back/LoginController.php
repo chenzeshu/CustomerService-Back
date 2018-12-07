@@ -23,6 +23,7 @@ use App\Models\Contractc;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
 use App\Models\Problem\Problem;
+use App\Models\Problem\ProblemRecord;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
 use App\Models\Utils\Device;
@@ -61,7 +62,7 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $problem = Employee::where('name', '陈泽书')->get();
+        $problem = ProblemRecord::findOrFail(1)->problem()->get();
         return $problem;
     }
 
