@@ -62,7 +62,6 @@ class ProblemController extends ApiController
         return $this->res(2002, "新建成功");
     }
 
-
     /**
      * 同样不能修改具体设备与服务单，因为那些是自动关联的，也不用改。
      * @param $problem_id
@@ -111,36 +110,16 @@ class ProblemController extends ApiController
         return $this->res(2002, '发送成功', $problem);
     }
 
+    /**
+     * @param $keyword
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchProblem($keyword)
+    {
+        $problems = Problem::where('problem_desc', 'like', '%'."用于".'%')
+            ->limit(10)
+            ->get(['problem_id', 'problem_desc']);
+        return $this->res(2002, '搜索成功', $problems);
+    }
 }
 
-
-
-//        //todo 获得故障模型
-//        $problem = Problem::findOrFail($problem_id);
-//        //todo 获得设备模型
-//        $device_name = Device::whereIn('id', $device_ids)
-//            ->get(['device_id'])
-//            ->map(function ($device){
-//                return $device->device_id;
-//            })
-//            ->implode(' 、 ');
-//        //todo 获得被通知人
-
-//        $emps = Employee::findOrFail($emp_ids);
-//
-//        //todo 组装数据
-//        $data = [
-//            'device_name' => $device_name,
-//            'problem_desc' => $problem->problem_desc,
-//            'four00tel' => env('FOUR00TEL')
-//        ];
-//
-//        foreach ($emps as $emp){
-//            $this->mailRepository->sendReportMsg(
-//                $emp->phone,
-//                array_merge([
-//                    "name" => $emp->name,
-//                ],
-//                    $data)
-//            );
-//        }

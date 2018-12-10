@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\v1\Back\Utils;
 
 use App\Http\Controllers\v1\Back\ApiController;
+use App\Http\Repositories\ProblemRepo;
+use App\Jobs\reportJob;
 use App\Models\Channels\Channel_info2;
 use App\Models\Utils\Device;
 use App\Models\Utils\Profession;
@@ -10,6 +12,13 @@ use Illuminate\Http\Request;
 
 class DeviceController extends ApiController
 {
+    private $problemRepo;
+
+    public function __construct(ProblemRepo $problemRepo)
+    {
+        $this->problemRepo = $problemRepo;
+    }
+
     public function page($page, $pageSize)
     {
         $begin = ( $page -1 ) * $pageSize;
@@ -76,5 +85,23 @@ class DeviceController extends ApiController
         ];
 
         return $this->res(200, '搜索结果', $data);
+    }
+
+    public function report(Request $request)
+    {
+        $device_ids = [$request->device_id];
+        $problem_id = $request->problem_id;
+        $emp_ids = $request->emp_ids;
+
+        list($problem, $emps, $data) = $this->problemRepo->pakReportData($device_ids, $problem_id, $emp_ids);
+
+        //todo 发送预警短信
+        $report_job = (new reportJob($emps, $data));
+        $this->dispatch($report_job);
+
+        //todo 记录本次报警
+        $problem->reportRecords()->attach($device_ids);
+
+        return $this->res(2002, '发送成功', $problem);
     }
 }

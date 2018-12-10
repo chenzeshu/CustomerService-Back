@@ -13,15 +13,10 @@ class ProblemRecordController extends ApiController
     {
         $offset = $pageSize * ($page - 1);
 
-//        $data = Problem::with('devices','reportRecords')
-//            ->offset($offset)
-//            ->limit(10)
-//            ->get()
-//            ->toArray();
-
         $data = ProblemRecord::with(['problem', 'device'])
                                 ->offset($offset)
                                 ->limit(10)
+                                ->orderBy('created_at', 'desc')
                                 ->get();
 
         $total = ProblemRecord::count();

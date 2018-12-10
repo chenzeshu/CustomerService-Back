@@ -10,6 +10,7 @@ use App\Models\Money\ServiceMoney;
 use App\Models\Services\Service;
 use App\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 //todo 统计
 class CalculateController extends ApiController
@@ -17,15 +18,18 @@ class CalculateController extends ApiController
     public function basic()
     {
         //todo 未结清普通合同
-        $contract_count = ServiceMoney::where('finish', '未结清')->count();
+        $contract_count = DB::table('service_moneys')->select(DB::raw('count(*) as count, finish'))->groupBy('finish')->get();
         //todo 未结清信道合同
-        $contractc_count = ChannelMoney::where('finish', '未结清')->count();
+        $contractc_count = DB::table('channel_moneys')->select(DB::raw('count(*) as count, finish'))->groupBy('finish')->get();
         //todo 待审核服务单
-        $service_count =  Service::where('status', '待审核')->count();
-        //todo 待审核信道服务单
-        $channel_count =  Channel::where('status', '待审核')->count();
-//        todo 所有公司数量
-        $company_count = Company::count();
+        $service_count =  DB::table('services')->select(DB::raw('count(*) as count, status'))->groupBy('status')->get();
+        //todo 信道服务单
+        $channel_count =  DB::table('channels')->select(DB::raw('count(*) as count, status'))->groupBy('status')->get();
+        //todo 公司
+        $company_count = DB::table('companies')->select(DB::raw('count(*) as count, type'))->groupBy('type')->get();
+        //todo 故障状态
+        $problem_count = DB::table('problems')->select(DB::raw('count(*) as count, problem_step'))->groupBy('problem_step')->get();
+
 
 
         //todo 拿到上次登陆时间
@@ -41,6 +45,7 @@ class CalculateController extends ApiController
                "service_count" => $service_count,
                "channel_count" => $channel_count,
                "company_count" => $company_count,
+               "problem_count" => $problem_count,
            ],
             "loginInfo" => $loginInfo
         ]);

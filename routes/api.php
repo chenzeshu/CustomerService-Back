@@ -311,6 +311,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/s/{name}/{page}/{pageSize}','DeviceController@search');  //todo 模糊搜索
             Route::post('/update/{id}', 'DeviceController@update');
             Route::get('/delete/{id}','DeviceController@destroy');
+            Route::post('/report','DeviceController@report');
             Route::resource('/','DeviceController');
         });
 
@@ -353,7 +354,8 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
          */
         Route::group(['prefix'=>'problem', 'namespace'=>'Problems'], function (){
             Route::post('/page/{page}/{pageSize}', 'ProblemController@getPage');
-            Route::post('/report','ProblemController@report');  //todo 模糊搜索
+            Route::post('/report','ProblemController@report');
+            Route::get('/s/{query}','ProblemController@searchProblem');
             Route::post('/update/{problem_id}', 'ProblemController@update');
             Route::get('/delete/{problem_id}','ProblemController@delete');
             Route::resource('/','ProblemController');

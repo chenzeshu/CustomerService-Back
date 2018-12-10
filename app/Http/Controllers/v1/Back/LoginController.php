@@ -62,8 +62,8 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $problem = ProblemRecord::findOrFail(1)->problem()->get();
-        return $problem;
+        $problems = $contractc_count = DB::table('channel_moneys')->select(DB::raw('count(*) as count, finish'))->groupBy('finish')->get();
+        return $problems;
     }
 
     public function test2(Request $request)
