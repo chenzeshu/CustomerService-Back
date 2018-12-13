@@ -31,6 +31,7 @@ use App\Models\Utils\Service_type;
 use App\Observers\OBTraits\ContractcUpdated;
 use App\Services\Sms;
 use App\User;
+use Carbon\Carbon;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Elasticsearch\ClientBuilder;
@@ -62,7 +63,11 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $problems = $contractc_count = DB::table('channel_moneys')->select(DB::raw('count(*) as count, finish'))->groupBy('finish')->get();
+        $problems = Channel::with(['plans.plan', "employee"])->where('employee_id', 221)->get();
+        $problems = $problems->map(function($d){
+            $d->apply_time = Carbon::createFromTimestamp(strtotime($d->created_at))->diffForHumans();
+            return $d;
+        });
         return $problems;
     }
 

@@ -79,7 +79,7 @@ class ChannelRepo extends CurdRepo
     {
         $model = Contractc::findOrFail($contractc_id)->channels()->orderBy('created_at', 'desc')->first();
 
-        if(empty($model->toArray())){ //本合同下第一次
+        if(empty($model)){ //本合同下第一次
             return true;
         }
         $data = $model->channel_applys()->orderBy('created_at', 'desc')->first()->channel_real()->first();

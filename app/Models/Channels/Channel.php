@@ -4,6 +4,7 @@ namespace App\Models\Channels;
 
 use App\Models\Contractc;
 use App\Models\Employee;
+use App\Models\Services\Contract_plan;
 use App\Models\Utils\Plan;
 use App\Models\Utils\Service_source;
 use Illuminate\Database\Eloquent\Model;
@@ -148,17 +149,15 @@ class Channel extends Model
     }
 
     /**
-     * 信道服务单通过apply远层关联套餐
+     * 信道服务单通过apply远层关联套餐  -- 目标表：contractc_plan表  -- fixme:遗憾：设计时表名、字段名、这里的ORM方法名都没有设计好，后期维护很烦，后期有机会推倒重来
      */
     public function plans()
     {
-        return $this->hasManyThrough(
-            Plan::class,
-            Channel_apply::class,
-            'channel_id',
-            'id',
-            'id',
-            'id1');
+        return $this->belongsToMany(
+            Contractc_plan::class,
+            "channel_applies",
+            "channel_id",
+            "id1");
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Exceptions\Channels\OutOfTimeException;
 use App\Exceptions\SP\ChannelNoCheckerExp;
 use App\Exceptions\SP\ChannelProcessingExp;
 use App\Models\Employee;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Controllers\v1\Back\ApiController;
 use App\Http\Repositories\ChannelRepo;
@@ -37,15 +38,22 @@ class ChannelController extends ApiController
      */
     public function page($page, $pageSize, $emp_id, $status)
     {
+        Carbon::setLocale('zh');
+
         $begin = ($page - 1) * $pageSize;
         if($status == "全部"){
-            $data = Channel::with(['plans', "employee"])->where('employee_id', $emp_id)->offset($begin)->limit($pageSize)->get();
+            $data = Channel::with(['channel_applys','plans.plan', "employee"])->where('employee_id', $emp_id)->offset($begin)->limit($pageSize)->get();
         }else{
-            $data = Channel::with(['plans', "employee"])->where('employee_id', $emp_id)->where('status', $status)->offset($begin)->limit($pageSize)->get();
+            $data = Channel::with(['channel_applys','plans.plan', "employee"])->where('employee_id', $emp_id)->where('status', $status)->offset($begin)->limit($pageSize)->get();
         }
         if(empty($data->toArray())){
             return $this->res(7004, '暂无更多', $data);
         }
+        $data = $data->map(function($d){
+           $d->apply_time = Carbon::createFromTimestamp(strtotime($d->created_at))->diffForHumans();
+           return $d;
+        });
+
         return $this->res(7003, $status.'列表', $data);
     }
 
