@@ -63,12 +63,38 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $problems = Channel::with(['plans.plan', "employee"])->where('employee_id', 221)->get();
-        $problems = $problems->map(function($d){
-            $d->apply_time = Carbon::createFromTimestamp(strtotime($d->created_at))->diffForHumans();
-            return $d;
+        $now = time();
+        $devices = Device::get(['id','device_id', 'company_id', 'checked_at', 'guarantee'])->filter(function ($device) use ($now){
+            //todo  注意去掉中网的
+            if($device->checked_at && $device->company_id != 1){
+                //todo 计算出质保期
+                $g = strtotime($device->checked_at) + $device->guarantee * 86400 * 365;
+                if($g > $now){
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            return false;
         });
-        return $problems;
+        //todo 获得对应的负责人
+        $report_data = $devices->map(function ($device){
+            $raw = $device->company()->with('employees')->first();
+            if(count($raw['employees']) != 0){
+                $data = [
+                    'phone' => $raw['employees'][0]['phone'],
+                    'send' => [
+                        'name' => $raw['employees'][0]['name'],
+                        'device_name' => $raw['device_id'],
+                        'problem_desc'=> "质保过期",
+                        'four00tel' => env('FOUR00TEL')
+                    ]
+                ];
+                return $data;
+            }
+        });
+
+        return $report_data;
     }
 
     public function test2(Request $request)

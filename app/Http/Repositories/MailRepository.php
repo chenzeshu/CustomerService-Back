@@ -37,6 +37,12 @@ class MailRepository
         return (new Sms())->sendSms(env('SIGN_NAME'), "SMS_120115188", $phoneNumber,['name'=>$name]);
     }
 
+    /**
+     * 发送警报
+     * @param $phoneNumber
+     * @param $data   ['name' => 联系人姓名， 'device_name' => 设备名称， 'problem_desc'=>问题描述，'four00tel' => env(400电话)]
+     * @return \App\Services\stdClass
+     */
     public function sendReportMsg($phoneNumber, $data)
     {
         return (new Sms())->sendSms(env('SIGN_NAME'), "SMS_152284845", $phoneNumber, $data);

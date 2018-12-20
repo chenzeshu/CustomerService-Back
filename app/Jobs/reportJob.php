@@ -42,8 +42,7 @@ class reportJob implements ShouldQueue
                     (int)$emp->phone,
                     array_merge([
                         "name" => $emp->name,
-                    ],
-                        $this->data)
+                    ], $this->data)
                 );
         }
         //todo 解除job
