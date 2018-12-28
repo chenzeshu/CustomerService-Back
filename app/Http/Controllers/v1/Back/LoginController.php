@@ -26,6 +26,7 @@ use App\Models\Problem\Problem;
 use App\Models\Problem\ProblemRecord;
 use App\Models\Services\Contract_plan;
 use App\Models\Services\Service;
+use App\Models\Utils\Allow;
 use App\Models\Utils\Device;
 use App\Models\Utils\Service_type;
 use App\Observers\OBTraits\ContractcUpdated;
@@ -63,38 +64,7 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $now = time();
-        $devices = Device::get(['id','device_id', 'company_id', 'checked_at', 'guarantee'])->filter(function ($device) use ($now){
-            //todo  注意去掉中网的
-            if($device->checked_at && $device->company_id != 1){
-                //todo 计算出质保期
-                $g = strtotime($device->checked_at) + $device->guarantee * 86400 * 365;
-                if($g > $now){
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            return false;
-        });
-        //todo 获得对应的负责人
-        $report_data = $devices->map(function ($device){
-            $raw = $device->company()->with('employees')->first();
-            if(count($raw['employees']) != 0){
-                $data = [
-                    'phone' => $raw['employees'][0]['phone'],
-                    'send' => [
-                        'name' => $raw['employees'][0]['name'],
-                        'device_name' => $raw['device_id'],
-                        'problem_desc'=> "质保过期",
-                        'four00tel' => env('FOUR00TEL')
-                    ]
-                ];
-                return $data;
-            }
-        });
-
-        return $report_data;
+        return Allow::findOrFail(1)->allow_report;
     }
 
     public function test2(Request $request)

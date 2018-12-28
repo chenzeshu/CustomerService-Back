@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Utils\Allow;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -38,8 +39,10 @@ class AlertDevice extends Command
      */
     public function handle()
     {
-        \App\Jobs\AlertDevice::dispatch();
-        $time = date('Y-m-d H:i:s');
-        Log::info($time." : 检查设备质保过期");
+        if(Allow::findOrFail(1)->allow_report == 1){
+            \App\Jobs\AlertDevice::dispatch();
+            $time = date('Y-m-d H:i:s');
+            Log::info($time." : 检查设备质保过期");
+        }
     }
 }

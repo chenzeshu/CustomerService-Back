@@ -376,5 +376,9 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::get('/delete/{precord_id}','ProblemRecordController@delete');
             Route::resource('/','ProblemController');
         });
+
+        Route::group(['prefix'=>'allow', 'namespace'=>'Utils'], function (){
+            Route::get('/report/{allow_int}', 'AllowController@report');
+        });
     });
 });
