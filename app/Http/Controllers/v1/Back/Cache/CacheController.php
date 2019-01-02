@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\Back\Cache;
 use App\Models\Channels\Channel_info3;
 use App\Models\Channels\Channel_info4;
 use App\Models\Channels\Channel_info5;
+use App\Models\Utils\Plan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
