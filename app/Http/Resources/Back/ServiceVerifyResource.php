@@ -26,6 +26,7 @@ class ServiceVerifyResource extends Resource
             'workman' => $this->when(!is_null($this->workman), function(){
                 return $this->workman;
             }),
+            'question' => $this->question,
             'project_manager' => $this->project_manager,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' =>  $this->updated_at->format('Y-m-d H:i:s'),
