@@ -181,7 +181,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
 
         //todo 信道申请
         Route::group(['prefix'=>'apply', 'namespace'=>'Channels'], function(){
-            Route::get('/page/{page}/{pageSize}', 'ApplyController@page');  //筛选信道单
+            Route::post('/page/{page}/{pageSize}', 'ApplyController@page');  //筛选信道单
             Route::post('/update/{id}', 'ApplyController@update');  //修改 + 审核通过
             Route::post('/operative', 'ApplyController@updateOperative');  //更新运行调配表
             Route::post('/real', 'ApplyController@updateReal');  //更新实际表
