@@ -189,7 +189,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::resource('/', 'ApplyController');
         });
 
-        Route::get('applyTemp/page/{page}/{pageSize}', 'Channels\ApplyController@pageTemp');  //todo 筛选走临时合同的信道单
+        Route::post('applyTemp/page/{page}/{pageSize}', 'Channels\ApplyController@pageTemp');  //todo 筛选走临时合同的信道单
         /***************************************************************************************************
         ***************                          工具类                                     ****************
         ***************************************************************************************************/
