@@ -59,7 +59,7 @@ class JobController extends ApiController
 
         $res = new serviceShowResource($data);
         //fixme 看来必须为service增加一个plan_id并且在选择时的前端也打通这个问题
-        $use = Service::findOrFail($service_id)->contract_plan_detail;  //todo 检索套餐使用详情
+        $use = Service::findOrFail($service_id)->contract_plan_detail()->first();  //todo 检索套餐使用详情
         return [
             'data' => $res,
             'use' => $use

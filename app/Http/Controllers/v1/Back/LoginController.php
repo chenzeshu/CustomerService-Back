@@ -64,7 +64,9 @@ class LoginController extends ApiController
 
     public function test()
     {
-        return Allow::findOrFail(1)->allow_report;
+        $data =  Service::findOrFail(7)->contract_plan_detail()->first();  //todo 检索套餐使用详情
+        dd($data);
+        return Contract::findOrFail(1)->services()->first();
     }
 
     public function test2(Request $request)
