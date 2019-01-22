@@ -15,6 +15,7 @@ class serviceShowResource extends Resource
      */
     public function toArray($request)
     {
+
        return [
            'status'=> $this->status,
            'time1' => $this->time1 ? $this->time1 : '未派单',
@@ -25,7 +26,8 @@ class serviceShowResource extends Resource
            'desc2' => $this->desc2 ? $this->desc2 : '未填写',
            'man' => $this->man ? new serviceEmpCollection($this->man) : '未派单',
            'company' => new serviceCompanyResource($this->contract->company),
-           'question' => $this->question
+           'question' => $this->question,
+           'img' => $this->doc[0],
        ];
     }
 }

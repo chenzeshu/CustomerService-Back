@@ -13,6 +13,7 @@ use App\Models\Services\Service;
 use App\Models\Utils\Service_type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 //派单
@@ -47,10 +48,13 @@ class JobController extends ApiController
      */
     public function showServiceDetail($service_id)
     {
-        $data = Service::with(['contract.company', 'type'])->findOrFail($service_id);
+        $data = Service::with(['contract.company', 'type'])
+            ->findOrFail($service_id);
 //        $contract_id = $data['contract']['id'];  //todo 用于检索套餐使用详情, 因为下方提前使用了fractalAPI 不想改了, 赘生上去
 
         $data->customer = Employee::findOrFail($data->customer);
+        $img = $data->document == null ? null : DB::select("select * from docs where id in ({$data->document})");
+
         if($data->man){
             $data->man = collect(explode(",", $data->man))->map(function($m){
                 return Employee::findOrFail($m);
@@ -58,11 +62,14 @@ class JobController extends ApiController
         }
 
         $res = new serviceShowResource($data);
+
         //fixme 看来必须为service增加一个plan_id并且在选择时的前端也打通这个问题
         $use = Service::findOrFail($service_id)->contract_plan_detail()->first();  //todo 检索套餐使用详情
+
         return [
             'data' => $res,
-            'use' => $use
+            'use' => $use,
+            "img" => $img,
         ];
     }
 

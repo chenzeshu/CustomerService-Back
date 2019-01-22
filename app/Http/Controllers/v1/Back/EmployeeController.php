@@ -24,7 +24,6 @@ class EmployeeController extends ApiController
 
     /**
      * Display a listing of the resource.
-     *
      * @return \Illuminate\Http\Response
      */
     public function index()
@@ -81,7 +80,6 @@ class EmployeeController extends ApiController
         }else{
             return $this->res(-200, "发送短信失败");
         }
-
     }
 
     /**

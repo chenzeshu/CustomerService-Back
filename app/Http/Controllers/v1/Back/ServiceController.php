@@ -69,7 +69,7 @@ class ServiceController extends ApiController
     }
 
     /**
-     * 展示待审核的服务单
+     * 展示不同状态的服务单（默认为待审核）
      */
     public function verify($status = "待审核")
     {

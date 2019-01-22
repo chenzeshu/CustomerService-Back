@@ -14,6 +14,7 @@ class ServiceVerifyResource extends Resource
      */
     public function toArray($request)
     {
+
 //        asset(str_replace('public', 'storage', $this->doc[0]->path));
         return [
             'id' => $this->id,
@@ -31,7 +32,7 @@ class ServiceVerifyResource extends Resource
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' =>  $this->updated_at->format('Y-m-d H:i:s'),
             'type' => $this->getRelations()['type'],
-            'img' =>$this->doc[0] ,
+            'img' =>$this->doc[0],
             'allege' => $this->allege
         ];
     }
