@@ -107,7 +107,7 @@ Route::group(['prefix'=>'v1', 'namespace'=>'v1\Back'], function (){
             Route::post('/update/{id}', 'EmployeeController@update');
             Route::get('/delete/{id}','EmployeeController@destroy');
             Route::get('/verify', 'EmployeeController@verify');  //todo 筛选未审核者
-            Route::post('/pass/{id}/{contract_plan_id}', 'EmployeeController@pass');  //todo 通过未审核者
+            Route::post('/pass/{id}', 'EmployeeController@pass');  //todo 通过未审核者
             Route::post('/rej/{id}', 'EmployeeController@rej');  //todo 拒绝未审核者
             Route::resource('/','EmployeeController');
         });
