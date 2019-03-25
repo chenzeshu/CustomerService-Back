@@ -66,7 +66,6 @@ class LoginController extends ApiController
 
     public function test()
     {
-
         $sms = new Sms();
         $sms->sendSms(env('SIGN_NAME'), "SMS_152284845", 18502557106,
             [

@@ -101,8 +101,18 @@ class ProblemController extends ApiController
         list($problem, $emps, $data) = $this->problemRepo->pakReportData($device_ids, $problem_id, $emp_ids);
 
         //todo 发送预警短信
-        $report_job = (new reportJob($emps, $data));
-        $this->dispatch($report_job);
+//        $report_job = (new reportJob($emps, $data));
+//        $this->dispatch($report_job);
+        $mailRepository = new MailRepository();
+
+        foreach ($emps as $emp){
+            $mailRepository->sendReportMsg(
+                (int)$emp->phone,
+                array_merge([
+                    "name" => $emp->name,
+                ], $data)
+            );
+        }
 
         //todo 记录本次报警
         $problem->reportRecords()->attach($device_ids, ['created_at' => date("Y-m-d H:i:s", time())]);
