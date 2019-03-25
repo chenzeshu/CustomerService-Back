@@ -9,11 +9,13 @@ use App\Exceptions\LoginExp\WrongInputExp;
 use App\Exceptions\SP\ChannelNoCheckerExp;
 use App\Http\Repositories\CompanyRepo;
 use App\Http\Repositories\ContractRepo;
+use App\Http\Repositories\ProblemRepo;
 use App\Http\Resources\Back\ServiceVerifyCollection;
 use App\Http\Resources\SP\serviceCompanyCollection;
 use App\Http\Resources\SP\serviceCompanyResource;
 use App\Http\Resources\SP\ServiceProcessCollection;
 use App\Http\Resources\SP\serviceShowResource;
+use App\Jobs\reportJob;
 use App\Models\Channels\Channel;
 use App\Models\Channels\Channel_info3;
 use App\Models\Channels\Channel_plan;
@@ -64,9 +66,24 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $data =  Service::findOrFail(7)->contract_plan_detail()->first();  //todo 检索套餐使用详情
-        dd($data);
-        return Contract::findOrFail(1)->services()->first();
+        $mtime = date("Y-m-d H:i:s", time());
+        ProblemRecord::create([
+           "problem_id" => 1,
+           "device_id" => 1,
+           "created_at" => $mtime
+        ]);
+
+
+//        $sms = new Sms();
+//        $sms->sendSms(env('SIGN_NAME'), "SMS_152284845", 18502557106,
+//            [
+//                "name" => "陈",
+//                "device_name" => "s123",
+//                "problem_desc" => "hasproblem",
+//                "400电话"
+//            ]);
+//
+//        return "ok";
     }
 
     public function test2(Request $request)

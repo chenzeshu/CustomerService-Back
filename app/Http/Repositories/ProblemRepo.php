@@ -12,7 +12,6 @@ namespace App\Http\Repositories;
 use App\Models\Employee;
 use App\Models\Problem\Problem;
 use App\Models\Utils\Device;
-use App\Services\Sms;
 
 class ProblemRepo
 {

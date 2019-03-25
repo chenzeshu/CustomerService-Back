@@ -105,7 +105,7 @@ class ProblemController extends ApiController
         $this->dispatch($report_job);
 
         //todo 记录本次报警
-        $problem->reportRecords()->attach($device_ids);
+        $problem->reportRecords()->attach($device_ids, ['created_at' => date("Y-m-d H:i:s", time())]);
 
         return $this->res(2002, '发送成功', $problem);
     }
