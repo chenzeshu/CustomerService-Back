@@ -45,6 +45,6 @@ class ProblemRecordController extends ApiController
     public function delete($precord_id)
     {
         ProblemRecord::destroy($precord_id);
-        return true;
+        return $this->res(2004, "删除");
     }
 }
