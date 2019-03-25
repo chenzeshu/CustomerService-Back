@@ -66,24 +66,16 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $mtime = date("Y-m-d H:i:s", time());
-        ProblemRecord::create([
-           "problem_id" => 1,
-           "device_id" => 1,
-           "created_at" => $mtime
-        ]);
 
-
-//        $sms = new Sms();
-//        $sms->sendSms(env('SIGN_NAME'), "SMS_152284845", 18502557106,
-//            [
-//                "name" => "陈",
-//                "device_name" => "s123",
-//                "problem_desc" => "hasproblem",
-//                "400电话"
-//            ]);
-//
-//        return "ok";
+        $sms = new Sms();
+        $sms->sendSms(env('SIGN_NAME'), "SMS_152284845", 18502557106,
+            [
+                "name" => "陈",
+                "device_name" => "s123",
+                "problem_desc" => "hasproblem",
+                "four00tel" => "400电话"
+            ]);
+        return "ok";
     }
 
     public function test2(Request $request)
