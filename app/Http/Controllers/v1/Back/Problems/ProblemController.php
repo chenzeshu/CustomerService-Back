@@ -16,6 +16,8 @@ class ProblemController extends ApiController
 {
 
     private $mailRepository;
+    private $problemRepo;
+
     public function __construct(ProblemRepo $problemRepo, MailRepository $mailRepository)
     {
         $this->problemRepo = $problemRepo;
@@ -99,20 +101,9 @@ class ProblemController extends ApiController
         $emp_ids = $request->emp_ids;
 
         list($problem, $emps, $data) = $this->problemRepo->pakReportData($device_ids, $problem_id, $emp_ids);
-
         //todo 发送预警短信
-//        $report_job = (new reportJob($emps, $data));
-//        $this->dispatch($report_job);
-        $mailRepository = new MailRepository();
-
-        foreach ($emps as $emp){
-            $mailRepository->sendReportMsg(
-                (int)$emp->phone,
-                array_merge([
-                    "name" => $emp->name,
-                ], $data)
-            );
-        }
+        $report_job = (new reportJob($emps, $data));
+        $this->dispatch($report_job);
 
         //todo 记录本次报警
         $problem->reportRecords()->attach($device_ids, ['created_at' => date("Y-m-d H:i:s", time())]);

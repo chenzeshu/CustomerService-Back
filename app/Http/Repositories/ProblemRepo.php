@@ -64,6 +64,7 @@ class ProblemRepo
     {
         //todo 获得故障模型
         $problem = Problem::findOrFail($problem_id);
+
         //todo 获得设备模型
         $device_name = Device::whereIn('id', $device_ids)
             ->get(['device_id'])
@@ -72,7 +73,6 @@ class ProblemRepo
             })
             ->implode(' 、 ');
         //todo 获得被通知人
-
         $emps = Employee::findOrFail($emp_ids);
 
         //todo 组装数据

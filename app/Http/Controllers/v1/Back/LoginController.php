@@ -2,46 +2,18 @@
 
 namespace App\Http\Controllers\v1\Back;
 
-use App\Dao\ServiceDAO;
 use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
-use App\Exceptions\SP\ChannelNoCheckerExp;
-use App\Http\Repositories\CompanyRepo;
-use App\Http\Repositories\ContractRepo;
+use App\Http\Repositories\MailRepository;
 use App\Http\Repositories\ProblemRepo;
-use App\Http\Resources\Back\ServiceVerifyCollection;
-use App\Http\Resources\SP\serviceCompanyCollection;
-use App\Http\Resources\SP\serviceCompanyResource;
-use App\Http\Resources\SP\ServiceProcessCollection;
-use App\Http\Resources\SP\serviceShowResource;
-use App\Jobs\reportJob;
-use App\Models\Channels\Channel;
-use App\Models\Channels\Channel_info3;
-use App\Models\Channels\Channel_plan;
-use App\Models\Company;
-use App\Models\Contract;
-use App\Models\Contractc;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
-use App\Models\Problem\Problem;
-use App\Models\Problem\ProblemRecord;
-use App\Models\Services\Contract_plan;
-use App\Models\Services\Service;
-use App\Models\Utils\Allow;
-use App\Models\Utils\Device;
-use App\Models\Utils\Service_type;
-use App\Observers\OBTraits\ContractcUpdated;
 use App\Services\Sms;
 use App\User;
-use Carbon\Carbon;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
-use Elasticsearch\ClientBuilder;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -66,15 +38,32 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $sms = new Sms();
-        $sms->sendSms(env('SIGN_NAME'), "SMS_152284845", 18502557106,
-            [
-                "name" => "陈",
-                "device_name" => "s123",
-                "problem_desc" => "hasproblem",
-                "four00tel" => "400电话"
-            ]);
-        return "ok";
+        $p = new ProblemRepo();
+        list($problem, $emps, $data) = $p->pakReportData([7], 1, [221]);
+        $mailRepository = new MailRepository();
+
+        $_data = [];
+        foreach ($emps as $emp){
+//            $mailRepository->sendReportMsg(
+            $_data[] = [
+                (int)$emp->phone,
+                array_merge([
+                    "name" => $emp->name,
+                ], $data)
+            ];
+//            );
+        }
+        return $_data;
+
+//        $sms = new Sms();
+//        $sms->sendSms(env('SIGN_NAME'), "SMS_152284845", 18502557106,
+//            [
+//                "name" => "陈",
+//                "device_name" => "s123",
+//                "problem_desc" => "hasproblem",
+//                "four00tel" => "400电话"
+//            ]);
+//        return "ok";
     }
 
     public function test2(Request $request)
