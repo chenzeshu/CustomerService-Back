@@ -52,6 +52,14 @@ class userSeed extends Seeder
                'status'=>'online',
                'scope' => 16
            ],
+           [
+               'name' => '庞华',
+               'email'=>'test@qq.com',
+               'password' => bcrypt('666666'),
+               'phone'=>'13585127781',
+               'status'=>'online',
+               'scope' => 16
+           ],
         ]);
     }
 }

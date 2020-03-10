@@ -256,7 +256,8 @@ class EmployeeController extends ApiController
             'email'=>$request->email,
             'status'=>$request->status,
             'openid'=>$request->openid,
-            'changed_at'=> $changed_at
+            'changed_at'=> $changed_at,
+            "sign" => $request->sign
         ]);
 
         $company = Company::findOrFail($company_id);

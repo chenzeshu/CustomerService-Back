@@ -22,6 +22,7 @@ class CreateEmployeesTable extends Migration
             $table->string('avatar',256)->nullable()->comment('头像的url');
             $table->string('phone',30)->unique();       //必须填写
             $table->string('email',64)->nullable();
+            $table->enum('sign',['signed', 'unsigned', 'intended'])->default('unsigned');  //签约、未签约、有意向的
             $table->enum('status', ['offline', 'online', '离职', '拒绝'])->default('online');  //不管待审批表里的最终被拒绝还是如何, 都会进入这个表, 成为记录
             $table->timestamp('changed_at')->nullable();  //专用于记录审核通过时间, 区分后期更改邮箱或手机时间, 可为空
             $table->timestamps();

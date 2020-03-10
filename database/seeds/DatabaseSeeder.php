@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
 //        $this->call(userSeed::class);
         //有依赖部分
 //        $this->call(companySeed::class);
-        $this->call(ProblemSeed::class);
-
+//        $this->call(ProblemSeed::class);
     }
 }
