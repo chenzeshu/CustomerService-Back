@@ -34,4 +34,10 @@ class ApiController extends Controller
             return false;
         }
     }
+
+    public function error($e){
+        return response()->json([
+            'msg'=>"错误",
+        ], 500);
+    }
 }

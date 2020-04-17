@@ -32,8 +32,8 @@ class SmsDemo
     public function __construct()
     {
 
-        $accessKeyId = "r5K5Mi6u4C83wrQx";
-        $accessKeySecret = "3XciVFaat3hoAdShvsAyDoRnIvbXLb";
+        $accessKeyId = env('SMS_ID');
+        $accessKeySecret = env('SMS_SECRET');
         // 短信API产品名
         $product = "Dysmsapi";
 
