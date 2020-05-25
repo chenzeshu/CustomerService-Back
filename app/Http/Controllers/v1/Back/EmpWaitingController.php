@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\v1\Back;
 
-use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\RegMailException;
 use App\Http\Repositories\MailRepository;
 use App\Models\Check\Check_phone;
 use App\Models\Employee_waiting;
-use App\Services\Sms;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
+use Chenzeshu\ChenUtils\WechatUtils;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class EmpWaitingController extends ApiController
@@ -42,9 +40,8 @@ class EmpWaitingController extends ApiController
     {
         try{
             //todo 通过openid判断是否重复提交申请
-            $openid = $this->getOpenid($request->jscode);
-
-            $request['openid'] = $openid;
+            $openid = (new WechatUtils())->getOpenid($request->jscode);
+            $request['openid'] = $openid['openid'];
 
             $check = $this->checkCode($request->phone, $request->phoneCode);
             if($check) {
@@ -55,11 +52,11 @@ class EmpWaitingController extends ApiController
                 throw new RegMailException();
             }
         }catch (QueryException $e){
+            //checkCode的sql出了问题
             return $this->res(-2003, '您已经提交过申请, 请耐心等待');
         }catch (RegMailException $e){
             return $this->error($e);
         }
-
     }
 
     /**
@@ -121,7 +118,7 @@ class EmpWaitingController extends ApiController
             }
         }
         //验证成功, 才将所有code都过期, 否则如果其输错了验证码, 就会导致前面全部作废
-        if($check == true && count($data) > 1){
+        if($check == true && count($data) >= 1){
             DB::update("update check_phones set status = 1 where status = 0 and phone = $phone");
         }
         return $check;

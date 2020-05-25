@@ -9,12 +9,11 @@ use App\Models\Employee;
 use App\Models\Employee_waiting;
 use App\Services\Sms;
 use App\User;
-use Chenzeshu\ChenUtils\Exceptions\TokenExp\WxCurlException;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
 use Chenzeshu\ChenUtils\WechatUtils;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -39,25 +38,8 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $this->app_id = config('chen.app_id');
-        $this->app_secret = config('chen.app_secret');
-        $this->login_url = config('chen.login_url');
-
-        $code = "001ADNSd27Y47J0BXlWd2m2QSd2ADNSl";
-        $login_url = sprintf($this->login_url, $this->app_id, $this->app_secret, $code);
-        $wx_string = $this->curl_get($login_url);
-        $wx_arr = json_decode($wx_string, true);
-        if(!$wx_arr){
-            throw new WxCurlException();
-        }
-        else {
-            $loginFail = array_key_exists('errcode', $wx_arr);
-            if ($loginFail) {
-                return "失败啦!";
-            } else {
-                return $wx_arr;
-            }
-        }
+        $openid = (new WechatUtils())->getOpenid("001SLjaZ1B5wyV0p8UaZ175jaZ1SLjao");
+        return $openid['openid'];
     }
 
     public function test2(Request $request)
