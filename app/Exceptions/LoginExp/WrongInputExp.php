@@ -10,7 +10,7 @@ namespace App\Exceptions\LoginExp;
 
 use App\Exceptions\BaseException;
 
-class WrongInputExp extends BaseException
+class WrongInputExp extends \Exception
 {
     // 错误具体信息
     public $msg = "手机号或密码填写错误";

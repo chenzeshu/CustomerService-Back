@@ -4,7 +4,7 @@ namespace App\Exceptions\LoginExp;
 
 use App\Exceptions\BaseException;
 
-class OfflineException extends BaseException
+class OfflineException extends \Exception
 {
     // 错误具体信息
     public $msg = "此账号已被下线, 请联系管理员";

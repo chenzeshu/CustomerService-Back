@@ -5,15 +5,16 @@ namespace App\Http\Controllers\v1\Back;
 use App\Exceptions\BaseException;
 use App\Exceptions\LoginExp\OfflineException;
 use App\Exceptions\LoginExp\WrongInputExp;
-use App\Http\Repositories\MailRepository;
-use App\Http\Repositories\ProblemRepo;
 use App\Models\Employee;
 use App\Models\Employee_waiting;
 use App\Services\Sms;
 use App\User;
+use Chenzeshu\ChenUtils\Exceptions\TokenExp\WxCurlException;
 use Chenzeshu\ChenUtils\Traits\CurlFuncs;
 use Chenzeshu\ChenUtils\Traits\TestTrait;
+use Chenzeshu\ChenUtils\WechatUtils;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -38,32 +39,25 @@ class LoginController extends ApiController
 
     public function test()
     {
-        $p = new ProblemRepo();
-        list($problem, $emps, $data) = $p->pakReportData([7], 1, [221]);
-        $mailRepository = new MailRepository();
+        $this->app_id = config('chen.app_id');
+        $this->app_secret = config('chen.app_secret');
+        $this->login_url = config('chen.login_url');
 
-        $_data = [];
-        foreach ($emps as $emp){
-//            $mailRepository->sendReportMsg(
-            $_data[] = [
-                (int)$emp->phone,
-                array_merge([
-                    "name" => $emp->name,
-                ], $data)
-            ];
-//            );
+        $code = "001ADNSd27Y47J0BXlWd2m2QSd2ADNSl";
+        $login_url = sprintf($this->login_url, $this->app_id, $this->app_secret, $code);
+        $wx_string = $this->curl_get($login_url);
+        $wx_arr = json_decode($wx_string, true);
+        if(!$wx_arr){
+            throw new WxCurlException();
         }
-        return $_data;
-
-//        $sms = new Sms();
-//        $sms->sendSms(env('SIGN_NAME'), "SMS_152284845", 18502557106,
-//            [
-//                "name" => "陈",
-//                "device_name" => "s123",
-//                "problem_desc" => "hasproblem",
-//                "four00tel" => "400电话"
-//            ]);
-//        return "ok";
+        else {
+            $loginFail = array_key_exists('errcode', $wx_arr);
+            if ($loginFail) {
+                return "失败啦!";
+            } else {
+                return $wx_arr;
+            }
+        }
     }
 
     public function test2(Request $request)
@@ -135,6 +129,9 @@ class LoginController extends ApiController
         return $this->findUserViaOpenid($openid);
     }
 
+    public function getOpenid($code){
+        return (new WechatUtils())->getOpenid($code);
+    }
 
     public function findUserViaOpenid($openid)
     {

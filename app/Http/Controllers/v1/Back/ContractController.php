@@ -73,7 +73,7 @@ class ContractController extends Controller
      */
     public function newPage(Request $request)
     {
-        $sc = $request->post('searchCondition');
+        $sc = $request->post('searchCondition'); //拿到搜索条件
 
         list($data, $total) = $this->repo->newPageRepo($sc);
         $data = [
